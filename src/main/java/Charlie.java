@@ -66,7 +66,7 @@ public class Charlie {
                     break;
                 } else if (command.equals("list")) {
                     for (int i = 0; i < taskCount; i++) {
-                        printBotLine((i + 1) + ". " + TASKS[i]);
+                        printBotLine((i + 1) + "." + TASKS[i]);
                     }
                 } else if (command.equals("mark")) {
                     int index = Integer.parseInt(parts[1]) - 1;
@@ -88,7 +88,8 @@ public class Charlie {
     private static void mark(int index) {
         Task curTask = TASKS[index];
         curTask.markDone();
-        System.out.println("Nice! I've marked this task as done: \n  " + curTask.toString());
+        System.out.println("Nice! I've marked this task as done:");
+        System.out.println("  " + curTask.toString());
     }
 
     private static void unmark(int index) {
