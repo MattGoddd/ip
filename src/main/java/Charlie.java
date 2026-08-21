@@ -7,7 +7,7 @@ public class Charlie {
     private static final String BOT_NAME = "Charlie";
     private static final String HORIZONTAL_LINE = "____________________________________________________________";
     private static final String INDENT = "    ";
-    private static final String[] TASKS = new String[100];
+    private static final Task[] TASKS = new Task[100];
     private static int taskCount = 0;
 
     public static void main(String[] args) {
@@ -58,16 +58,25 @@ public class Charlie {
         try (Scanner scanner = new Scanner(System.in)) {
             while (scanner.hasNextLine()) {
                 String input = scanner.nextLine();
+                String[] parts = input.trim().split("\\s+");
+                String command = parts[0];
                 horizontalLine();
-                if (input.equals("bye")) {
+                if (command.equals("bye")) {
                     outro();
                     break;
-                } else if (input.equals("list")) {
+                } else if (command.equals("list")) {
                     for (int i = 0; i < taskCount; i++) {
                         printBotLine((i + 1) + ". " + TASKS[i]);
                     }
+                } else if (command.equals("mark")) {
+                    int index = Integer.parseInt(parts[1]) - 1;
+                    mark(index);
+                } else if (command.equals("unmark")) {
+                    int index = Integer.parseInt(parts[1]) - 1;
+                    unmark(index);
                 } else {
-                    TASKS[taskCount] = input;
+                    Task newTask = new Task(input);
+                    TASKS[taskCount] = newTask;
                     taskCount++;
                     printBotLine("added: " + input);
                 }
@@ -75,4 +84,17 @@ public class Charlie {
             }
         }
     }
+
+    private static void mark(int index) {
+        Task curTask = TASKS[index];
+        curTask.markDone();
+        System.out.println("Nice! I've marked this task as done: \n  " + curTask.toString());
+    }
+
+    private static void unmark(int index) {
+        Task curTask = TASKS[index];
+        curTask.markUndone();
+        System.out.println("OK, I've marked this task not done yet: \n  " + curTask.toString());
+    }
+
 }
