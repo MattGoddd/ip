@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -7,7 +8,7 @@ public class Charlie {
     private static final String BOT_NAME = "Charlie";
     private static final String HORIZONTAL_LINE = "____________________________________________________________";
     private static final String INDENT = "    ";
-    private static final Task[] TASKS = new Task[100];
+    private static final ArrayList<Task> TASKS = new ArrayList<>();
     private static int taskCount = 0;
 
     public static void main(String[] args) {
@@ -84,6 +85,11 @@ public class Charlie {
                             unmark(index);
                             break;
                         }
+                        case "delete": {
+                            int index = parseTaskIndex(parts);
+                            deleteTask(index);
+                            break;
+                        }
                         case "todo":
                         case "deadline":
                         case "event": {
@@ -103,14 +109,14 @@ public class Charlie {
     }
 
     private static void mark(int index) {
-        Task curTask = TASKS[index];
+        Task curTask = TASKS.get(index);
         curTask.markDone();
         printBotLine("Nice! I've marked this task as done:");
         printBotLine("  " + curTask.toString());
     }
 
     private static void unmark(int index) {
-        Task curTask = TASKS[index];
+        Task curTask = TASKS.get(index);
         curTask.markUndone();
         printBotLine("OK, I've marked this task not done yet:");
         printBotLine("  " + curTask.toString());
@@ -119,7 +125,7 @@ public class Charlie {
     private static void listTask() {
         printBotLine("Here are the tasks in your list: ");
         for (int i = 0; i < taskCount; i++) {
-            printBotLine((i + 1) + "." + TASKS[i]);
+            printBotLine((i + 1) + "." + TASKS.get(i));
         }
     }
 
@@ -170,7 +176,7 @@ public class Charlie {
 
     private static void addTask(Task task) {
         try {
-            TASKS[taskCount] = task;
+            TASKS.add(task);
             taskCount++;
             printBotLine("Got it. I've added this task:");
             printBotLine("  " + task.toString());
@@ -209,6 +215,14 @@ public class Charlie {
         }
 
         return taskNumber - 1;
+    }
+
+    private static void deleteTask(int index) {
+        Task deletedTask = TASKS.remove(index);
+        taskCount--;
+        printBotLine("Noted. I've removed this task: ");
+        printBotLine("  " + deletedTask.toString());
+        printBotLine("Now you have " + taskCount + " tasks in the list.");
     }
 
 }
