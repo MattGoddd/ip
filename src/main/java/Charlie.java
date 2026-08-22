@@ -56,35 +56,98 @@ public class Charlie {
      */
     private static void readCommand() {
         try (Scanner scanner = new Scanner(System.in)) {
+            label:
             while (scanner.hasNextLine()) {
                 String input = scanner.nextLine();
                 String[] parts = input.trim().split("\\s+");
                 String command = parts[0];
                 horizontalLine();
-                if (command.equals("bye")) {
-                    outro();
-                    break;
-                } else if (command.equals("list")) {
-                    for (int i = 0; i < taskCount; i++) {
-                        printBotLine((i + 1) + "." + TASKS[i]);
+                switch (command) {
+                    case "bye":
+                        outro();
+                        break label;
+                    case "list":
+                        for (int i = 0; i < taskCount; i++) {
+                            printBotLine((i + 1) + "." + TASKS[i]);
+                        }
+                        break;
+                    case "mark": {
+                        int index = Integer.parseInt(parts[1]) - 1;
+                        mark(index);
+                        break;
                     }
-                } else if (command.equals("mark")) {
-                    int index = Integer.parseInt(parts[1]) - 1;
-                    mark(index);
-                } else if (command.equals("unmark")) {
-                    int index = Integer.parseInt(parts[1]) - 1;
-                    unmark(index);
-                } else {
-                    Task newTask = new Task(input, false);
-                    TASKS[taskCount] = newTask;
-                    taskCount++;
-                    printBotLine("Got it. I've added this task: \n"
-                            + newTask.toString() + "\n"
-                            + "Now you have" + taskCount + "tasks in the list.");
+                    case "unmark": {
+                        int index = Integer.parseInt(parts[1]) - 1;
+                        unmark(index);
+                        break;
+                    }
+                    case "todo":
+                    case "deadline":
+                    case "event": {
+                        Task newTask = parseTask(input);
+                        if (newTask == null) {
+                            printBotLine("Please check the format of your task.");
+                        } else {
+                            TASKS[taskCount] = newTask;
+                            taskCount++;
+                            printBotLine("Got it. I've added this task:");
+                            printBotLine("  " + newTask.toString());
+                            printBotLine("Now you have " + taskCount + " tasks in the list.");
+                        }
+                        break;
+                    }
+                    default:
+                        Task newTask = new Task(input, false);
+                        TASKS[taskCount] = newTask;
+                        taskCount++;
+                        printBotLine("Got it. I've added this task: ");
+                        printBotLine("  " + newTask.toString());
+                        printBotLine("Now you have " + taskCount + " tasks in the list.");
+                        break;
                 }
                 horizontalLine();
             }
         }
+    }
+
+    /**
+     * Converts a task command into the corresponding type of task.
+     * Returns {@code null} when the command does not have the expected format.
+     */
+    private static Task parseTask(String input) {
+        String[] commandAndArguments = input.trim().split("\\s+", 2);
+        if (commandAndArguments.length < 2) {
+            return null;
+        }
+
+        String command = commandAndArguments[0];
+        String arguments = commandAndArguments[1];
+
+        if (command.equals("todo")) {
+            return new Todo(arguments, false);
+        } else if (command.equals("deadline")) {
+            int byPosition = arguments.indexOf("/by");
+            if (byPosition == -1) {
+                return null;
+            }
+
+            String description = arguments.substring(0, byPosition).trim();
+            String deadline = arguments.substring(byPosition + "/by".length()).trim();
+            return new Deadline(description, false, deadline);
+        } else if (command.equals("event")) {
+            int fromPosition = arguments.indexOf("/from");
+            int toPosition = arguments.indexOf("/to");
+            if (fromPosition == -1 || toPosition == -1 || fromPosition > toPosition) {
+                return null;
+            }
+
+            String description = arguments.substring(0, fromPosition).trim();
+            String from = arguments.substring(fromPosition + "/from".length(), toPosition).trim();
+            String to = arguments.substring(toPosition + "/to".length()).trim();
+            return new Event(description, false, from, to);
+        }
+
+        return null;
     }
 
     private static void mark(int index) {
