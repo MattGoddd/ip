@@ -66,39 +66,37 @@ public class Charlie {
                         throw new CharlieException("Please enter a command.");
                     }
                     String[] parts = input.trim().split("\\s+");
-                    String command = parts[0];
                     horizontalLine();
+                    Command command = Command.fromKeyword(parts[0]);
                     switch (command) {
-                        case "bye":
+                        case BYE:
                             outro();
                             break label;
-                        case "list":
+                        case LIST:
                             listTask();
                             break;
-                        case "mark": {
+                        case MARK: {
                             int index = parseTaskIndex(parts);
                             mark(index);
                             break;
                         }
-                        case "unmark": {
+                        case UNMARK: {
                             int index = parseTaskIndex(parts);
                             unmark(index);
                             break;
                         }
-                        case "delete": {
+                        case DELETE: {
                             int index = parseTaskIndex(parts);
                             deleteTask(index);
                             break;
                         }
-                        case "todo":
-                        case "deadline":
-                        case "event": {
-                            Task newTask = parseTask(input);
+                        case TODO:
+                        case DEADLINE:
+                        case EVENT: {
+                            Task newTask = parseTask(input, command);
                             addTask(newTask);
                             break;
                         }
-                        default:
-                            throw new CharlieException("Oops, this is an invalid command");
                     }
                 } catch (CharlieException e) {
                     printBotLine(e.getMessage());
@@ -132,19 +130,22 @@ public class Charlie {
     /**
      * Converts a task command into the corresponding type of task.
      * Throws a {@link CharlieException} when the command does not have the expected format.
+     *
+     * @param input complete user input containing the task details
+     * @param command type of task to create
+     * @return a task containing the parsed details
      */
-    private static Task parseTask(String input) {
+    private static Task parseTask(String input, Command command) {
         String[] commandAndArguments = input.trim().split("\\s+", 2);
         if (commandAndArguments.length < 2) {
             throw new CharlieException("The task description cannot be empty.");
         }
 
-        String command = commandAndArguments[0];
         String arguments = commandAndArguments[1];
 
-        if (command.equals("todo")) {
+        if (command == Command.TODO) {
             return new Todo(arguments, false);
-        } else if (command.equals("deadline")) {
+        } else if (command == Command.DEADLINE) {
             int byPosition = arguments.indexOf("/by");
             if (byPosition == -1) {
                 throw new CharlieException("A deadline must include /by followed by a date.");
@@ -158,7 +159,7 @@ public class Charlie {
                 throw new CharlieException("Deadline cannot be empty.");
             }
             return new Deadline(description, false, deadline);
-        } else { // Run else clause here due to the switch format ensuring this is "event"
+        } else { // readCommand only passes EVENT as the remaining command type.
             int fromPosition = arguments.indexOf("/from");
             int toPosition = arguments.indexOf("/to");
             if (fromPosition == -1 || toPosition == -1) {
