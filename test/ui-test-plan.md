@@ -14,6 +14,8 @@
 
 **Aim:** Verify that `todo` creates an incomplete todo with the correct description and confirmation.
 
+**Rationale:** This is the simplest task-creation command, so it establishes that task descriptions, status symbols, and task counts are displayed correctly.
+
 **Input:**
 
 ```text
@@ -33,6 +35,8 @@ todo borrow book
 ## UI-02 — Add a deadline
 
 **Aim:** Verify that `/by` separates the deadline description from its date or time.
+
+**Rationale:** A deadline contains two user-provided fields, making this case necessary to check both delimiter parsing and deadline formatting.
 
 **Input:**
 
@@ -54,6 +58,8 @@ deadline return book /by Sunday
 
 **Aim:** Verify that `/from` and `/to` separate the event description, start, and end.
 
+**Rationale:** An event uses two delimiters and three fields, so it checks the most complex task parser and its output order.
+
 **Input:**
 
 ```text
@@ -73,6 +79,8 @@ event project meeting /from Mon 2pm /to 4pm
 ## UI-04 — List all tasks
 
 **Aim:** Verify that `list` displays every task in insertion order with one-based numbering.
+
+**Rationale:** This case uses the state created by the preceding cases to check that different task types are retained and displayed together correctly.
 
 **Input:**
 

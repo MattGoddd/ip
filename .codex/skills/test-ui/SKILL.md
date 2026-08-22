@@ -10,7 +10,7 @@ Use `test/ui-test-plan.md` as the persistent source of UI test cases and session
 ## Preparing the test plan
 
 - Accept test cases supplied as lists of commands and expected outputs.
-- Before testing, record every supplied case in `test/ui-test-plan.md`. Give each case a unique ID and state its aim, input, and exact expected output.
+- Before testing, record every supplied case in `test/ui-test-plan.md`. Give each case a unique ID and state its aim/rationale, input, and exact expected output.
 - Preserve spaces, punctuation, capitalization, blank lines, and task order in expected output.
 - If the user supplies no cases, run the cases already recorded in the plan.
 - Do not change application code while performing a test-only request.

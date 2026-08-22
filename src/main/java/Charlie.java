@@ -67,6 +67,7 @@ public class Charlie {
                         outro();
                         break label;
                     case "list":
+                        printBotLine("Here are the tasks in your list: ");
                         for (int i = 0; i < taskCount; i++) {
                             printBotLine((i + 1) + "." + TASKS[i]);
                         }
