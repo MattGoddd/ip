@@ -122,14 +122,19 @@ public class Charlie {
         String arguments = commandAndArguments[1];
 
         if (command.equals("todo")) {
+            if (arguments.isEmpty()) {
+                throw new CharlieException("Description cannot be empty");
+            }
             return new Todo(arguments, false);
         } else if (command.equals("deadline")) {
             int byPosition = arguments.indexOf("/by");
             if (byPosition == -1) {
                 throw new CharlieException("A deadline must include /by followed by a date.");
             }
-
             String description = arguments.substring(0, byPosition).trim();
+            if (description.isEmpty()) {
+                throw new CharlieException("Description cannot be empty");
+            }
             String deadline = arguments.substring(byPosition + "/by".length()).trim();
             return new Deadline(description, false, deadline);
         } else if (command.equals("event")) {
@@ -142,6 +147,9 @@ public class Charlie {
             }
 
             String description = arguments.substring(0, fromPosition).trim();
+            if (description.isEmpty()) {
+                throw new CharlieException("Description cannot be empty");
+            }
             String from = arguments.substring(fromPosition + "/from".length(), toPosition).trim();
             String to = arguments.substring(toPosition + "/to".length()).trim();
             return new Event(description, false, from, to);
@@ -153,14 +161,15 @@ public class Charlie {
     private static void mark(int index) {
         Task curTask = TASKS[index];
         curTask.markDone();
-        System.out.println("Nice! I've marked this task as done:");
-        System.out.println("  " + curTask.toString());
+        printBotLine("Nice! I've marked this task as done:");
+        printBotLine("  " + curTask.toString());
     }
 
     private static void unmark(int index) {
         Task curTask = TASKS[index];
         curTask.markUndone();
-        System.out.println("OK, I've marked this task not done yet: \n  " + curTask.toString());
+        printBotLine("OK, I've marked this task not done yet:");
+        printBotLine("  " + curTask.toString());
     }
 
 }

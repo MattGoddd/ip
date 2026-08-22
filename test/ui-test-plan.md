@@ -141,3 +141,45 @@ list
     3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
     ____________________________________________________________
 ```
+
+## UI-07 — Mark a task as done
+
+**Aim:** Verify that `mark` changes the selected task's status to done and displays the updated task.
+
+**Rationale:** Marking changes existing task state, so the response must identify the selected task and show its completed status symbol.
+
+**Input:**
+
+```text
+mark 2
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Nice! I've marked this task as done:
+      [D][X] return book (by: Sunday)
+    ____________________________________________________________
+```
+
+## UI-08 — Unmark a task
+
+**Aim:** Verify that `unmark` changes the selected task's status back to not done and displays the updated task.
+
+**Rationale:** Unmarking is the inverse state transition and must restore the incomplete status symbol for the same task.
+
+**Input:**
+
+```text
+unmark 2
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    OK, I've marked this task not done yet:
+      [D][ ] return book (by: Sunday)
+    ____________________________________________________________
+```
