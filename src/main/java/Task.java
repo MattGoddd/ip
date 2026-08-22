@@ -1,15 +1,10 @@
 public class Task {
-    String description;
-    boolean isDone;
+    protected String description;
+    protected boolean isDone;
 
     public Task(String description, boolean isDone) {
         this.description = description;
         this.isDone = isDone;
-    }
-
-    public Task(String description) {
-        this.description = description;
-        this.isDone = false;
     }
 
     public void markDone() {

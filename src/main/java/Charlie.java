@@ -75,10 +75,12 @@ public class Charlie {
                     int index = Integer.parseInt(parts[1]) - 1;
                     unmark(index);
                 } else {
-                    Task newTask = new Task(input);
+                    Task newTask = new Task(input, false);
                     TASKS[taskCount] = newTask;
                     taskCount++;
-                    printBotLine("added: " + input);
+                    printBotLine("Got it. I've added this task: \n"
+                            + newTask.toString() + "\n"
+                            + "Now you have" + taskCount + "tasks in the list.");
                 }
                 horizontalLine();
             }
