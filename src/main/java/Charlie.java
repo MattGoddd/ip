@@ -58,53 +58,50 @@ public class Charlie {
         try (Scanner scanner = new Scanner(System.in)) {
             label:
             while (scanner.hasNextLine()) {
-                String input = scanner.nextLine();
-                String[] parts = input.trim().split("\\s+");
-                String command = parts[0];
-                horizontalLine();
-                switch (command) {
-                    case "bye":
-                        outro();
-                        break label;
-                    case "list":
-                        printBotLine("Here are the tasks in your list: ");
-                        for (int i = 0; i < taskCount; i++) {
-                            printBotLine((i + 1) + "." + TASKS[i]);
+                try {
+                    String input = scanner.nextLine();
+                    if (input.isBlank()) {
+                        throw new CharlieException("Please enter a command.");
+                    }
+                    String[] parts = input.trim().split("\\s+");
+                    String command = parts[0];
+                    horizontalLine();
+                    switch (command) {
+                        case "bye":
+                            outro();
+                            break label;
+                        case "list":
+                            printBotLine("Here are the tasks in your list: ");
+                            for (int i = 0; i < taskCount; i++) {
+                                printBotLine((i + 1) + "." + TASKS[i]);
+                            }
+                            break;
+                        case "mark": {
+                            int index = Integer.parseInt(parts[1]) - 1;
+                            mark(index);
+                            break;
                         }
-                        break;
-                    case "mark": {
-                        int index = Integer.parseInt(parts[1]) - 1;
-                        mark(index);
-                        break;
-                    }
-                    case "unmark": {
-                        int index = Integer.parseInt(parts[1]) - 1;
-                        unmark(index);
-                        break;
-                    }
-                    case "todo":
-                    case "deadline":
-                    case "event": {
-                        Task newTask = parseTask(input);
-                        if (newTask == null) {
-                            printBotLine("Please check the format of your task.");
-                        } else {
+                        case "unmark": {
+                            int index = Integer.parseInt(parts[1]) - 1;
+                            unmark(index);
+                            break;
+                        }
+                        case "todo":
+                        case "deadline":
+                        case "event": {
+                            Task newTask = parseTask(input);
                             TASKS[taskCount] = newTask;
                             taskCount++;
                             printBotLine("Got it. I've added this task:");
                             printBotLine("  " + newTask.toString());
                             printBotLine("Now you have " + taskCount + " tasks in the list.");
+                            break;
                         }
-                        break;
+                        default:
+                            throw new CharlieException("Oops, this is an invalid command");
                     }
-                    default:
-                        Task newTask = new Task(input, false);
-                        TASKS[taskCount] = newTask;
-                        taskCount++;
-                        printBotLine("Got it. I've added this task: ");
-                        printBotLine("  " + newTask.toString());
-                        printBotLine("Now you have " + taskCount + " tasks in the list.");
-                        break;
+                } catch (CharlieException e) {
+                    printBotLine(e.getMessage());
                 }
                 horizontalLine();
             }
@@ -113,12 +110,12 @@ public class Charlie {
 
     /**
      * Converts a task command into the corresponding type of task.
-     * Returns {@code null} when the command does not have the expected format.
+     * Throws a {@link CharlieException} when the command does not have the expected format.
      */
     private static Task parseTask(String input) {
         String[] commandAndArguments = input.trim().split("\\s+", 2);
         if (commandAndArguments.length < 2) {
-            return null;
+            throw new CharlieException("Invalid number of arguments!");
         }
 
         String command = commandAndArguments[0];
@@ -129,7 +126,7 @@ public class Charlie {
         } else if (command.equals("deadline")) {
             int byPosition = arguments.indexOf("/by");
             if (byPosition == -1) {
-                return null;
+                throw new CharlieException("A deadline must include /by followed by a date.");
             }
 
             String description = arguments.substring(0, byPosition).trim();
@@ -138,8 +135,10 @@ public class Charlie {
         } else if (command.equals("event")) {
             int fromPosition = arguments.indexOf("/from");
             int toPosition = arguments.indexOf("/to");
-            if (fromPosition == -1 || toPosition == -1 || fromPosition > toPosition) {
-                return null;
+            if (fromPosition == -1 || toPosition == -1) {
+                throw new CharlieException("from/to fields cannot be empty");
+            } else if (fromPosition > toPosition) {
+                throw new CharlieException("Invalid argument format");
             }
 
             String description = arguments.substring(0, fromPosition).trim();
@@ -148,7 +147,7 @@ public class Charlie {
             return new Event(description, false, from, to);
         }
 
-        return null;
+        throw new CharlieException("I don't understand what this command is :(");
     }
 
     private static void mark(int index) {

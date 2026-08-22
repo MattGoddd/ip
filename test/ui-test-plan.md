@@ -98,3 +98,46 @@ list
     3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
     ____________________________________________________________
 ```
+
+## UI-05 — Reject an invalid command
+
+**Aim:** Verify that an unknown command displays a helpful error without terminating Charlie.
+
+**Rationale:** Custom exceptions should be handled inside the input loop so the chatbot remains available after invalid input.
+
+**Input:**
+
+```text
+hello
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Oops, this is an invalid command
+    ____________________________________________________________
+```
+
+## UI-06 — Continue after an invalid command
+
+**Aim:** Verify that Charlie still accepts commands after handling an invalid command.
+
+**Rationale:** Printing an error is insufficient if the exception causes the input loop to end.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] borrow book
+    2.[D][ ] return book (by: Sunday)
+    3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+    ____________________________________________________________
+```
