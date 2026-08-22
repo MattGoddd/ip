@@ -61,6 +61,7 @@ public class Charlie {
                 try {
                     String input = scanner.nextLine();
                     if (input.isBlank()) {
+                        horizontalLine();
                         throw new CharlieException("Please enter a command.");
                     }
                     String[] parts = input.trim().split("\\s+");
@@ -71,18 +72,15 @@ public class Charlie {
                             outro();
                             break label;
                         case "list":
-                            printBotLine("Here are the tasks in your list: ");
-                            for (int i = 0; i < taskCount; i++) {
-                                printBotLine((i + 1) + "." + TASKS[i]);
-                            }
+                            listTask();
                             break;
                         case "mark": {
-                            int index = Integer.parseInt(parts[1]) - 1;
+                            int index = parseTaskIndex(parts);
                             mark(index);
                             break;
                         }
                         case "unmark": {
-                            int index = Integer.parseInt(parts[1]) - 1;
+                            int index = parseTaskIndex(parts);
                             unmark(index);
                             break;
                         }
@@ -90,11 +88,7 @@ public class Charlie {
                         case "deadline":
                         case "event": {
                             Task newTask = parseTask(input);
-                            TASKS[taskCount] = newTask;
-                            taskCount++;
-                            printBotLine("Got it. I've added this task:");
-                            printBotLine("  " + newTask.toString());
-                            printBotLine("Now you have " + taskCount + " tasks in the list.");
+                            addTask(newTask);
                             break;
                         }
                         default:
@@ -108,6 +102,27 @@ public class Charlie {
         }
     }
 
+    private static void mark(int index) {
+        Task curTask = TASKS[index];
+        curTask.markDone();
+        printBotLine("Nice! I've marked this task as done:");
+        printBotLine("  " + curTask.toString());
+    }
+
+    private static void unmark(int index) {
+        Task curTask = TASKS[index];
+        curTask.markUndone();
+        printBotLine("OK, I've marked this task not done yet:");
+        printBotLine("  " + curTask.toString());
+    }
+
+    private static void listTask() {
+        printBotLine("Here are the tasks in your list: ");
+        for (int i = 0; i < taskCount; i++) {
+            printBotLine((i + 1) + "." + TASKS[i]);
+        }
+    }
+
     /**
      * Converts a task command into the corresponding type of task.
      * Throws a {@link CharlieException} when the command does not have the expected format.
@@ -115,16 +130,13 @@ public class Charlie {
     private static Task parseTask(String input) {
         String[] commandAndArguments = input.trim().split("\\s+", 2);
         if (commandAndArguments.length < 2) {
-            throw new CharlieException("Invalid number of arguments!");
+            throw new CharlieException("The task description cannot be empty.");
         }
 
         String command = commandAndArguments[0];
         String arguments = commandAndArguments[1];
 
         if (command.equals("todo")) {
-            if (arguments.isEmpty()) {
-                throw new CharlieException("Description cannot be empty");
-            }
             return new Todo(arguments, false);
         } else if (command.equals("deadline")) {
             int byPosition = arguments.indexOf("/by");
@@ -137,7 +149,7 @@ public class Charlie {
             }
             String deadline = arguments.substring(byPosition + "/by".length()).trim();
             return new Deadline(description, false, deadline);
-        } else if (command.equals("event")) {
+        } else { // Run else clause here due to the switch format ensuring this is "event"
             int fromPosition = arguments.indexOf("/from");
             int toPosition = arguments.indexOf("/to");
             if (fromPosition == -1 || toPosition == -1) {
@@ -154,22 +166,49 @@ public class Charlie {
             String to = arguments.substring(toPosition + "/to".length()).trim();
             return new Event(description, false, from, to);
         }
-
-        throw new CharlieException("I don't understand what this command is :(");
     }
 
-    private static void mark(int index) {
-        Task curTask = TASKS[index];
-        curTask.markDone();
-        printBotLine("Nice! I've marked this task as done:");
-        printBotLine("  " + curTask.toString());
+    private static void addTask(Task task) {
+        try {
+            TASKS[taskCount] = task;
+            taskCount++;
+            printBotLine("Got it. I've added this task:");
+            printBotLine("  " + task.toString());
+            printBotLine("Now you have " + taskCount + " tasks in the list.");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new CharlieException("List can only hold 100 tasks");
+        }
     }
 
-    private static void unmark(int index) {
-        Task curTask = TASKS[index];
-        curTask.markUndone();
-        printBotLine("OK, I've marked this task not done yet:");
-        printBotLine("  " + curTask.toString());
+    /**
+     * Included this to separate parsing from readCommand()
+     * Takes in the parsed String parts, and checks if the 2nd input is a valid int
+     * Returns the index for mark / unmark
+     * Throws a {@link CharlieException} with invalid input
+     */
+    private static int parseTaskIndex(String[] parts) {
+        if (parts.length != 2) {
+            throw new CharlieException("Please provide exactly one task number.");
+        }
+
+        int taskNumber;
+
+        try {
+            taskNumber = Integer.parseInt(parts[1]);
+        } catch (NumberFormatException e) {
+            throw new CharlieException("Please enter a valid task number.");
+        }
+
+        if (taskCount <= 0) {
+            throw new CharlieException("There are no tasks in the list");
+        }
+
+        if (taskNumber < 1 || taskNumber > taskCount) {
+            throw new CharlieException(
+                    "Please enter a task number from 1 to " + taskCount + ".");
+        }
+
+        return taskNumber - 1;
     }
 
 }

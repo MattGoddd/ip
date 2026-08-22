@@ -183,3 +183,203 @@ unmark 2
       [D][ ] return book (by: Sunday)
     ____________________________________________________________
 ```
+
+## UI-09 — Reject an empty command
+
+**Aim:** Verify that submitting an empty line displays a helpful error.
+
+**Rationale:** Empty input must be handled without terminating Charlie or producing inconsistent response separators.
+
+**Input:** Submit one empty line.
+
+```text
+
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Please enter a command.
+    ____________________________________________________________
+```
+
+## UI-10 — Reject a todo without a description
+
+**Aim:** Verify that `todo` requires a description.
+
+**Rationale:** A task without a description cannot convey useful work to the user.
+
+**Input:**
+
+```text
+todo
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    The task description cannot be empty.
+    ____________________________________________________________
+```
+
+## UI-11 — Reject a deadline without `/by`
+
+**Aim:** Verify that a deadline requires its `/by` delimiter.
+
+**Rationale:** Without `/by`, Charlie cannot separate the task description from its deadline.
+
+**Input:**
+
+```text
+deadline return book
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    A deadline must include /by followed by a date.
+    ____________________________________________________________
+```
+
+## UI-12 — Reject a deadline without a description
+
+**Aim:** Verify that a deadline requires text before `/by`.
+
+**Rationale:** Supplying a date alone does not describe a task.
+
+**Input:**
+
+```text
+deadline /by Sunday
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Description cannot be empty
+    ____________________________________________________________
+```
+
+## UI-13 — Reject a deadline without a date
+
+**Aim:** Verify that a deadline requires text after `/by`.
+
+**Rationale:** An empty deadline value would create an incomplete Deadline object.
+
+**Input:**
+
+```text
+deadline return book /by
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    The deadline date cannot be empty.
+    ____________________________________________________________
+```
+
+## UI-14 — Reject an event without a start
+
+**Aim:** Verify that an event requires text between `/from` and `/to`.
+
+**Rationale:** An event with no starting value is incomplete.
+
+**Input:**
+
+```text
+event meeting /from /to Friday
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    The event start cannot be empty.
+    ____________________________________________________________
+```
+
+## UI-15 — Reject an event without an end
+
+**Aim:** Verify that an event requires text after `/to`.
+
+**Rationale:** An event with no ending value is incomplete.
+
+**Input:**
+
+```text
+event meeting /from Monday /to
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    The event end cannot be empty.
+    ____________________________________________________________
+```
+
+## UI-16 — Reject `mark` without a task number
+
+**Aim:** Verify that `mark` requires exactly one task number.
+
+**Rationale:** Charlie cannot identify which task to update when the number is absent.
+
+**Input:**
+
+```text
+mark
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Please provide exactly one task number.
+    ____________________________________________________________
+```
+
+## UI-17 — Reject a non-numeric task number
+
+**Aim:** Verify that `mark` rejects text in place of a number.
+
+**Rationale:** Number parsing failures should become friendly CharlieException messages rather than terminate the program.
+
+**Input:**
+
+```text
+mark abc
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Please enter a valid task number.
+    ____________________________________________________________
+```
+
+## UI-18 — Reject an out-of-range task number
+
+**Aim:** Verify that `mark` rejects a number outside the current task list.
+
+**Rationale:** Preventing invalid array access avoids crashes and accidental updates.
+
+**Input:**
+
+```text
+mark 999
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Please enter a task number from 1 to 3.
+    ____________________________________________________________
+```
