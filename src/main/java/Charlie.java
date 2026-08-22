@@ -151,17 +151,20 @@ public class Charlie {
             }
             String description = arguments.substring(0, byPosition).trim();
             if (description.isEmpty()) {
-                throw new CharlieException("Description cannot be empty");
+                throw new CharlieException("Description cannot be empty.");
             }
             String deadline = arguments.substring(byPosition + "/by".length()).trim();
+            if (deadline.isBlank()) {
+                throw new CharlieException("Deadline cannot be empty.");
+            }
             return new Deadline(description, false, deadline);
         } else { // Run else clause here due to the switch format ensuring this is "event"
             int fromPosition = arguments.indexOf("/from");
             int toPosition = arguments.indexOf("/to");
             if (fromPosition == -1 || toPosition == -1) {
-                throw new CharlieException("from/to fields cannot be empty");
+                throw new CharlieException("Need to include /from or /to fields.");
             } else if (fromPosition > toPosition) {
-                throw new CharlieException("Invalid argument format");
+                throw new CharlieException("Invalid argument format: /from should appear before /to");
             }
 
             String description = arguments.substring(0, fromPosition).trim();
@@ -170,20 +173,19 @@ public class Charlie {
             }
             String from = arguments.substring(fromPosition + "/from".length(), toPosition).trim();
             String to = arguments.substring(toPosition + "/to".length()).trim();
+            if (from.isBlank() || to.isBlank()) {
+                throw new CharlieException("from/to fields cannot be empty.");
+            }
             return new Event(description, false, from, to);
         }
     }
 
     private static void addTask(Task task) {
-        try {
-            TASKS.add(task);
-            taskCount++;
-            printBotLine("Got it. I've added this task:");
-            printBotLine("  " + task.toString());
-            printBotLine("Now you have " + taskCount + " tasks in the list.");
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new CharlieException("List can only hold 100 tasks");
-        }
+        TASKS.add(task);
+        taskCount++;
+        printBotLine("Got it. I've added this task:");
+        printBotLine("  " + task.toString());
+        printBotLine("Now you have " + taskCount + " tasks in the list.");
     }
 
     /**
@@ -206,7 +208,7 @@ public class Charlie {
         }
 
         if (taskCount <= 0) {
-            throw new CharlieException("There are no tasks in the list");
+            throw new CharlieException("There are no tasks in the list.");
         }
 
         if (taskNumber < 1 || taskNumber > taskCount) {
@@ -220,7 +222,7 @@ public class Charlie {
     private static void deleteTask(int index) {
         Task deletedTask = TASKS.remove(index);
         taskCount--;
-        printBotLine("Noted. I've removed this task: ");
+        printBotLine("Noted. I've removed this task:");
         printBotLine("  " + deletedTask.toString());
         printBotLine("Now you have " + taskCount + " tasks in the list.");
     }

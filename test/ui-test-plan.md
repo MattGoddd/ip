@@ -6,7 +6,7 @@
 - Compile command: `javac -d out src/main/java/*.java`
 - Run command: `java -cp out Charlie`
 - Run all test cases below in one fresh program session and in the listed order.
-- Compare output exactly, except that CRLF and LF line endings are considered equivalent.
+- Compare output exactly, except that CRLF and LF line endings are considered equivalent and trailing spaces at the end of a line are ignored.
 - Each expected-output block starts with the horizontal line printed after entering the command and ends with that command's final horizontal line.
 - Console input echo is part of the transcript but is not part of the expected application output.
 
@@ -184,7 +184,51 @@ unmark 2
     ____________________________________________________________
 ```
 
-## UI-09 — Reject an empty command
+## UI-09 — Delete the third task
+
+**Aim:** Verify that `delete 3` removes the selected event and reports the reduced task count.
+
+**Rationale:** This directly checks the successful deletion behavior supplied by the user, including one-based indexing and the deleted task's exact representation.
+
+**Input:**
+
+```text
+delete 3
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Noted. I've removed this task:
+      [E][ ] project meeting (from: Mon 2pm to: 4pm)
+    Now you have 2 tasks in the list.
+    ____________________________________________________________
+```
+
+## UI-10 — List tasks after deletion
+
+**Aim:** Verify that the deleted task is absent and the remaining tasks keep consecutive one-based numbering.
+
+**Rationale:** A confirmation alone does not prove that deletion updated the stored list correctly.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] borrow book
+    2.[D][ ] return book (by: Sunday)
+    ____________________________________________________________
+```
+
+## UI-11 — Reject an empty command
 
 **Aim:** Verify that submitting an empty line displays a helpful error.
 
@@ -204,7 +248,7 @@ unmark 2
     ____________________________________________________________
 ```
 
-## UI-10 — Reject a todo without a description
+## UI-12 — Reject a todo without a description
 
 **Aim:** Verify that `todo` requires a description.
 
@@ -224,7 +268,7 @@ todo
     ____________________________________________________________
 ```
 
-## UI-11 — Reject a deadline without `/by`
+## UI-13 — Reject a deadline without `/by`
 
 **Aim:** Verify that a deadline requires its `/by` delimiter.
 
@@ -244,7 +288,7 @@ deadline return book
     ____________________________________________________________
 ```
 
-## UI-12 — Reject a deadline without a description
+## UI-14 — Reject a deadline without a description
 
 **Aim:** Verify that a deadline requires text before `/by`.
 
@@ -260,11 +304,11 @@ deadline /by Sunday
 
 ```text
     ____________________________________________________________
-    Description cannot be empty
+    Description cannot be empty.
     ____________________________________________________________
 ```
 
-## UI-13 — Reject a deadline without a date
+## UI-15 — Reject a deadline without a date
 
 **Aim:** Verify that a deadline requires text after `/by`.
 
@@ -280,11 +324,11 @@ deadline return book /by
 
 ```text
     ____________________________________________________________
-    The deadline date cannot be empty.
+    Deadline cannot be empty.
     ____________________________________________________________
 ```
 
-## UI-14 — Reject an event without a start
+## UI-16 — Reject an event without a start
 
 **Aim:** Verify that an event requires text between `/from` and `/to`.
 
@@ -300,11 +344,11 @@ event meeting /from /to Friday
 
 ```text
     ____________________________________________________________
-    The event start cannot be empty.
+    from/to fields cannot be empty.
     ____________________________________________________________
 ```
 
-## UI-15 — Reject an event without an end
+## UI-17 — Reject an event without an end
 
 **Aim:** Verify that an event requires text after `/to`.
 
@@ -320,11 +364,11 @@ event meeting /from Monday /to
 
 ```text
     ____________________________________________________________
-    The event end cannot be empty.
+    from/to fields cannot be empty.
     ____________________________________________________________
 ```
 
-## UI-16 — Reject `mark` without a task number
+## UI-18 — Reject `mark` without a task number
 
 **Aim:** Verify that `mark` requires exactly one task number.
 
@@ -344,7 +388,7 @@ mark
     ____________________________________________________________
 ```
 
-## UI-17 — Reject a non-numeric task number
+## UI-19 — Reject a non-numeric task number
 
 **Aim:** Verify that `mark` rejects text in place of a number.
 
@@ -364,7 +408,7 @@ mark abc
     ____________________________________________________________
 ```
 
-## UI-18 — Reject an out-of-range task number
+## UI-20 — Reject an out-of-range task number
 
 **Aim:** Verify that `mark` rejects a number outside the current task list.
 
@@ -380,6 +424,6 @@ mark 999
 
 ```text
     ____________________________________________________________
-    Please enter a task number from 1 to 3.
+    Please enter a task number from 1 to 2.
     ____________________________________________________________
 ```
