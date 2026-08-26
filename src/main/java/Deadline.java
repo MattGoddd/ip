@@ -8,5 +8,12 @@ public class Deadline extends Task {
     @Override
     public String toString() {
         return "[D]" + super.toString() + " (by: " + this.deadline + ")";
-     }
+    }
+
+    @Override
+    public String saveFileFormat() {
+        String status = isDone ? "Done" : "Not done";
+        return "D" + " | " + status + " | " + this.description + " | " + this.deadline;
+    }
+
 }

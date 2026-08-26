@@ -1,4 +1,8 @@
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -10,6 +14,7 @@ public class Charlie {
     private static final String INDENT = "    ";
     private static final ArrayList<Task> TASKS = new ArrayList<>();
     private static int taskCount = 0;
+    private static final Path SAVE_PATH = Path.of("data", "charlie.txt");
 
     public static void main(String[] args) {
         String banner = "  ____ _   _    _    ____  _     ___ _____\n"
@@ -17,6 +22,7 @@ public class Charlie {
                 + "| |   | |_| | / _ \\ | |_) | |    | ||  _|\n"
                 + "| |___|  _  |/ ___ \\|  _ <| |___ | || |___\n"
                 + " \\____|_| |_/_/   \\_\\_| \\_\\_____|___|_____|\n";
+        loadTasks();
         intro(banner);
         readCommand();
     }
@@ -109,6 +115,7 @@ public class Charlie {
     private static void mark(int index) {
         Task curTask = TASKS.get(index);
         curTask.markDone();
+        save();
         printBotLine("Nice! I've marked this task as done:");
         printBotLine("  " + curTask.toString());
     }
@@ -116,6 +123,7 @@ public class Charlie {
     private static void unmark(int index) {
         Task curTask = TASKS.get(index);
         curTask.markUndone();
+        save();
         printBotLine("OK, I've marked this task not done yet:");
         printBotLine("  " + curTask.toString());
     }
@@ -184,6 +192,7 @@ public class Charlie {
     private static void addTask(Task task) {
         TASKS.add(task);
         taskCount++;
+        save();
         printBotLine("Got it. I've added this task:");
         printBotLine("  " + task.toString());
         printBotLine("Now you have " + taskCount + " tasks in the list.");
@@ -223,9 +232,62 @@ public class Charlie {
     private static void deleteTask(int index) {
         Task deletedTask = TASKS.remove(index);
         taskCount--;
+        save();
         printBotLine("Noted. I've removed this task:");
         printBotLine("  " + deletedTask.toString());
         printBotLine("Now you have " + taskCount + " tasks in the list.");
     }
 
+    private static void save() {
+        StringBuilder content = new StringBuilder();
+        for (Task task : TASKS) {
+            content.append(task.saveFileFormat()).append(System.lineSeparator());
+        }
+        try {
+            Files.createDirectories(SAVE_PATH.getParent());
+            Files.writeString(SAVE_PATH, content.toString());
+        } catch (IOException e) {
+            throw new RuntimeException("Could not save tasks.", e);
+        }
+    }
+
+    /**
+     * Loads all saved tasks into memory when Charlie starts.
+     * A missing save file represents a user who does not have any saved tasks yet.
+     */
+    private static void loadTasks() {
+        if (!Files.exists(SAVE_PATH)) {
+            return;
+        }
+
+        try {
+            List<String> savedLines = Files.readAllLines(SAVE_PATH);
+            for (String line : savedLines) {
+                if (!line.isBlank()) {
+                    TASKS.add(parseSavedTask(line));
+                }
+            }
+            taskCount = TASKS.size();
+        } catch (IOException e) {
+            throw new RuntimeException("Could not load tasks.", e);
+        }
+    }
+
+    /**
+     * Recreates one task from a line in Charlie's save-file format.
+     *
+     * @param line saved representation of one task
+     * @return the reconstructed task
+     */
+    private static Task parseSavedTask(String line) {
+        String[] fields = line.split(" \\| ", -1);
+        boolean isDone = fields[1].equals("Done");
+
+        return switch (fields[0]) {
+            case "T" -> new Todo(fields[2], isDone);
+            case "D" -> new Deadline(fields[2], isDone, fields[3]);
+            case "E" -> new Event(fields[2], isDone, fields[3], fields[4]);
+            default -> throw new IllegalArgumentException("Unknown task type: " + fields[0]);
+        };
+    }
 }

@@ -1,4 +1,4 @@
-public class Task {
+public abstract class Task {
     protected String description;
     protected boolean isDone;
 
@@ -20,4 +20,11 @@ public class Task {
         String status = (this.isDone) ? "X" : " ";
         return "[" + status + "] " + this.description;
     }
+
+    /**
+     * Converts this task to one line in Charlie's save-file format.
+     *
+     * @return the task data to write to the save file
+     */
+    public abstract String saveFileFormat();
 }
