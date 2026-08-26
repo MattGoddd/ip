@@ -22,8 +22,12 @@ public class Charlie {
                 + "| |   | |_| | / _ \\ | |_) | |    | ||  _|\n"
                 + "| |___|  _  |/ ___ \\|  _ <| |___ | || |___\n"
                 + " \\____|_| |_/_/   \\_\\_| \\_\\_____|___|_____|\n";
-        loadTasks();
         intro(banner);
+        try {
+            loadTasks();
+        } catch (CharlieException e) {
+            System.out.println("Error loading saved tasks: " + e.getMessage());
+        }
         readCommand();
     }
 
@@ -129,7 +133,7 @@ public class Charlie {
     }
 
     private static void listTask() {
-        printBotLine("Here are the tasks in your list: ");
+        printBotLine("Here are the tasks in your list:");
         for (int i = 0; i < taskCount; i++) {
             printBotLine((i + 1) + "." + TASKS.get(i));
         }
@@ -238,6 +242,10 @@ public class Charlie {
         printBotLine("Now you have " + taskCount + " tasks in the list.");
     }
 
+    /**
+     *  Saves the list details whenever a command is run into charlie.txt
+     *
+     */
     private static void save() {
         StringBuilder content = new StringBuilder();
         for (Task task : TASKS) {
@@ -256,6 +264,7 @@ public class Charlie {
      * A missing save file represents a user who does not have any saved tasks yet.
      */
     private static void loadTasks() {
+        // Instance when the file is not created, then we return an empty List to TASKS
         if (!Files.exists(SAVE_PATH)) {
             return;
         }
@@ -269,7 +278,7 @@ public class Charlie {
             }
             taskCount = TASKS.size();
         } catch (IOException e) {
-            throw new RuntimeException("Could not load tasks.", e);
+            throw new CharlieException("Could not read the saved task file.");
         }
     }
 
@@ -281,13 +290,23 @@ public class Charlie {
      */
     private static Task parseSavedTask(String line) {
         String[] fields = line.split(" \\| ", -1);
+        int expectedFieldCount = switch (fields[0]) {
+            case "T" -> 3;
+            case "D" -> 4;
+            case "E" -> 5;
+            default -> throw new CharlieException("Unknown saved task type: " + fields[0]);
+        };
+        if (fields.length != expectedFieldCount) {
+            throw new CharlieException("Invalid number of fields in saved task.");
+        }
+
         boolean isDone = fields[1].equals("Done");
 
         return switch (fields[0]) {
             case "T" -> new Todo(fields[2], isDone);
             case "D" -> new Deadline(fields[2], isDone, fields[3]);
             case "E" -> new Event(fields[2], isDone, fields[3], fields[4]);
-            default -> throw new IllegalArgumentException("Unknown task type: " + fields[0]);
+            default -> throw new AssertionError("Task type was validated above.");
         };
     }
 }
