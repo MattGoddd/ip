@@ -1,14 +1,175 @@
 # UI Test Plan
 
+## Startup-error sessions
+
+Run each startup-error case in a separate fresh Charlie process before the main session below.
+
+### UI-STARTUP-01 — Reject a saved task with missing fields
+
+**Aim:** Verify that a corrupted saved task reports a friendly error instead of causing an array-index failure.
+
+**Rationale:** A deadline requires its type, status, description, and deadline fields in the save file.
+
+Before starting Charlie, create `data/charlie.txt` with exactly this line:
+
+```text
+D | Not done | missing deadline
+```
+
+Start Charlie, then enter:
+
+```text
+bye
+```
+
+**Expected startup output after the banner and greeting:**
+
+```text
+Error loading saved tasks: Invalid number of fields in saved task.
+```
+
+**Expected output after entering `bye`:**
+
+```text
+    ____________________________________________________________
+    Goodbye! See you next time.
+    ____________________________________________________________
+```
+
+### UI-STARTUP-02 — Handle a save-file read failure
+
+**Aim:** Verify that an I/O failure while reading the save path reports a friendly error.
+
+**Rationale:** The program should not expose an uncaught `IOException` or Java stack trace when saved tasks cannot be read.
+
+Before starting Charlie, remove the previous test file and create a directory named `data/charlie.txt`. Start Charlie, then enter:
+
+```text
+bye
+```
+
+**Expected startup output after the banner and greeting:**
+
+```text
+Error loading saved tasks: Could not read the saved task file.
+```
+
+**Expected output after entering `bye`:**
+
+```text
+    ____________________________________________________________
+    Goodbye! See you next time.
+    ____________________________________________________________
+```
+
+After this case, remove the `data/charlie.txt` directory before preparing the main session fixture.
+
 ## Session setup
 
 - Required Java version: Java 25
 - Compile command: `javac -d out src/main/java/*.java`
 - Run command: `java -cp out Charlie`
+- Before starting Charlie, create `data/charlie.txt` with exactly these lines:
+
+```text
+T | Done | loaded todo
+D | Not done | loaded deadline | Friday
+E | Done | loaded event | Monday | Tuesday
+```
+
 - Run all test cases below in one fresh program session and in the listed order.
 - Compare output exactly, except that CRLF and LF line endings are considered equivalent and trailing spaces at the end of a line are ignored.
 - Each expected-output block starts with the horizontal line printed after entering the command and ends with that command's final horizontal line.
 - Console input echo is part of the transcript but is not part of the expected application output.
+
+## UI-LOAD-01 — List tasks loaded at startup
+
+**Aim:** Verify that Charlie restores todos, deadlines, events, and their completion states from the save file.
+
+**Rationale:** Listing all preloaded task types confirms that startup loading reconstructs each saved field correctly.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][X] loaded todo
+    2.[D][ ] loaded deadline (by: Friday)
+    3.[E][X] loaded event (from: Monday to: Tuesday)
+    ____________________________________________________________
+```
+
+## UI-LOAD-02 — Remove the loaded event
+
+**Aim:** Remove the preloaded event as part of returning to an empty list for the existing test sequence.
+
+**Rationale:** This also verifies that a task reconstructed from disk behaves like a newly created task.
+
+**Input:**
+
+```text
+delete 3
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Noted. I've removed this task:
+      [E][X] loaded event (from: Monday to: Tuesday)
+    Now you have 2 tasks in the list.
+    ____________________________________________________________
+```
+
+## UI-LOAD-03 — Remove the loaded deadline
+
+**Aim:** Remove the preloaded deadline before running the original empty-list test sequence.
+
+**Rationale:** Deleting a loaded deadline checks that its list position and stored data are valid.
+
+**Input:**
+
+```text
+delete 2
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Noted. I've removed this task:
+      [D][ ] loaded deadline (by: Friday)
+    Now you have 1 tasks in the list.
+    ____________________________________________________________
+```
+
+## UI-LOAD-04 — Remove the loaded todo
+
+**Aim:** Return to an empty task list before running the original test sequence.
+
+**Rationale:** Removing the final loaded task also verifies that saving an empty task list clears the save file.
+
+**Input:**
+
+```text
+delete 1
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Noted. I've removed this task:
+      [T][X] loaded todo
+    Now you have 0 tasks in the list.
+    ____________________________________________________________
+```
 
 ## UI-01 — Add a todo
 
@@ -426,4 +587,31 @@ mark 999
     ____________________________________________________________
     Please enter a task number from 1 to 2.
     ____________________________________________________________
+```
+
+## UI-21 — Exit after persistence checks
+
+**Aim:** End the test session normally and verify the final persisted task list.
+
+**Rationale:** The final file contents confirm that additions, status changes, and deletion have all been written to disk.
+
+**Input:**
+
+```text
+bye
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Goodbye! See you next time.
+    ____________________________________________________________
+```
+
+**Expected `data/charlie.txt` contents after exit:**
+
+```text
+T | Not done | borrow book
+D | Not done | return book | Sunday
 ```

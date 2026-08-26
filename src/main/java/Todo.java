@@ -9,4 +9,10 @@ public class Todo extends Task {
         return "[T]" + super.toString();
     }
 
+    @Override
+    public String saveFileFormat() {
+        String status = isDone ? "Done" : "Not done";
+        return "T" + " | " + status + " | " + this.description;
+    }
+
 }
