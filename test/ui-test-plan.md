@@ -73,7 +73,7 @@ After this case, remove the `data/charlie.txt` directory before preparing the ma
 
 ```text
 T | Done | loaded todo
-D | Not done | loaded deadline | Friday
+D | Not done | loaded deadline | 2026-09-18
 E | Done | loaded event | Monday | Tuesday
 ```
 
@@ -100,7 +100,7 @@ list
     ____________________________________________________________
     Here are the tasks in your list:
     1.[T][X] loaded todo
-    2.[D][ ] loaded deadline (by: Friday)
+    2.[D][ ] loaded deadline (by: Sep 18 2026)
     3.[E][X] loaded event (from: Monday to: Tuesday)
     ____________________________________________________________
 ```
@@ -144,7 +144,7 @@ delete 2
 ```text
     ____________________________________________________________
     Noted. I've removed this task:
-      [D][ ] loaded deadline (by: Friday)
+      [D][ ] loaded deadline (by: Sep 18 2026)
     Now you have 1 tasks in the list.
     ____________________________________________________________
 ```
@@ -202,7 +202,7 @@ todo borrow book
 **Input:**
 
 ```text
-deadline return book /by Sunday
+deadline return book /by 2026-09-20
 ```
 
 **Expected output:**
@@ -210,7 +210,7 @@ deadline return book /by Sunday
 ```text
     ____________________________________________________________
     Got it. I've added this task:
-      [D][ ] return book (by: Sunday)
+      [D][ ] return book (by: Sep 20 2026)
     Now you have 2 tasks in the list.
     ____________________________________________________________
 ```
@@ -255,7 +255,7 @@ list
     ____________________________________________________________
     Here are the tasks in your list:
     1.[T][ ] borrow book
-    2.[D][ ] return book (by: Sunday)
+    2.[D][ ] return book (by: Sep 20 2026)
     3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
     ____________________________________________________________
 ```
@@ -298,7 +298,7 @@ list
     ____________________________________________________________
     Here are the tasks in your list:
     1.[T][ ] borrow book
-    2.[D][ ] return book (by: Sunday)
+    2.[D][ ] return book (by: Sep 20 2026)
     3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
     ____________________________________________________________
 ```
@@ -320,7 +320,7 @@ mark 2
 ```text
     ____________________________________________________________
     Nice! I've marked this task as done:
-      [D][X] return book (by: Sunday)
+      [D][X] return book (by: Sep 20 2026)
     ____________________________________________________________
 ```
 
@@ -341,7 +341,7 @@ unmark 2
 ```text
     ____________________________________________________________
     OK, I've marked this task not done yet:
-      [D][ ] return book (by: Sunday)
+      [D][ ] return book (by: Sep 20 2026)
     ____________________________________________________________
 ```
 
@@ -385,7 +385,7 @@ list
     ____________________________________________________________
     Here are the tasks in your list:
     1.[T][ ] borrow book
-    2.[D][ ] return book (by: Sunday)
+    2.[D][ ] return book (by: Sep 20 2026)
     ____________________________________________________________
 ```
 
@@ -458,7 +458,7 @@ deadline return book
 **Input:**
 
 ```text
-deadline /by Sunday
+deadline /by 2026-09-20
 ```
 
 **Expected output:**
@@ -589,7 +589,27 @@ mark 999
     ____________________________________________________________
 ```
 
-## UI-21 — Exit after persistence checks
+## UI-21 — Reject a deadline that is not an ISO date
+
+**Aim:** Verify that deadline values must use the `yyyy-MM-dd` input format.
+
+**Rationale:** Storing deadlines as `LocalDate` requires Charlie to reject text that cannot be converted into a real calendar date without terminating the program.
+
+**Input:**
+
+```text
+deadline return book /by Sunday
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Deadline must be a valid date in yyyy-MM-dd format.
+    ____________________________________________________________
+```
+
+## UI-22 — Exit after persistence checks
 
 **Aim:** End the test session normally and verify the final persisted task list.
 
@@ -613,5 +633,5 @@ bye
 
 ```text
 T | Not done | borrow book
-D | Not done | return book | Sunday
+D | Not done | return book | 2026-09-20
 ```

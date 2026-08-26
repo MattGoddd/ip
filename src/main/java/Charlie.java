@@ -1,6 +1,8 @@
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -166,11 +168,17 @@ public class Charlie {
             if (description.isEmpty()) {
                 throw new CharlieException("Description cannot be empty.");
             }
-            String deadline = arguments.substring(byPosition + "/by".length()).trim();
-            if (deadline.isBlank()) {
+            String deadlineText = arguments.substring(byPosition + "/by".length()).trim();
+            if (deadlineText.isBlank()) {
                 throw new CharlieException("Deadline cannot be empty.");
             }
-            return new Deadline(description, false, deadline);
+            try {
+                LocalDate deadline = LocalDate.parse(deadlineText);
+                return new Deadline(description, false, deadline);
+            } catch (DateTimeParseException e) {
+                throw new CharlieException(
+                        "Deadline must be a valid date in yyyy-MM-dd format.");
+            }
         } else { // readCommand only passes EVENT as the remaining command type.
             int fromPosition = arguments.indexOf("/from");
             int toPosition = arguments.indexOf("/to");
@@ -302,11 +310,16 @@ public class Charlie {
 
         boolean isDone = fields[1].equals("Done");
 
-        return switch (fields[0]) {
-            case "T" -> new Todo(fields[2], isDone);
-            case "D" -> new Deadline(fields[2], isDone, fields[3]);
-            case "E" -> new Event(fields[2], isDone, fields[3], fields[4]);
-            default -> throw new AssertionError("Task type was validated above.");
-        };
+        try {
+            return switch (fields[0]) {
+                case "T" -> new Todo(fields[2], isDone);
+                case "D" -> new Deadline(fields[2], isDone, LocalDate.parse(fields[3]));
+                case "E" -> new Event(fields[2], isDone, fields[3], fields[4]);
+                default -> throw new AssertionError("Task type was validated above.");
+            };
+        } catch (DateTimeParseException e) {
+            throw new CharlieException(
+                    "Deadline must be a valid date in yyyy-MM-dd format.");
+        }
     }
 }

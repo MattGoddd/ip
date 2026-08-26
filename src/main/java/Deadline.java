@@ -1,13 +1,23 @@
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
+/**
+ * Represents a task that must be completed by a specific calendar date.
+ */
 public class Deadline extends Task {
-    protected String deadline;
-    public Deadline(String description, boolean isDone, String deadline) {
+    protected LocalDate deadline;
+
+    public Deadline(String description, boolean isDone, LocalDate deadline) {
         super(description, isDone);
         this.deadline = deadline;
     }
 
     @Override
     public String toString() {
-        return "[D]" + super.toString() + " (by: " + this.deadline + ")";
+        String formattedDeadline = this.deadline.format(
+                DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH));
+        return "[D]" + super.toString() + " (by: " + formattedDeadline + ")";
     }
 
     @Override
