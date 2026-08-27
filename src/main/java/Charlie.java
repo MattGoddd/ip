@@ -166,30 +166,28 @@ public class Charlie {
                     "Date must be a valid date in yyyy-MM-dd format.");
         }
 
-        boolean foundMatch = false;
+        int matchCount = 0;
         printBotLine("Here are the tasks occurring on " + searchDate + ":");
 
-        for (int i = 0; i < TASKS.size(); i++) {
-            Task task = TASKS.get(i);
+        for (Task task : TASKS) {
+            boolean matches = false;
 
-            if (task instanceof Deadline deadlineTask
-                    && deadlineTask.deadline.equals(searchDate)) {
-                printBotLine((i + 1) + "." + task);
-                foundMatch = true;
-            }
-
-            if (task instanceof Event eventTask) {
+            if (task instanceof Deadline deadlineTask) {
+                matches = deadlineTask.deadline.equals(searchDate);
+            } else if (task instanceof Event eventTask) {
                 LocalDate fromDate = eventTask.from.toLocalDate();
                 LocalDate toDate = eventTask.to.toLocalDate();
 
-                if (!searchDate.isBefore(fromDate) && !searchDate.isAfter(toDate)) {
-                    printBotLine((i + 1) + "." + task);
-                    foundMatch = true;
-                }
+                matches = !searchDate.isBefore(fromDate) && !searchDate.isAfter(toDate);
+            }
+
+            if (matches) {
+                matchCount++;
+                printBotLine(matchCount + "." + task);
             }
         }
 
-        if (!foundMatch) {
+        if (matchCount == 0) {
             printBotLine("No deadlines or events occur on this date.");
         }
     }
