@@ -91,6 +91,10 @@ public class Charlie {
                             listTask();
                             break;
                         case ON:
+                            if (parts.length != 2) {
+                                throw new CharlieException(
+                                        "Please provide exactly one date in yyyy-MM-dd format.");
+                            }
                             checkDate(parts[1]);
                             break;
                         case MARK: {
@@ -154,7 +158,15 @@ public class Charlie {
      * @param input date to check in yyyy-MM-dd format
      */
     private static void checkDate(String input) {
-        LocalDate searchDate = LocalDate.parse(input);
+        LocalDate searchDate;
+        try {
+            searchDate = LocalDate.parse(input);
+        } catch (DateTimeParseException e) {
+            throw new CharlieException(
+                    "Date must be a valid date in yyyy-MM-dd format.");
+        }
+
+        boolean foundMatch = false;
         printBotLine("Here are the tasks occurring on " + searchDate + ":");
 
         for (int i = 0; i < TASKS.size(); i++) {
@@ -163,6 +175,7 @@ public class Charlie {
             if (task instanceof Deadline deadlineTask
                     && deadlineTask.deadline.equals(searchDate)) {
                 printBotLine((i + 1) + "." + task);
+                foundMatch = true;
             }
 
             if (task instanceof Event eventTask) {
@@ -171,8 +184,13 @@ public class Charlie {
 
                 if (!searchDate.isBefore(fromDate) && !searchDate.isAfter(toDate)) {
                     printBotLine((i + 1) + "." + task);
+                    foundMatch = true;
                 }
             }
+        }
+
+        if (!foundMatch) {
+            printBotLine("No deadlines or events occur on this date.");
         }
     }
 

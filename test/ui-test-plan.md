@@ -302,6 +302,107 @@ on 2026-09-22
     ____________________________________________________________
 ```
 
+## UI-DATE-03 — Report no matching dated tasks
+
+**Aim:** Verify that `on` reports when no deadline or event occurs on the requested date.
+
+**Rationale:** Printing only a heading could leave the user unsure whether the search completed successfully.
+
+**Input:**
+
+```text
+on 2026-09-19
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks occurring on 2026-09-19:
+    No deadlines or events occur on this date.
+    ____________________________________________________________
+```
+
+## UI-DATE-04 — Reject `on` without a date
+
+**Aim:** Verify that `on` requires exactly one date argument.
+
+**Rationale:** Accessing a missing argument must not cause an array-index failure.
+
+**Input:**
+
+```text
+on
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Please provide exactly one date in yyyy-MM-dd format.
+    ____________________________________________________________
+```
+
+## UI-DATE-05 — Reject extra `on` arguments
+
+**Aim:** Verify that `on` rejects input after its single date argument.
+
+**Rationale:** Silently ignoring extra input can hide a user's typing mistake.
+
+**Input:**
+
+```text
+on 2026-09-20 extra
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Please provide exactly one date in yyyy-MM-dd format.
+    ____________________________________________________________
+```
+
+## UI-DATE-06 — Reject a weekday name
+
+**Aim:** Verify that `on` rejects a weekday that does not identify one exact calendar date.
+
+**Rationale:** `Sunday` is ambiguous because it does not state which week's Sunday is intended.
+
+**Input:**
+
+```text
+on Sunday
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Date must be a valid date in yyyy-MM-dd format.
+    ____________________________________________________________
+```
+
+## UI-DATE-07 — Reject an impossible calendar date
+
+**Aim:** Verify that `on` rejects a correctly shaped but nonexistent date.
+
+**Rationale:** Calendar validation must prevent dates such as February 30 from being searched.
+
+**Input:**
+
+```text
+on 2026-02-30
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Date must be a valid date in yyyy-MM-dd format.
+    ____________________________________________________________
+```
+
 ## UI-05 — Reject an invalid command
 
 **Aim:** Verify that an unknown command displays a helpful error without terminating Charlie.
