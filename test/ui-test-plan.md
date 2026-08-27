@@ -224,7 +224,7 @@ deadline return book /by 2026-09-20
 **Input:**
 
 ```text
-event project meeting /from 2026-09-21 1400 /to 2026-09-21 1600
+event project meeting /from 2026-09-21 1400 /to 2026-09-23 1600
 ```
 
 **Expected output:**
@@ -232,7 +232,7 @@ event project meeting /from 2026-09-21 1400 /to 2026-09-21 1600
 ```text
     ____________________________________________________________
     Got it. I've added this task:
-      [E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 21 2026, 4:00 PM)
+      [E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
     Now you have 3 tasks in the list.
     ____________________________________________________________
 ```
@@ -256,7 +256,49 @@ list
     Here are the tasks in your list:
     1.[T][ ] borrow book
     2.[D][ ] return book (by: Sep 20 2026)
-    3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 21 2026, 4:00 PM)
+    3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
+    ____________________________________________________________
+```
+
+## UI-DATE-01 — Find a deadline on an exact date
+
+**Aim:** Verify that `on` prints a deadline whose date exactly matches the requested date.
+
+**Rationale:** Deadline dates represent a single day rather than a date range.
+
+**Input:**
+
+```text
+on 2026-09-20
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks occurring on 2026-09-20:
+    2.[D][ ] return book (by: Sep 20 2026)
+    ____________________________________________________________
+```
+
+## UI-DATE-02 — Find an event spanning the requested date
+
+**Aim:** Verify that `on` prints an event when the requested date falls within its date range.
+
+**Rationale:** The event starts on September 21 and ends on September 23, so it should include September 22 even though neither endpoint is on that date.
+
+**Input:**
+
+```text
+on 2026-09-22
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks occurring on 2026-09-22:
+    3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
     ____________________________________________________________
 ```
 
@@ -299,7 +341,7 @@ list
     Here are the tasks in your list:
     1.[T][ ] borrow book
     2.[D][ ] return book (by: Sep 20 2026)
-    3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 21 2026, 4:00 PM)
+    3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
     ____________________________________________________________
 ```
 
@@ -362,7 +404,7 @@ delete 3
 ```text
     ____________________________________________________________
     Noted. I've removed this task:
-      [E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 21 2026, 4:00 PM)
+      [E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
     Now you have 2 tasks in the list.
     ____________________________________________________________
 ```

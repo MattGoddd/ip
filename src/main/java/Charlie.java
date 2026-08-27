@@ -90,6 +90,9 @@ public class Charlie {
                         case LIST:
                             listTask();
                             break;
+                        case ON:
+                            checkDate(parts[1]);
+                            break;
                         case MARK: {
                             int index = parseTaskIndex(parts);
                             mark(index);
@@ -141,6 +144,35 @@ public class Charlie {
         printBotLine("Here are the tasks in your list:");
         for (int i = 0; i < taskCount; i++) {
             printBotLine((i + 1) + "." + TASKS.get(i));
+        }
+    }
+
+    /**
+     * Prints deadlines and events that occur on the specified date.
+     * Deadlines must match the date exactly, while events may span the date.
+     *
+     * @param input date to check in yyyy-MM-dd format
+     */
+    private static void checkDate(String input) {
+        LocalDate searchDate = LocalDate.parse(input);
+        printBotLine("Here are the tasks occurring on " + searchDate + ":");
+
+        for (int i = 0; i < TASKS.size(); i++) {
+            Task task = TASKS.get(i);
+
+            if (task instanceof Deadline deadlineTask
+                    && deadlineTask.deadline.equals(searchDate)) {
+                printBotLine((i + 1) + "." + task);
+            }
+
+            if (task instanceof Event eventTask) {
+                LocalDate fromDate = eventTask.from.toLocalDate();
+                LocalDate toDate = eventTask.to.toLocalDate();
+
+                if (!searchDate.isBefore(fromDate) && !searchDate.isAfter(toDate)) {
+                    printBotLine((i + 1) + "." + task);
+                }
+            }
         }
     }
 
