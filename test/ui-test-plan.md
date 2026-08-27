@@ -74,7 +74,7 @@ After this case, remove the `data/charlie.txt` directory before preparing the ma
 ```text
 T | Done | loaded todo
 D | Not done | loaded deadline | 2026-09-18
-E | Done | loaded event | Monday | Tuesday
+E | Done | loaded event | 2026-09-18T09:00 | 2026-09-18T10:00
 ```
 
 - Run all test cases below in one fresh program session and in the listed order.
@@ -101,7 +101,7 @@ list
     Here are the tasks in your list:
     1.[T][X] loaded todo
     2.[D][ ] loaded deadline (by: Sep 18 2026)
-    3.[E][X] loaded event (from: Monday to: Tuesday)
+    3.[E][X] loaded event (from: Sep 18 2026, 9:00 AM to: Sep 18 2026, 10:00 AM)
     ____________________________________________________________
 ```
 
@@ -122,7 +122,7 @@ delete 3
 ```text
     ____________________________________________________________
     Noted. I've removed this task:
-      [E][X] loaded event (from: Monday to: Tuesday)
+      [E][X] loaded event (from: Sep 18 2026, 9:00 AM to: Sep 18 2026, 10:00 AM)
     Now you have 2 tasks in the list.
     ____________________________________________________________
 ```
@@ -224,7 +224,7 @@ deadline return book /by 2026-09-20
 **Input:**
 
 ```text
-event project meeting /from Mon 2pm /to 4pm
+event project meeting /from 2026-09-21 1400 /to 2026-09-21 1600
 ```
 
 **Expected output:**
@@ -232,7 +232,7 @@ event project meeting /from Mon 2pm /to 4pm
 ```text
     ____________________________________________________________
     Got it. I've added this task:
-      [E][ ] project meeting (from: Mon 2pm to: 4pm)
+      [E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 21 2026, 4:00 PM)
     Now you have 3 tasks in the list.
     ____________________________________________________________
 ```
@@ -256,7 +256,7 @@ list
     Here are the tasks in your list:
     1.[T][ ] borrow book
     2.[D][ ] return book (by: Sep 20 2026)
-    3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+    3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 21 2026, 4:00 PM)
     ____________________________________________________________
 ```
 
@@ -299,7 +299,7 @@ list
     Here are the tasks in your list:
     1.[T][ ] borrow book
     2.[D][ ] return book (by: Sep 20 2026)
-    3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+    3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 21 2026, 4:00 PM)
     ____________________________________________________________
 ```
 
@@ -362,7 +362,7 @@ delete 3
 ```text
     ____________________________________________________________
     Noted. I've removed this task:
-      [E][ ] project meeting (from: Mon 2pm to: 4pm)
+      [E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 21 2026, 4:00 PM)
     Now you have 2 tasks in the list.
     ____________________________________________________________
 ```
@@ -498,7 +498,7 @@ deadline return book /by
 **Input:**
 
 ```text
-event meeting /from /to Friday
+event meeting /from /to 2026-09-21 1600
 ```
 
 **Expected output:**
@@ -518,7 +518,7 @@ event meeting /from /to Friday
 **Input:**
 
 ```text
-event meeting /from Monday /to
+event meeting /from 2026-09-21 1400 /to
 ```
 
 **Expected output:**
@@ -609,7 +609,47 @@ deadline return book /by Sunday
     ____________________________________________________________
 ```
 
-## UI-22 — Exit after persistence checks
+## UI-22 — Reject an event with an invalid date-time
+
+**Aim:** Verify that event start and end values use the `yyyy-MM-dd HHmm` format.
+
+**Rationale:** Event values must be convertible into real `LocalDateTime` objects without terminating Charlie.
+
+**Input:**
+
+```text
+event meeting /from Monday 2pm /to Monday 4pm
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Event dates must use the yyyy-MM-dd HHmm format.
+    ____________________________________________________________
+```
+
+## UI-23 — Reject an event that does not end after it starts
+
+**Aim:** Verify that an event's end date-time must occur after its start date-time.
+
+**Rationale:** An event ending before or exactly when it starts does not represent a valid time interval.
+
+**Input:**
+
+```text
+event meeting /from 2026-09-21 1600 /to 2026-09-21 1400
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Event end must be after its start.
+    ____________________________________________________________
+```
+
+## UI-24 — Exit after persistence checks
 
 **Aim:** End the test session normally and verify the final persisted task list.
 

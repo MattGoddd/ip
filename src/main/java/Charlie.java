@@ -2,7 +2,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -192,12 +195,27 @@ public class Charlie {
             if (description.isEmpty()) {
                 throw new CharlieException("Description cannot be empty");
             }
-            String from = arguments.substring(fromPosition + "/from".length(), toPosition).trim();
-            String to = arguments.substring(toPosition + "/to".length()).trim();
-            if (from.isBlank() || to.isBlank()) {
+            String fromText = arguments.substring(
+                    fromPosition + "/from".length(), toPosition).trim();
+            String toText = arguments.substring(toPosition + "/to".length()).trim();
+            if (fromText.isBlank() || toText.isBlank()) {
                 throw new CharlieException("from/to fields cannot be empty.");
             }
-            return new Event(description, false, from, to);
+
+            DateTimeFormatter formatter = DateTimeFormatter
+                    .ofPattern("uuuu-MM-dd HHmm")
+                    .withResolverStyle(ResolverStyle.STRICT);
+            try {
+                LocalDateTime from = LocalDateTime.parse(fromText, formatter);
+                LocalDateTime to = LocalDateTime.parse(toText, formatter);
+                if (!from.isBefore(to)) {
+                    throw new CharlieException("Event end must be after its start.");
+                }
+                return new Event(description, false, from, to);
+            } catch (DateTimeParseException e) {
+                throw new CharlieException(
+                        "Event dates must use the yyyy-MM-dd HHmm format.");
+            }
         }
     }
 
@@ -314,7 +332,15 @@ public class Charlie {
             return switch (fields[0]) {
                 case "T" -> new Todo(fields[2], isDone);
                 case "D" -> new Deadline(fields[2], isDone, LocalDate.parse(fields[3]));
-                case "E" -> new Event(fields[2], isDone, fields[3], fields[4]);
+                case "E" -> {
+                    try {
+                        yield new Event(fields[2], isDone,
+                                LocalDateTime.parse(fields[3]),
+                                LocalDateTime.parse(fields[4]));
+                    } catch (DateTimeParseException e) {
+                        throw new CharlieException("Saved event contains an invalid date-time.");
+                    }
+                }
                 default -> throw new AssertionError("Task type was validated above.");
             };
         } catch (DateTimeParseException e) {
