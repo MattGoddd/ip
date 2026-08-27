@@ -1,6 +1,11 @@
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -85,6 +90,13 @@ public class Charlie {
                         case LIST:
                             listTask();
                             break;
+                        case ON:
+                            if (parts.length != 2) {
+                                throw new CharlieException(
+                                        "Please provide exactly one date in yyyy-MM-dd format.");
+                            }
+                            checkDate(parts[1]);
+                            break;
                         case MARK: {
                             int index = parseTaskIndex(parts);
                             mark(index);
@@ -140,6 +152,47 @@ public class Charlie {
     }
 
     /**
+     * Prints deadlines and events that occur on the specified date.
+     * Deadlines must match the date exactly, while events may span the date.
+     *
+     * @param input date to check in yyyy-MM-dd format
+     */
+    private static void checkDate(String input) {
+        LocalDate searchDate;
+        try {
+            searchDate = LocalDate.parse(input);
+        } catch (DateTimeParseException e) {
+            throw new CharlieException(
+                    "Date must be a valid date in yyyy-MM-dd format.");
+        }
+
+        int matchCount = 0;
+        printBotLine("Here are the tasks occurring on " + searchDate + ":");
+
+        for (Task task : TASKS) {
+            boolean matches = false;
+
+            if (task instanceof Deadline deadlineTask) {
+                matches = deadlineTask.deadline.equals(searchDate);
+            } else if (task instanceof Event eventTask) {
+                LocalDate fromDate = eventTask.from.toLocalDate();
+                LocalDate toDate = eventTask.to.toLocalDate();
+
+                matches = !searchDate.isBefore(fromDate) && !searchDate.isAfter(toDate);
+            }
+
+            if (matches) {
+                matchCount++;
+                printBotLine(matchCount + "." + task);
+            }
+        }
+
+        if (matchCount == 0) {
+            printBotLine("No deadlines or events occur on this date.");
+        }
+    }
+
+    /**
      * Converts a task command into the corresponding type of task.
      * Throws a {@link CharlieException} when the command does not have the expected format.
      *
@@ -166,11 +219,17 @@ public class Charlie {
             if (description.isEmpty()) {
                 throw new CharlieException("Description cannot be empty.");
             }
-            String deadline = arguments.substring(byPosition + "/by".length()).trim();
-            if (deadline.isBlank()) {
+            String deadlineText = arguments.substring(byPosition + "/by".length()).trim();
+            if (deadlineText.isBlank()) {
                 throw new CharlieException("Deadline cannot be empty.");
             }
-            return new Deadline(description, false, deadline);
+            try {
+                LocalDate deadline = LocalDate.parse(deadlineText);
+                return new Deadline(description, false, deadline);
+            } catch (DateTimeParseException e) {
+                throw new CharlieException(
+                        "Deadline must be a valid date in yyyy-MM-dd format.");
+            }
         } else { // readCommand only passes EVENT as the remaining command type.
             int fromPosition = arguments.indexOf("/from");
             int toPosition = arguments.indexOf("/to");
@@ -184,12 +243,27 @@ public class Charlie {
             if (description.isEmpty()) {
                 throw new CharlieException("Description cannot be empty");
             }
-            String from = arguments.substring(fromPosition + "/from".length(), toPosition).trim();
-            String to = arguments.substring(toPosition + "/to".length()).trim();
-            if (from.isBlank() || to.isBlank()) {
+            String fromText = arguments.substring(
+                    fromPosition + "/from".length(), toPosition).trim();
+            String toText = arguments.substring(toPosition + "/to".length()).trim();
+            if (fromText.isBlank() || toText.isBlank()) {
                 throw new CharlieException("from/to fields cannot be empty.");
             }
-            return new Event(description, false, from, to);
+
+            DateTimeFormatter formatter = DateTimeFormatter
+                    .ofPattern("uuuu-MM-dd HHmm")
+                    .withResolverStyle(ResolverStyle.STRICT);
+            try {
+                LocalDateTime from = LocalDateTime.parse(fromText, formatter);
+                LocalDateTime to = LocalDateTime.parse(toText, formatter);
+                if (!from.isBefore(to)) {
+                    throw new CharlieException("Event end must be after its start.");
+                }
+                return new Event(description, false, from, to);
+            } catch (DateTimeParseException e) {
+                throw new CharlieException(
+                        "Event dates must use the yyyy-MM-dd HHmm format.");
+            }
         }
     }
 
@@ -302,11 +376,24 @@ public class Charlie {
 
         boolean isDone = fields[1].equals("Done");
 
-        return switch (fields[0]) {
-            case "T" -> new Todo(fields[2], isDone);
-            case "D" -> new Deadline(fields[2], isDone, fields[3]);
-            case "E" -> new Event(fields[2], isDone, fields[3], fields[4]);
-            default -> throw new AssertionError("Task type was validated above.");
-        };
+        try {
+            return switch (fields[0]) {
+                case "T" -> new Todo(fields[2], isDone);
+                case "D" -> new Deadline(fields[2], isDone, LocalDate.parse(fields[3]));
+                case "E" -> {
+                    try {
+                        yield new Event(fields[2], isDone,
+                                LocalDateTime.parse(fields[3]),
+                                LocalDateTime.parse(fields[4]));
+                    } catch (DateTimeParseException e) {
+                        throw new CharlieException("Saved event contains an invalid date-time.");
+                    }
+                }
+                default -> throw new AssertionError("Task type was validated above.");
+            };
+        } catch (DateTimeParseException e) {
+            throw new CharlieException(
+                    "Deadline must be a valid date in yyyy-MM-dd format.");
+        }
     }
 }

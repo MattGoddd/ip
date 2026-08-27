@@ -1,7 +1,14 @@
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
+/**
+ * Represents an event occurring between two specific date-times.
+ */
 public class Event extends Task {
-    protected String from;
-    protected String to;
-    public Event(String description, boolean isDone, String from, String to) {
+    protected LocalDateTime from;
+    protected LocalDateTime to;
+    public Event(String description, boolean isDone, LocalDateTime from, LocalDateTime to) {
         super(description, isDone);
         this.from = from;
         this.to = to;
@@ -9,7 +16,10 @@ public class Event extends Task {
 
     @Override
     public String toString() {
-        return "[E]" + super.toString() + " (from: " + this.from + " to: " + this.to + ")";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
+                "MMM dd yyyy, h:mm a", Locale.ENGLISH);
+        return "[E]" + super.toString() + " (from: " + this.from.format(formatter)
+                + " to: " + this.to.format(formatter) + ")";
     }
 
     @Override

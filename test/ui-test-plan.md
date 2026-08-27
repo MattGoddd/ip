@@ -73,8 +73,8 @@ After this case, remove the `data/charlie.txt` directory before preparing the ma
 
 ```text
 T | Done | loaded todo
-D | Not done | loaded deadline | Friday
-E | Done | loaded event | Monday | Tuesday
+D | Not done | loaded deadline | 2026-09-18
+E | Done | loaded event | 2026-09-18T09:00 | 2026-09-18T10:00
 ```
 
 - Run all test cases below in one fresh program session and in the listed order.
@@ -100,8 +100,8 @@ list
     ____________________________________________________________
     Here are the tasks in your list:
     1.[T][X] loaded todo
-    2.[D][ ] loaded deadline (by: Friday)
-    3.[E][X] loaded event (from: Monday to: Tuesday)
+    2.[D][ ] loaded deadline (by: Sep 18 2026)
+    3.[E][X] loaded event (from: Sep 18 2026, 9:00 AM to: Sep 18 2026, 10:00 AM)
     ____________________________________________________________
 ```
 
@@ -122,7 +122,7 @@ delete 3
 ```text
     ____________________________________________________________
     Noted. I've removed this task:
-      [E][X] loaded event (from: Monday to: Tuesday)
+      [E][X] loaded event (from: Sep 18 2026, 9:00 AM to: Sep 18 2026, 10:00 AM)
     Now you have 2 tasks in the list.
     ____________________________________________________________
 ```
@@ -144,7 +144,7 @@ delete 2
 ```text
     ____________________________________________________________
     Noted. I've removed this task:
-      [D][ ] loaded deadline (by: Friday)
+      [D][ ] loaded deadline (by: Sep 18 2026)
     Now you have 1 tasks in the list.
     ____________________________________________________________
 ```
@@ -202,7 +202,7 @@ todo borrow book
 **Input:**
 
 ```text
-deadline return book /by Sunday
+deadline return book /by 2026-09-20
 ```
 
 **Expected output:**
@@ -210,7 +210,7 @@ deadline return book /by Sunday
 ```text
     ____________________________________________________________
     Got it. I've added this task:
-      [D][ ] return book (by: Sunday)
+      [D][ ] return book (by: Sep 20 2026)
     Now you have 2 tasks in the list.
     ____________________________________________________________
 ```
@@ -224,7 +224,7 @@ deadline return book /by Sunday
 **Input:**
 
 ```text
-event project meeting /from Mon 2pm /to 4pm
+event project meeting /from 2026-09-21 1400 /to 2026-09-23 1600
 ```
 
 **Expected output:**
@@ -232,7 +232,7 @@ event project meeting /from Mon 2pm /to 4pm
 ```text
     ____________________________________________________________
     Got it. I've added this task:
-      [E][ ] project meeting (from: Mon 2pm to: 4pm)
+      [E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
     Now you have 3 tasks in the list.
     ____________________________________________________________
 ```
@@ -255,8 +255,151 @@ list
     ____________________________________________________________
     Here are the tasks in your list:
     1.[T][ ] borrow book
-    2.[D][ ] return book (by: Sunday)
-    3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+    2.[D][ ] return book (by: Sep 20 2026)
+    3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
+    ____________________________________________________________
+```
+
+## UI-DATE-01 — Find a deadline on an exact date
+
+**Aim:** Verify that `on` prints a deadline whose date exactly matches the requested date.
+
+**Rationale:** Deadline dates represent a single day rather than a date range.
+
+**Input:**
+
+```text
+on 2026-09-20
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks occurring on 2026-09-20:
+    1.[D][ ] return book (by: Sep 20 2026)
+    ____________________________________________________________
+```
+
+## UI-DATE-02 — Find an event spanning the requested date
+
+**Aim:** Verify that `on` prints an event when the requested date falls within its date range.
+
+**Rationale:** The event starts on September 21 and ends on September 23, so it should include September 22 even though neither endpoint is on that date.
+
+**Input:**
+
+```text
+on 2026-09-22
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks occurring on 2026-09-22:
+    1.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
+    ____________________________________________________________
+```
+
+## UI-DATE-03 — Report no matching dated tasks
+
+**Aim:** Verify that `on` reports when no deadline or event occurs on the requested date.
+
+**Rationale:** Printing only a heading could leave the user unsure whether the search completed successfully.
+
+**Input:**
+
+```text
+on 2026-09-19
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks occurring on 2026-09-19:
+    No deadlines or events occur on this date.
+    ____________________________________________________________
+```
+
+## UI-DATE-04 — Reject `on` without a date
+
+**Aim:** Verify that `on` requires exactly one date argument.
+
+**Rationale:** Accessing a missing argument must not cause an array-index failure.
+
+**Input:**
+
+```text
+on
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Please provide exactly one date in yyyy-MM-dd format.
+    ____________________________________________________________
+```
+
+## UI-DATE-05 — Reject extra `on` arguments
+
+**Aim:** Verify that `on` rejects input after its single date argument.
+
+**Rationale:** Silently ignoring extra input can hide a user's typing mistake.
+
+**Input:**
+
+```text
+on 2026-09-20 extra
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Please provide exactly one date in yyyy-MM-dd format.
+    ____________________________________________________________
+```
+
+## UI-DATE-06 — Reject a weekday name
+
+**Aim:** Verify that `on` rejects a weekday that does not identify one exact calendar date.
+
+**Rationale:** `Sunday` is ambiguous because it does not state which week's Sunday is intended.
+
+**Input:**
+
+```text
+on Sunday
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Date must be a valid date in yyyy-MM-dd format.
+    ____________________________________________________________
+```
+
+## UI-DATE-07 — Reject an impossible calendar date
+
+**Aim:** Verify that `on` rejects a correctly shaped but nonexistent date.
+
+**Rationale:** Calendar validation must prevent dates such as February 30 from being searched.
+
+**Input:**
+
+```text
+on 2026-02-30
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Date must be a valid date in yyyy-MM-dd format.
     ____________________________________________________________
 ```
 
@@ -298,8 +441,8 @@ list
     ____________________________________________________________
     Here are the tasks in your list:
     1.[T][ ] borrow book
-    2.[D][ ] return book (by: Sunday)
-    3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+    2.[D][ ] return book (by: Sep 20 2026)
+    3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
     ____________________________________________________________
 ```
 
@@ -320,7 +463,7 @@ mark 2
 ```text
     ____________________________________________________________
     Nice! I've marked this task as done:
-      [D][X] return book (by: Sunday)
+      [D][X] return book (by: Sep 20 2026)
     ____________________________________________________________
 ```
 
@@ -341,7 +484,7 @@ unmark 2
 ```text
     ____________________________________________________________
     OK, I've marked this task not done yet:
-      [D][ ] return book (by: Sunday)
+      [D][ ] return book (by: Sep 20 2026)
     ____________________________________________________________
 ```
 
@@ -362,7 +505,7 @@ delete 3
 ```text
     ____________________________________________________________
     Noted. I've removed this task:
-      [E][ ] project meeting (from: Mon 2pm to: 4pm)
+      [E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
     Now you have 2 tasks in the list.
     ____________________________________________________________
 ```
@@ -385,7 +528,7 @@ list
     ____________________________________________________________
     Here are the tasks in your list:
     1.[T][ ] borrow book
-    2.[D][ ] return book (by: Sunday)
+    2.[D][ ] return book (by: Sep 20 2026)
     ____________________________________________________________
 ```
 
@@ -458,7 +601,7 @@ deadline return book
 **Input:**
 
 ```text
-deadline /by Sunday
+deadline /by 2026-09-20
 ```
 
 **Expected output:**
@@ -498,7 +641,7 @@ deadline return book /by
 **Input:**
 
 ```text
-event meeting /from /to Friday
+event meeting /from /to 2026-09-21 1600
 ```
 
 **Expected output:**
@@ -518,7 +661,7 @@ event meeting /from /to Friday
 **Input:**
 
 ```text
-event meeting /from Monday /to
+event meeting /from 2026-09-21 1400 /to
 ```
 
 **Expected output:**
@@ -589,7 +732,67 @@ mark 999
     ____________________________________________________________
 ```
 
-## UI-21 — Exit after persistence checks
+## UI-21 — Reject a deadline that is not an ISO date
+
+**Aim:** Verify that deadline values must use the `yyyy-MM-dd` input format.
+
+**Rationale:** Storing deadlines as `LocalDate` requires Charlie to reject text that cannot be converted into a real calendar date without terminating the program.
+
+**Input:**
+
+```text
+deadline return book /by Sunday
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Deadline must be a valid date in yyyy-MM-dd format.
+    ____________________________________________________________
+```
+
+## UI-22 — Reject an event with an invalid date-time
+
+**Aim:** Verify that event start and end values use the `yyyy-MM-dd HHmm` format.
+
+**Rationale:** Event values must be convertible into real `LocalDateTime` objects without terminating Charlie.
+
+**Input:**
+
+```text
+event meeting /from Monday 2pm /to Monday 4pm
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Event dates must use the yyyy-MM-dd HHmm format.
+    ____________________________________________________________
+```
+
+## UI-23 — Reject an event that does not end after it starts
+
+**Aim:** Verify that an event's end date-time must occur after its start date-time.
+
+**Rationale:** An event ending before or exactly when it starts does not represent a valid time interval.
+
+**Input:**
+
+```text
+event meeting /from 2026-09-21 1600 /to 2026-09-21 1400
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Event end must be after its start.
+    ____________________________________________________________
+```
+
+## UI-24 — Exit after persistence checks
 
 **Aim:** End the test session normally and verify the final persisted task list.
 
@@ -613,5 +816,5 @@ bye
 
 ```text
 T | Not done | borrow book
-D | Not done | return book | Sunday
+D | Not done | return book | 2026-09-20
 ```
