@@ -51,51 +51,14 @@ public class Charlie {
      * Other input is stored as a task, while {@code list} displays all stored tasks.
      */
     private void readCommands() {
-        commandLoop:
         while (ui.hasNextCommand()) {
             try {
                 String input = ui.readCommand();
                 ui.showHorizontalLine();
-                CommandType commandType = Parser.parseCommand(input);
-                switch (commandType) {
-                    case BYE: {
-                        Command exitCommand = new ExitCommand();
-                        exitCommand.execute(tasks, ui, storage);
-                        if (exitCommand.isExit()) {
-                            break commandLoop;
-                        }
-                        break;
-                    }
-                    case LIST:
-                        new ListCommand().execute(tasks, ui, storage);
-                        break;
-                    case ON:
-                        new FindCommand(Parser.parseDate(input)).execute(tasks, ui, storage);
-                        break;
-                    case MARK: {
-                        int index = Parser.parseTaskIndex(input);
-                        new MarkCommand(index).execute(tasks, ui, storage);
-                        break;
-                    }
-                    case UNMARK: {
-                        int index = Parser.parseTaskIndex(input);
-                        new UnmarkCommand(index).execute(tasks, ui, storage);
-                        break;
-                    }
-                    case DELETE: {
-                        int index = Parser.parseTaskIndex(input);
-                        new DeleteCommand(index).execute(tasks, ui, storage);
-                        break;
-                    }
-                    case TODO:
-                        // Fallthrough
-                    case DEADLINE:
-                        // Fallthrough
-                    case EVENT: {
-                        Task newTask = Parser.parseTask(input, commandType);
-                        new AddCommand(newTask).execute(tasks, ui, storage);
-                        break;
-                    }
+                Command command = Parser.parse(input);
+                command.execute(tasks, ui, storage);
+                if (command.isExit()) {
+                    break;
                 }
             } catch (CharlieException e) {
                 ui.showMessage(e.getMessage());

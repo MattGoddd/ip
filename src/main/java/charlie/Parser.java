@@ -14,6 +14,26 @@ public final class Parser {
     }
 
     /**
+     * Converts user input into a command that is ready to execute.
+     *
+     * @param input Complete user input.
+     * @return Command represented by the input.
+     * @throws CharlieException If the command or its arguments are invalid.
+     */
+    public static Command parse(String input) {
+        CommandType commandType = parseCommand(input);
+        return switch (commandType) {
+        case BYE -> new ExitCommand();
+        case LIST -> new ListCommand();
+        case ON -> new FindCommand(parseDate(input));
+        case MARK -> new MarkCommand(parseTaskIndex(input));
+        case UNMARK -> new UnmarkCommand(parseTaskIndex(input));
+        case DELETE -> new DeleteCommand(parseTaskIndex(input));
+        case TODO, DEADLINE, EVENT -> new AddCommand(parseTask(input, commandType));
+        };
+    }
+
+    /**
      * Converts the first word of a user input line into a command.
      *
      * @param input Complete user input.
