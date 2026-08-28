@@ -93,16 +93,14 @@ public class Charlie {
     }
 
     private void mark(int index) {
-        Task curTask = tasks.get(index);
-        curTask.markDone();
+        Task curTask = tasks.mark(index);
         storage.save(tasks.getTasks());
         ui.showMessage("Nice! I've marked this task as done:");
         ui.showMessage("  " + curTask.toString());
     }
 
     private void unmark(int index) {
-        Task curTask = tasks.get(index);
-        curTask.markUndone();
+        Task curTask = tasks.unmark(index);
         storage.save(tasks.getTasks());
         ui.showMessage("OK, I've marked this task not done yet:");
         ui.showMessage("  " + curTask.toString());
@@ -143,7 +141,7 @@ public class Charlie {
     }
 
     private void deleteTask(int index) {
-        Task deletedTask = tasks.remove(index);
+        Task deletedTask = tasks.delete(index);
         storage.save(tasks.getTasks());
         ui.showMessage("Noted. I've removed this task:");
         ui.showMessage("  " + deletedTask.toString());

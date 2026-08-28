@@ -832,6 +832,28 @@ delete 999
     ____________________________________________________________
 ```
 
+## UI-TASKLIST-02 — Keep tasks after an invalid deletion
+
+**Aim:** Verify that an unsuccessful deletion does not change the task list.
+
+**Rationale:** Rejecting an invalid index is insufficient if the attempted mutation still removes or changes a task.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] borrow book
+    2.[D][ ] return book (by: Sep 20 2026)
+    ____________________________________________________________
+```
+
 ## UI-21 — Reject a deadline that is not an ISO date
 
 **Aim:** Verify that deadline values must use the `yyyy-MM-dd` input format.

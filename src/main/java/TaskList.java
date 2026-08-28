@@ -34,16 +34,6 @@ public class TaskList {
     }
 
     /**
-     * Removes and returns the task at the given zero-based index.
-     *
-     * @param index Zero-based task index.
-     * @return Removed task.
-     */
-    public Task remove(int index) {
-        return tasks.remove(index);
-    }
-
-    /**
      * Returns the task at the given zero-based index.
      *
      * @param index Zero-based task index.
@@ -51,6 +41,40 @@ public class TaskList {
      */
     public Task get(int index) {
         return tasks.get(index);
+    }
+
+    /**
+     * Marks and returns the task at the given zero-based index as done.
+     *
+     * @param index Zero-based task index.
+     * @return Marked task.
+     */
+    public Task mark(int index) {
+        Task task = tasks.get(index);
+        task.markDone();
+        return task;
+    }
+
+    /**
+     * Marks and returns the task at the given zero-based index as not done.
+     *
+     * @param index Zero-based task index.
+     * @return Unmarked task.
+     */
+    public Task unmark(int index) {
+        Task task = tasks.get(index);
+        task.markUndone();
+        return task;
+    }
+
+    /**
+     * Deletes and returns the task at the given zero-based index.
+     *
+     * @param index Zero-based task index.
+     * @return Deleted task.
+     */
+    public Task delete(int index) {
+        return tasks.remove(index);
     }
 
     /**
