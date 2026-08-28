@@ -26,7 +26,7 @@ public class Ui implements AutoCloseable {
     /**
      * Returns whether another command is available from the user.
      *
-     * @return true when another input line can be read
+     * @return True when another input line can be read.
      */
     public boolean hasNextCommand() {
         return scanner.hasNextLine();
@@ -35,7 +35,7 @@ public class Ui implements AutoCloseable {
     /**
      * Reads the next complete command entered by the user.
      *
-     * @return the next input line
+     * @return The next input line.
      */
     public String readCommand() {
         return scanner.nextLine();
@@ -65,7 +65,7 @@ public class Ui implements AutoCloseable {
     /**
      * Displays an error encountered while loading saved tasks.
      *
-     * @param message explanation of the loading problem
+     * @param message Explanation of the loading problem.
      */
     public void showLoadingError(String message) {
         System.out.println("Error loading saved tasks: " + message);
@@ -74,7 +74,7 @@ public class Ui implements AutoCloseable {
     /**
      * Displays one message using Charlie's standard indentation.
      *
-     * @param message message to display
+     * @param message Message to display.
      */
     public void showMessage(String message) {
         System.out.println(INDENT + message);

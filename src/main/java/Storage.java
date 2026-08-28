@@ -16,7 +16,7 @@ public class Storage {
     /**
      * Creates storage that uses the specified save file.
      *
-     * @param filePath path to Charlie's save file
+     * @param filePath Path to Charlie's save file.
      */
     public Storage(String filePath) {
         this.filePath = Path.of(filePath);
@@ -26,8 +26,8 @@ public class Storage {
      * Loads all tasks from the save file.
      * A missing file represents a first-time user with no saved tasks.
      *
-     * @return tasks reconstructed from the save file
-     * @throws CharlieException if the file cannot be read or contains invalid task data
+     * @return Tasks reconstructed from the save file.
+     * @throws CharlieException If the file cannot be read or contains invalid task data.
      */
     public List<Task> load() {
         if (!Files.exists(filePath)) {
@@ -50,7 +50,7 @@ public class Storage {
     /**
      * Saves every task using Charlie's line-based file format.
      *
-     * @param tasks tasks to save
+     * @param tasks Tasks to save.
      */
     public void save(List<Task> tasks) {
         StringBuilder content = new StringBuilder();
@@ -68,8 +68,8 @@ public class Storage {
     /**
      * Recreates one task from a line in Charlie's save-file format.
      *
-     * @param line saved representation of one task
-     * @return the reconstructed task
+     * @param line Saved representation of one task.
+     * @return The reconstructed task.
      */
     private Task parseSavedTask(String line) {
         String[] fields = line.split(" \\| ", -1);

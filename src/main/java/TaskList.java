@@ -18,7 +18,7 @@ public class TaskList {
     /**
      * Creates a task list containing tasks loaded from storage.
      *
-     * @param initialTasks tasks with which to initialise the list
+     * @param initialTasks Tasks with which to initialize the list.
      */
     public TaskList(List<Task> initialTasks) {
         this.tasks = new ArrayList<>(initialTasks);
@@ -27,7 +27,7 @@ public class TaskList {
     /**
      * Adds a task to the end of the list.
      *
-     * @param task task to add
+     * @param task Task to add.
      */
     public void add(Task task) {
         tasks.add(task);
@@ -36,8 +36,8 @@ public class TaskList {
     /**
      * Removes and returns the task at the given zero-based index.
      *
-     * @param index zero-based task index
-     * @return removed task
+     * @param index Zero-based task index.
+     * @return Removed task.
      */
     public Task remove(int index) {
         return tasks.remove(index);
@@ -46,8 +46,8 @@ public class TaskList {
     /**
      * Returns the task at the given zero-based index.
      *
-     * @param index zero-based task index
-     * @return selected task
+     * @param index Zero-based task index.
+     * @return Selected task.
      */
     public Task get(int index) {
         return tasks.get(index);
@@ -56,7 +56,7 @@ public class TaskList {
     /**
      * Returns the number of tasks currently stored.
      *
-     * @return task count
+     * @return Task count.
      */
     public int size() {
         return tasks.size();
@@ -65,17 +65,17 @@ public class TaskList {
     /**
      * Returns a read-only snapshot suitable for saving or displaying.
      *
-     * @return current tasks in list order
+     * @return Current tasks in list order.
      */
-    public List<Task> asList() {
+    public List<Task> getTasks() {
         return List.copyOf(tasks);
     }
 
     /**
      * Finds deadlines and events that occur on the requested date.
      *
-     * @param searchDate date on which tasks must occur
-     * @return matching tasks in their original list order
+     * @param searchDate Date on which tasks must occur.
+     * @return Matching tasks in their original list order.
      */
     public List<Task> findOnDate(LocalDate searchDate) {
         List<Task> matches = new ArrayList<>();

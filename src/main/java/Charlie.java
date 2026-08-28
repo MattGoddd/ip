@@ -11,7 +11,7 @@ public class Charlie {
     /**
      * Creates Charlie with collaborators for user interaction and task persistence.
      *
-     * @param filePath path to the saved-task file
+     * @param filePath Path to the saved-task file.
      */
     public Charlie(String filePath) {
         this.ui = new Ui();
@@ -57,10 +57,10 @@ public class Charlie {
                         ui.showOutro();
                         break label;
                     case LIST:
-                        listTask();
+                        showTasks();
                         break;
                     case ON:
-                        checkDate(Parser.parseDate(input));
+                        showTasksOnDate(Parser.parseDate(input));
                         break;
                     case MARK: {
                         int index = Parser.parseTaskIndex(input, tasks.size());
@@ -95,7 +95,7 @@ public class Charlie {
     private void mark(int index) {
         Task curTask = tasks.get(index);
         curTask.markDone();
-        storage.save(tasks.asList());
+        storage.save(tasks.getTasks());
         ui.showMessage("Nice! I've marked this task as done:");
         ui.showMessage("  " + curTask.toString());
     }
@@ -103,12 +103,12 @@ public class Charlie {
     private void unmark(int index) {
         Task curTask = tasks.get(index);
         curTask.markUndone();
-        storage.save(tasks.asList());
+        storage.save(tasks.getTasks());
         ui.showMessage("OK, I've marked this task not done yet:");
         ui.showMessage("  " + curTask.toString());
     }
 
-    private void listTask() {
+    private void showTasks() {
         ui.showMessage("Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
             ui.showMessage((i + 1) + "." + tasks.get(i));
@@ -119,9 +119,9 @@ public class Charlie {
      * Prints deadlines and events that occur on the specified date.
      * Deadlines must match the date exactly, while events may span the date.
      *
-     * @param searchDate date to check
+     * @param searchDate Date to check.
      */
-    private void checkDate(LocalDate searchDate) {
+    private void showTasksOnDate(LocalDate searchDate) {
         ui.showMessage("Here are the tasks occurring on " + searchDate + ":");
         int matchCount = 0;
         for (Task task : tasks.findOnDate(searchDate)) {
@@ -136,7 +136,7 @@ public class Charlie {
 
     private void addTask(Task task) {
         tasks.add(task);
-        storage.save(tasks.asList());
+        storage.save(tasks.getTasks());
         ui.showMessage("Got it. I've added this task:");
         ui.showMessage("  " + task.toString());
         ui.showMessage("Now you have " + tasks.size() + " tasks in the list.");
@@ -144,7 +144,7 @@ public class Charlie {
 
     private void deleteTask(int index) {
         Task deletedTask = tasks.remove(index);
-        storage.save(tasks.asList());
+        storage.save(tasks.getTasks());
         ui.showMessage("Noted. I've removed this task:");
         ui.showMessage("  " + deletedTask.toString());
         ui.showMessage("Now you have " + tasks.size() + " tasks in the list.");

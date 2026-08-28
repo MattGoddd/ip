@@ -11,9 +11,9 @@ public class Parser {
     /**
      * Converts the first word of a user input line into a command.
      *
-     * @param input complete user input
-     * @return the recognised command
-     * @throws CharlieException if the input is empty or starts with an unknown command
+     * @param input Complete user input.
+     * @return The recognized command.
+     * @throws CharlieException If the input is empty or starts with an unknown command.
      */
     public static Command parseCommand(String input) {
         if (input.isBlank()) {
@@ -26,9 +26,9 @@ public class Parser {
     /**
      * Parses the single date argument of an {@code on} command.
      *
-     * @param input complete user input
-     * @return the requested date
-     * @throws CharlieException if the argument count or date is invalid
+     * @param input Complete user input.
+     * @return The requested date.
+     * @throws CharlieException If the argument count or date is invalid.
      */
     public static LocalDate parseDate(String input) {
         String[] parts = input.trim().split("\\s+");
@@ -47,10 +47,10 @@ public class Parser {
     /**
      * Parses and validates the one-based task number supplied to a task command.
      *
-     * @param input complete user input
-     * @param taskCount current number of tasks
-     * @return zero-based task index
-     * @throws CharlieException if the input does not identify an existing task
+     * @param input Complete user input.
+     * @param taskCount Current number of tasks.
+     * @return Zero-based task index.
+     * @throws CharlieException If the input does not identify an existing task.
      */
     public static int parseTaskIndex(String input, int taskCount) {
         String[] parts = input.trim().split("\\s+");
@@ -78,10 +78,10 @@ public class Parser {
     /**
      * Converts a task command into the corresponding task type.
      *
-     * @param input complete user input containing the task details
-     * @param command type of task to create
-     * @return task containing the parsed details
-     * @throws CharlieException if the command does not have the expected format
+     * @param input Complete user input containing the task details.
+     * @param command Type of task to create.
+     * @return Task containing the parsed details.
+     * @throws CharlieException If the command does not have the expected format.
      */
     public static Task parseTask(String input, Command command) {
         String[] commandAndArguments = input.trim().split("\\s+", 2);
