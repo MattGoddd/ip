@@ -76,7 +76,7 @@ public class Charlie {
                         break;
                     case MARK: {
                         int index = Parser.parseTaskIndex(input, tasks.getSize());
-                        mark(index);
+                        new MarkCommand(index).execute(tasks, ui, storage);
                         break;
                     }
                     case UNMARK: {
@@ -104,13 +104,6 @@ public class Charlie {
             }
             ui.showHorizontalLine();
         }
-    }
-
-    private void mark(int index) {
-        Task currentTask = tasks.mark(index);
-        storage.save(tasks.getTasks());
-        ui.showMessage("Nice! I've marked this task as done:");
-        ui.showMessage("  " + currentTask.toString());
     }
 
     private void unmark(int index) {

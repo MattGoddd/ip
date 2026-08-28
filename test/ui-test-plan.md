@@ -549,6 +549,29 @@ mark 2
     ____________________________________________________________
 ```
 
+## UI-COMMAND-MARK-01 — List tasks after marking
+
+**Aim:** Verify that listing immediately after `mark` shows the selected task as done.
+
+**Rationale:** Extracting mark behavior into `MarkCommand` must retain the mutation in `TaskList`.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] borrow book
+    2.[D][X] return book (by: Sep 20 2026)
+    3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
+    ____________________________________________________________
+```
+
 ## UI-08 — Unmark a task
 
 **Aim:** Verify that `unmark` changes the selected task's status back to not done and displays the updated task.
