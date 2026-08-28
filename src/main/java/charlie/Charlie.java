@@ -86,7 +86,7 @@ public class Charlie {
                     }
                     case DELETE: {
                         int index = Parser.parseTaskIndex(input, tasks.getSize());
-                        deleteTask(index);
+                        new DeleteCommand(index).execute(tasks, ui, storage);
                         break;
                     }
                     case TODO:
@@ -133,11 +133,4 @@ public class Charlie {
         ui.showMessage("Now you have " + tasks.getSize() + " tasks in the list.");
     }
 
-    private void deleteTask(int index) {
-        Task deletedTask = tasks.delete(index);
-        storage.save(tasks.getTasks());
-        ui.showMessage("Noted. I've removed this task:");
-        ui.showMessage("  " + deletedTask.toString());
-        ui.showMessage("Now you have " + tasks.getSize() + " tasks in the list.");
-    }
 }

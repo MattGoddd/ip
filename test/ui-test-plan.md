@@ -638,6 +638,26 @@ delete 3
     ____________________________________________________________
 ```
 
+## UI-COMMAND-DELETE-01 — Reject deleting the removed position again
+
+**Aim:** Verify that deleting task 3 again fails because only two tasks remain.
+
+**Rationale:** Extracting deletion into `DeleteCommand` must update the size of the shared `TaskList`.
+
+**Input:**
+
+```text
+delete 3
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Please enter a task number from 1 to 2.
+    ____________________________________________________________
+```
+
 ## UI-10 — List tasks after deletion
 
 **Aim:** Verify that the deleted task is absent and the remaining tasks keep consecutive one-based numbering.
