@@ -6,8 +6,8 @@ import java.time.LocalDate;
  * Starts the CHARLIE chatbot application.
  */
 public class Charlie {
-    private final Storage storage;
-    private final Ui ui;
+    private Storage storage;
+    private Ui ui;
     private TaskList tasks;
 
     /**
