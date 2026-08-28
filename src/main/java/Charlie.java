@@ -1,22 +1,20 @@
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 /**
  * Starts the CHARLIE chatbot application.
  */
 public class Charlie {
-    private static final ArrayList<Task> TASKS = new ArrayList<>();
+    private static TaskList tasks = new TaskList();
     private static final Storage STORAGE = new Storage("data/charlie.txt");
-    private static int taskCount = 0;
 
     public static void main(String[] args) {
         try (Ui ui = new Ui()) {
             ui.showIntro();
             try {
-                TASKS.addAll(STORAGE.load());
-                taskCount = TASKS.size();
+                tasks = new TaskList(STORAGE.load());
             } catch (CharlieException e) {
                 ui.showLoadingError(e.getMessage());
+                tasks = new TaskList();
             }
             readCommand(ui);
         }
@@ -44,17 +42,17 @@ public class Charlie {
                         checkDate(Parser.parseDate(input), ui);
                         break;
                     case MARK: {
-                        int index = Parser.parseTaskIndex(input, taskCount);
+                        int index = Parser.parseTaskIndex(input, tasks.size());
                         mark(index, ui);
                         break;
                     }
                     case UNMARK: {
-                        int index = Parser.parseTaskIndex(input, taskCount);
+                        int index = Parser.parseTaskIndex(input, tasks.size());
                         unmark(index, ui);
                         break;
                     }
                     case DELETE: {
-                        int index = Parser.parseTaskIndex(input, taskCount);
+                        int index = Parser.parseTaskIndex(input, tasks.size());
                         deleteTask(index, ui);
                         break;
                     }
@@ -74,25 +72,25 @@ public class Charlie {
     }
 
     private static void mark(int index, Ui ui) {
-        Task curTask = TASKS.get(index);
+        Task curTask = tasks.get(index);
         curTask.markDone();
-        STORAGE.save(TASKS);
+        STORAGE.save(tasks.asList());
         ui.showMessage("Nice! I've marked this task as done:");
         ui.showMessage("  " + curTask.toString());
     }
 
     private static void unmark(int index, Ui ui) {
-        Task curTask = TASKS.get(index);
+        Task curTask = tasks.get(index);
         curTask.markUndone();
-        STORAGE.save(TASKS);
+        STORAGE.save(tasks.asList());
         ui.showMessage("OK, I've marked this task not done yet:");
         ui.showMessage("  " + curTask.toString());
     }
 
     private static void listTask(Ui ui) {
         ui.showMessage("Here are the tasks in your list:");
-        for (int i = 0; i < taskCount; i++) {
-            ui.showMessage((i + 1) + "." + TASKS.get(i));
+        for (int i = 0; i < tasks.size(); i++) {
+            ui.showMessage((i + 1) + "." + tasks.get(i));
         }
     }
 
@@ -104,25 +102,11 @@ public class Charlie {
      * @param ui user interface used to display matching tasks
      */
     private static void checkDate(LocalDate searchDate, Ui ui) {
-        int matchCount = 0;
         ui.showMessage("Here are the tasks occurring on " + searchDate + ":");
-
-        for (Task task : TASKS) {
-            boolean matches = false;
-
-            if (task instanceof Deadline deadlineTask) {
-                matches = deadlineTask.deadline.equals(searchDate);
-            } else if (task instanceof Event eventTask) {
-                LocalDate fromDate = eventTask.from.toLocalDate();
-                LocalDate toDate = eventTask.to.toLocalDate();
-
-                matches = !searchDate.isBefore(fromDate) && !searchDate.isAfter(toDate);
-            }
-
-            if (matches) {
-                matchCount++;
-                ui.showMessage(matchCount + "." + task);
-            }
+        int matchCount = 0;
+        for (Task task : tasks.findOnDate(searchDate)) {
+            matchCount++;
+            ui.showMessage(matchCount + "." + task);
         }
 
         if (matchCount == 0) {
@@ -131,21 +115,19 @@ public class Charlie {
     }
 
     private static void addTask(Task task, Ui ui) {
-        TASKS.add(task);
-        taskCount++;
-        STORAGE.save(TASKS);
+        tasks.add(task);
+        STORAGE.save(tasks.asList());
         ui.showMessage("Got it. I've added this task:");
         ui.showMessage("  " + task.toString());
-        ui.showMessage("Now you have " + taskCount + " tasks in the list.");
+        ui.showMessage("Now you have " + tasks.size() + " tasks in the list.");
     }
 
     private static void deleteTask(int index, Ui ui) {
-        Task deletedTask = TASKS.remove(index);
-        taskCount--;
-        STORAGE.save(TASKS);
+        Task deletedTask = tasks.remove(index);
+        STORAGE.save(tasks.asList());
         ui.showMessage("Noted. I've removed this task:");
         ui.showMessage("  " + deletedTask.toString());
-        ui.showMessage("Now you have " + taskCount + " tasks in the list.");
+        ui.showMessage("Now you have " + tasks.size() + " tasks in the list.");
     }
 
 }

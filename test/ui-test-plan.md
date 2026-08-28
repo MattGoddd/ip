@@ -803,6 +803,26 @@ mark 999
     ____________________________________________________________
 ```
 
+## UI-TASKLIST-01 — Reject deletion outside the task list
+
+**Aim:** Verify that `delete` rejects a task number outside the current list.
+
+**Rationale:** An invalid deletion must not access or change the task collection.
+
+**Input:**
+
+```text
+delete 999
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Please enter a task number from 1 to 2.
+    ____________________________________________________________
+```
+
 ## UI-21 — Reject a deadline that is not an ISO date
 
 **Aim:** Verify that deadline values must use the `yyyy-MM-dd` input format.
