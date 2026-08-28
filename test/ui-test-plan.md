@@ -19,6 +19,7 @@ D | Not done | missing deadline
 Start Charlie, then enter:
 
 ```text
+list
 bye
 ```
 
@@ -26,6 +27,14 @@ bye
 
 ```text
 Error loading saved tasks: Invalid number of fields in saved task.
+```
+
+**Expected output after entering `list`:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    ____________________________________________________________
 ```
 
 **Expected output after entering `bye`:**
@@ -62,13 +71,271 @@ Error loading saved tasks: Could not read the saved task file.
     ____________________________________________________________
 ```
 
-After this case, remove the `data/charlie.txt` directory before preparing the main session fixture.
+Leave the `data/charlie.txt` directory in place for the following save-error case.
+
+### UI-STORAGE-02 — Handle a save-file write failure
+
+**Aim:** Verify that an I/O failure while saving tasks reports a friendly error.
+
+**Rationale:** A save failure should be handled by Charlie's command loop instead of exposing a Java stack trace or terminating the program.
+
+Using the `data/charlie.txt` directory left by `UI-STARTUP-02`, start a fresh Charlie process. Then enter:
+
+```text
+todo unsaved task
+list
+bye
+```
+
+**Expected startup output after the banner and greeting:**
+
+```text
+Error loading saved tasks: Could not read the saved task file.
+```
+
+**Expected output after entering `todo unsaved task`:**
+
+```text
+    ____________________________________________________________
+    Could not save tasks.
+    ____________________________________________________________
+```
+
+### UI-STORAGE-03 — Keep the list empty after a failed addition
+
+**Aim:** Verify that a task is not added to the in-memory list when it cannot be saved.
+
+**Rationale:** The saved file and current task list should represent the same state after a failed addition.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    ____________________________________________________________
+```
+
+**Expected output after entering `bye`:**
+
+```text
+    ____________________________________________________________
+    Goodbye! See you next time.
+    ____________________________________________________________
+```
+
+After this case, remove the `data/charlie.txt` directory before continuing.
+
+### UI-STORAGE-01 — Start without a save file
+
+**Aim:** Verify that Charlie starts with an empty task list when no save file exists.
+
+**Rationale:** A missing save file represents a first-time user and must not be treated as a loading error.
+
+Before starting Charlie, ensure that `data/charlie.txt` does not exist. Then enter:
+
+```text
+list
+bye
+```
+
+**Expected output after entering `list`:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    ____________________________________________________________
+```
+
+**Expected output after entering `bye`:**
+
+```text
+    ____________________________________________________________
+    Goodbye! See you next time.
+    ____________________________________________________________
+```
+
+### UI-COMMAND-EXIT-01 — Terminate after the exit command
+
+**Aim:** Verify that Charlie terminates immediately after responding to `bye`.
+
+**Rationale:** Extracting exit behavior into `ExitCommand` must preserve both the farewell and the exit signal.
+
+Run this case in a separate fresh Charlie process with no save file. Enter:
+
+```text
+bye
+```
+
+**Expected output after entering `bye`:**
+
+```text
+    ____________________________________________________________
+    Goodbye! See you next time.
+    ____________________________________________________________
+```
+
+**Expected process state:** Charlie terminates without waiting for another command.
+
+## Save-failure consistency session
+
+Run the cases in this section in one fresh Charlie process before the main session. First, create `data/charlie.txt` with exactly these lines:
+
+```text
+T | Not done | stable task
+T | Done | completed task
+```
+
+Start Charlie and wait until it has loaded the tasks. Then move the save file aside and create an empty directory named `data/charlie.txt`. This forces subsequent save attempts to fail while preserving the two tasks already loaded in memory.
+
+### UI-STORAGE-CONSISTENCY-STARTUP — Load tasks before forcing save failures
+
+**Aim:** Verify that the consistency session starts normally with its two-task fixture.
+
+**Expected startup output:**
+
+```text
+    ____________________________________________________________
+      ____ _   _    _    ____  _     ___ _____
+     / ___| | | |  / \  |  _ \| |   |_ _| ____|
+    | |   | |_| | / _ \ | |_) | |    | ||  _|
+    | |___|  _  |/ ___ \|  _ <| |___ | || |___
+     \____|_| |_/_/   \_\_| \_\_____|___|_____|
+    Hello! I'm Charlie!
+    What do you want to do today?
+    ____________________________________________________________
+```
+
+### UI-STORAGE-CONSISTENCY-01 — Reject marking when saving fails
+
+**Input:**
+
+```text
+mark 1
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Could not save tasks.
+    ____________________________________________________________
+```
+
+### UI-STORAGE-CONSISTENCY-02 — Keep status unchanged after failed marking
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] stable task
+    2.[T][X] completed task
+    ____________________________________________________________
+```
+
+### UI-STORAGE-CONSISTENCY-03 — Reject unmarking when saving fails
+
+**Input:**
+
+```text
+unmark 2
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Could not save tasks.
+    ____________________________________________________________
+```
+
+### UI-STORAGE-CONSISTENCY-04 — Keep status unchanged after failed unmarking
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] stable task
+    2.[T][X] completed task
+    ____________________________________________________________
+```
+
+### UI-STORAGE-CONSISTENCY-05 — Reject deletion when saving fails
+
+**Input:**
+
+```text
+delete 1
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Could not save tasks.
+    ____________________________________________________________
+```
+
+### UI-STORAGE-CONSISTENCY-06 — Keep tasks after failed deletion
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] stable task
+    2.[T][X] completed task
+    ____________________________________________________________
+```
+
+### UI-STORAGE-CONSISTENCY-07 — Exit the consistency session
+
+**Input:**
+
+```text
+bye
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Goodbye! See you next time.
+    ____________________________________________________________
+```
+
+After this session, remove the `data/charlie.txt` directory before preparing the main session fixture.
 
 ## Session setup
 
 - Required Java version: Java 25
-- Compile command: `javac -d out src/main/java/*.java`
-- Run command: `java -cp out Charlie`
+- Compile command: `javac -d out src/main/java/charlie/*.java`
+- Run command: `java -cp out charlie.Charlie`
 - Before starting Charlie, create `data/charlie.txt` with exactly these lines:
 
 ```text
@@ -81,6 +348,28 @@ E | Done | loaded event | 2026-09-18T09:00 | 2026-09-18T10:00
 - Compare output exactly, except that CRLF and LF line endings are considered equivalent and trailing spaces at the end of a line are ignored.
 - Each expected-output block starts with the horizontal line printed after entering the command and ends with that command's final horizontal line.
 - Console input echo is part of the transcript but is not part of the expected application output.
+
+## UI-STARTUP-03 — Display the startup greeting
+
+**Aim:** Verify that Charlie displays its banner and greeting when the main test session starts.
+
+**Rationale:** Extracting console interactions into a `Ui` class must preserve the startup presentation exactly.
+
+**Input:** Start Charlie and wait for the initial output. Do not enter a command yet.
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+      ____ _   _    _    ____  _     ___ _____
+     / ___| | | |  / \  |  _ \| |   |_ _| ____|
+    | |   | |_| | / _ \ | |_) | |    | ||  _|
+    | |___|  _  |/ ___ \|  _ <| |___ | || |___
+     \____|_| |_/_/   \_\_| \_\_____|___|_____|
+    Hello! I'm Charlie!
+    What do you want to do today?
+    ____________________________________________________________
+```
 
 ## UI-LOAD-01 — List tasks loaded at startup
 
@@ -171,6 +460,26 @@ delete 1
     ____________________________________________________________
 ```
 
+## UI-COMMAND-INDEX-01 — Reject marking when the task list is empty
+
+**Aim:** Verify that `mark` reports an empty task list before any new tasks are added.
+
+**Rationale:** Moving range validation into `TaskList` must preserve the dedicated empty-list error.
+
+**Input:**
+
+```text
+mark 1
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    There are no tasks in the list.
+    ____________________________________________________________
+```
+
 ## UI-01 — Add a todo
 
 **Aim:** Verify that `todo` creates an incomplete todo with the correct description and confirmation.
@@ -190,6 +499,27 @@ todo borrow book
     Got it. I've added this task:
       [T][ ] borrow book
     Now you have 1 tasks in the list.
+    ____________________________________________________________
+```
+
+## UI-COMMAND-ADD-01 — List tasks after adding a todo
+
+**Aim:** Verify that listing immediately after adding a todo shows the new task.
+
+**Rationale:** Extracting task creation into `AddCommand` must add the task to the shared `TaskList`.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] borrow book
     ____________________________________________________________
 ```
 
@@ -403,6 +733,29 @@ on 2026-02-30
     ____________________________________________________________
 ```
 
+## UI-COMMAND-FIND-01 — Keep tasks unchanged after date searches
+
+**Aim:** Verify that listing after the date searches displays every original task unchanged.
+
+**Rationale:** Extracting date-search behavior into `FindCommand` must keep the operation read-only.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] borrow book
+    2.[D][ ] return book (by: Sep 20 2026)
+    3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
+    ____________________________________________________________
+```
+
 ## UI-05 — Reject an invalid command
 
 **Aim:** Verify that an unknown command displays a helpful error without terminating Charlie.
@@ -467,6 +820,29 @@ mark 2
     ____________________________________________________________
 ```
 
+## UI-COMMAND-MARK-01 — List tasks after marking
+
+**Aim:** Verify that listing immediately after `mark` shows the selected task as done.
+
+**Rationale:** Extracting mark behavior into `MarkCommand` must retain the mutation in `TaskList`.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] borrow book
+    2.[D][X] return book (by: Sep 20 2026)
+    3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
+    ____________________________________________________________
+```
+
 ## UI-08 — Unmark a task
 
 **Aim:** Verify that `unmark` changes the selected task's status back to not done and displays the updated task.
@@ -485,6 +861,29 @@ unmark 2
     ____________________________________________________________
     OK, I've marked this task not done yet:
       [D][ ] return book (by: Sep 20 2026)
+    ____________________________________________________________
+```
+
+## UI-COMMAND-UNMARK-01 — List tasks after unmarking
+
+**Aim:** Verify that listing immediately after `unmark` shows the selected task as not done.
+
+**Rationale:** Extracting unmark behavior into `UnmarkCommand` must retain the mutation in `TaskList`.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] borrow book
+    2.[D][ ] return book (by: Sep 20 2026)
+    3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
     ____________________________________________________________
 ```
 
@@ -507,6 +906,26 @@ delete 3
     Noted. I've removed this task:
       [E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
     Now you have 2 tasks in the list.
+    ____________________________________________________________
+```
+
+## UI-COMMAND-DELETE-01 — Reject deleting the removed position again
+
+**Aim:** Verify that deleting task 3 again fails because only two tasks remain.
+
+**Rationale:** Extracting deletion into `DeleteCommand` must update the size of the shared `TaskList`.
+
+**Input:**
+
+```text
+delete 3
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Please enter a task number from 1 to 2.
     ____________________________________________________________
 ```
 
@@ -632,6 +1051,26 @@ deadline return book /by
     ____________________________________________________________
 ```
 
+## UI-PARSER-01 — Reject an event without delimiters
+
+**Aim:** Verify that an event command requires both `/from` and `/to` delimiters.
+
+**Rationale:** Without the delimiters, the parser cannot separate the description, start, and end fields.
+
+**Input:**
+
+```text
+event meeting
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Need to include /from or /to fields.
+    ____________________________________________________________
+```
+
 ## UI-16 — Reject an event without a start
 
 **Aim:** Verify that an event requires text between `/from` and `/to`.
@@ -732,6 +1171,68 @@ mark 999
     ____________________________________________________________
 ```
 
+## UI-COMMAND-INDEX-02 — Reject task number zero
+
+**Aim:** Verify that `mark 0` is rejected as below the one-based task range.
+
+**Rationale:** After range validation moves from `Parser` to `TaskList`, zero must still produce the friendly range error.
+
+**Input:**
+
+```text
+mark 0
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Please enter a task number from 1 to 2.
+    ____________________________________________________________
+```
+
+## UI-TASKLIST-01 — Reject deletion outside the task list
+
+**Aim:** Verify that `delete` rejects a task number outside the current list.
+
+**Rationale:** An invalid deletion must not access or change the task collection.
+
+**Input:**
+
+```text
+delete 999
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Please enter a task number from 1 to 2.
+    ____________________________________________________________
+```
+
+## UI-TASKLIST-02 — Keep tasks after an invalid deletion
+
+**Aim:** Verify that an unsuccessful deletion does not change the task list.
+
+**Rationale:** Rejecting an invalid index is insufficient if the attempted mutation still removes or changes a task.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] borrow book
+    2.[D][ ] return book (by: Sep 20 2026)
+    ____________________________________________________________
+```
+
 ## UI-21 — Reject a deadline that is not an ISO date
 
 **Aim:** Verify that deadline values must use the `yyyy-MM-dd` input format.
@@ -789,6 +1290,50 @@ event meeting /from 2026-09-21 1600 /to 2026-09-21 1400
 ```text
     ____________________________________________________________
     Event end must be after its start.
+    ____________________________________________________________
+```
+
+## UI-COMMAND-01 — Recognize a command with leading whitespace
+
+**Aim:** Verify that command recognition continues to ignore whitespace before a command keyword.
+
+**Rationale:** Renaming the internal command type must not change how the parser recognizes user commands.
+
+**Input:**
+
+```text
+   list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] borrow book
+    2.[D][ ] return book (by: Sep 20 2026)
+    ____________________________________________________________
+```
+
+## UI-COMMAND-02 — Keep the task list unchanged after listing
+
+**Aim:** Verify that running `list` again displays the same tasks in the same order.
+
+**Rationale:** Extracting list behavior into a command object must keep `list` as a read-only operation.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] borrow book
+    2.[D][ ] return book (by: Sep 20 2026)
     ____________________________________________________________
 ```
 

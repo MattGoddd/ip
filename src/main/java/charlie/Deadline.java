@@ -1,3 +1,5 @@
+package charlie;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -8,9 +10,21 @@ import java.util.Locale;
 public class Deadline extends Task {
     protected LocalDate deadline;
 
+    /**
+     * Creates a deadline task with its description, status, and due date.
+     *
+     * @param description Description of the task.
+     * @param isDone Whether the task is completed.
+     * @param deadline Date by which the task must be completed.
+     */
     public Deadline(String description, boolean isDone, LocalDate deadline) {
         super(description, isDone);
         this.deadline = deadline;
+    }
+
+    @Override
+    public Task copyWithStatus(boolean isDone) {
+        return new Deadline(description, isDone, deadline);
     }
 
     @Override
@@ -25,5 +39,4 @@ public class Deadline extends Task {
         String status = isDone ? "Done" : "Not done";
         return "D" + " | " + status + " | " + this.description + " | " + this.deadline;
     }
-
 }

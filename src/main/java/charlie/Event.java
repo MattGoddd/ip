@@ -1,3 +1,5 @@
+package charlie;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -8,10 +10,24 @@ import java.util.Locale;
 public class Event extends Task {
     protected LocalDateTime from;
     protected LocalDateTime to;
+
+    /**
+     * Creates an event task with its description, status, start, and end.
+     *
+     * @param description Description of the event.
+     * @param isDone Whether the event task is completed.
+     * @param from Date and time at which the event starts.
+     * @param to Date and time at which the event ends.
+     */
     public Event(String description, boolean isDone, LocalDateTime from, LocalDateTime to) {
         super(description, isDone);
         this.from = from;
         this.to = to;
+    }
+
+    @Override
+    public Task copyWithStatus(boolean isDone) {
+        return new Event(description, isDone, from, to);
     }
 
     @Override

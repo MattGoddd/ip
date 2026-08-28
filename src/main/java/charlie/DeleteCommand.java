@@ -1,0 +1,33 @@
+package charlie;
+
+/**
+ * Deletes one task from the task list.
+ */
+public class DeleteCommand extends Command {
+    private final int index;
+
+    /**
+     * Creates a command for the task at the given zero-based index.
+     *
+     * @param index Zero-based index of the task to delete.
+     */
+    public DeleteCommand(int index) {
+        this.index = index;
+    }
+
+    /**
+     * Deletes the selected task, saves the task list, and displays the result.
+     *
+     * @param tasks Task collection containing the selected task.
+     * @param ui User interface used to display the result.
+     * @param storage Storage used to persist the updated task list.
+     */
+    @Override
+    public void execute(TaskList tasks, Ui ui, Storage storage) {
+        storage.save(tasks.getTasksAfterDeleting(index));
+        Task deletedTask = tasks.delete(index);
+        ui.showMessage("Noted. I've removed this task:");
+        ui.showMessage("  " + deletedTask);
+        ui.showMessage("Now you have " + tasks.getSize() + " tasks in the list.");
+    }
+}

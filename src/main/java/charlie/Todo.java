@@ -1,7 +1,23 @@
+package charlie;
+
+/**
+ * Represents a task without an associated date or time.
+ */
 public class Todo extends Task {
 
+    /**
+     * Creates a todo task with its description and completion status.
+     *
+     * @param description Description of the task.
+     * @param isDone Whether the task is completed.
+     */
     public Todo(String description, boolean isDone) {
         super(description, isDone);
+    }
+
+    @Override
+    public Task copyWithStatus(boolean isDone) {
+        return new Todo(description, isDone);
     }
 
     @Override
@@ -14,5 +30,4 @@ public class Todo extends Task {
         String status = isDone ? "Done" : "Not done";
         return "T" + " | " + status + " | " + this.description;
     }
-
 }
