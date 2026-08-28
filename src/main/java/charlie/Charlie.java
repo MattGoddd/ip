@@ -58,8 +58,8 @@ public class Charlie {
             try {
                 String input = ui.readCommand();
                 ui.showHorizontalLine();
-                Command command = Parser.parseCommand(input);
-                switch (command) {
+                CommandType commandType = Parser.parseCommand(input);
+                switch (commandType) {
                     case BYE:
                         ui.showOutro();
                         break commandLoop;
@@ -89,7 +89,7 @@ public class Charlie {
                     case DEADLINE:
                         // Fallthrough
                     case EVENT: {
-                        Task newTask = Parser.parseTask(input, command);
+                        Task newTask = Parser.parseTask(input, commandType);
                         addTask(newTask);
                         break;
                     }

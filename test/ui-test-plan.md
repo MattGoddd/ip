@@ -914,6 +914,28 @@ event meeting /from 2026-09-21 1600 /to 2026-09-21 1400
     ____________________________________________________________
 ```
 
+## UI-COMMAND-01 — Recognize a command with leading whitespace
+
+**Aim:** Verify that command recognition continues to ignore whitespace before a command keyword.
+
+**Rationale:** Renaming the internal command type must not change how the parser recognizes user commands.
+
+**Input:**
+
+```text
+   list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] borrow book
+    2.[D][ ] return book (by: Sep 20 2026)
+    ____________________________________________________________
+```
+
 ## UI-24 — Exit after persistence checks
 
 **Aim:** End the test session normally and verify the final persisted task list.

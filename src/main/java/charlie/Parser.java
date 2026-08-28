@@ -20,12 +20,12 @@ public final class Parser {
      * @return The recognized command.
      * @throws CharlieException If the input is empty or starts with an unknown command.
      */
-    public static Command parseCommand(String input) {
+    public static CommandType parseCommand(String input) {
         if (input.isBlank()) {
             throw new CharlieException("Please enter a command.");
         }
         String[] parts = input.trim().split("\\s+");
-        return Command.parseKeyword(parts[0]);
+        return CommandType.parseKeyword(parts[0]);
     }
 
     /**
@@ -84,20 +84,20 @@ public final class Parser {
      * Converts a task command into the corresponding task type.
      *
      * @param input Complete user input containing the task details.
-     * @param command Type of task to create.
+     * @param commandType Type of task to create.
      * @return Task containing the parsed details.
      * @throws CharlieException If the command does not have the expected format.
      */
-    public static Task parseTask(String input, Command command) {
+    public static Task parseTask(String input, CommandType commandType) {
         String[] commandAndArguments = input.trim().split("\\s+", 2);
         if (commandAndArguments.length < 2) {
             throw new CharlieException("The task description cannot be empty.");
         }
 
         String arguments = commandAndArguments[1];
-        if (command == Command.TODO) {
+        if (commandType == CommandType.TODO) {
             return new Todo(arguments, false);
-        } else if (command == Command.DEADLINE) {
+        } else if (commandType == CommandType.DEADLINE) {
             return parseDeadline(arguments);
         } else {
             return parseEvent(arguments);

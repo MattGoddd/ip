@@ -1,9 +1,9 @@
 package charlie;
 
 /**
- * Represents a command that Charlie can recognize.
+ * Identifies a command that Charlie can recognize.
  */
-public enum Command {
+public enum CommandType {
     BYE("bye"),
     LIST("list"),
     MARK("mark"),
@@ -16,7 +16,7 @@ public enum Command {
 
     private final String keyword;
 
-    Command(String keyword) {
+    CommandType(String keyword) {
         this.keyword = keyword;
     }
 
@@ -27,10 +27,10 @@ public enum Command {
      * @return The matching command.
      * @throws CharlieException If the keyword does not represent a supported command.
      */
-    public static Command parseKeyword(String keyword) {
-        for (Command command : values()) {
-            if (command.keyword.equals(keyword)) {
-                return command;
+    public static CommandType parseKeyword(String keyword) {
+        for (CommandType commandType : values()) {
+            if (commandType.keyword.equals(keyword)) {
+                return commandType;
             }
         }
         throw new CharlieException("Oops, this is an invalid command");
