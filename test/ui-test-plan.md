@@ -936,6 +936,28 @@ event meeting /from 2026-09-21 1600 /to 2026-09-21 1400
     ____________________________________________________________
 ```
 
+## UI-COMMAND-02 — Keep the task list unchanged after listing
+
+**Aim:** Verify that running `list` again displays the same tasks in the same order.
+
+**Rationale:** Extracting list behavior into a command object must keep `list` as a read-only operation.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] borrow book
+    2.[D][ ] return book (by: Sep 20 2026)
+    ____________________________________________________________
+```
+
 ## UI-24 — Exit after persistence checks
 
 **Aim:** End the test session normally and verify the final persisted task list.
