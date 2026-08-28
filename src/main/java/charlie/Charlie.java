@@ -1,3 +1,5 @@
+package charlie;
+
 import java.time.LocalDate;
 
 /**
@@ -19,6 +21,11 @@ public class Charlie {
         this.tasks = new TaskList();
     }
 
+    /**
+     * Starts Charlie using the default save-file location.
+     *
+     * @param args Command-line arguments, which are not used.
+     */
     public static void main(String[] args) {
         new Charlie("data/charlie.txt").run();
     }
@@ -35,7 +42,7 @@ public class Charlie {
                 ui.showLoadingError(e.getMessage());
                 tasks = new TaskList();
             }
-            readCommand();
+            readCommands();
         } finally {
             ui.close();
         }
@@ -45,8 +52,8 @@ public class Charlie {
      * Reads commands until the user enters {@code bye}.
      * Other input is stored as a task, while {@code list} displays all stored tasks.
      */
-    private void readCommand() {
-        label:
+    private void readCommands() {
+        commandLoop:
         while (ui.hasNextCommand()) {
             try {
                 String input = ui.readCommand();
@@ -55,7 +62,7 @@ public class Charlie {
                 switch (command) {
                     case BYE:
                         ui.showOutro();
-                        break label;
+                        break commandLoop;
                     case LIST:
                         showTasks();
                         break;
@@ -63,22 +70,24 @@ public class Charlie {
                         showTasksOnDate(Parser.parseDate(input));
                         break;
                     case MARK: {
-                        int index = Parser.parseTaskIndex(input, tasks.size());
+                        int index = Parser.parseTaskIndex(input, tasks.getSize());
                         mark(index);
                         break;
                     }
                     case UNMARK: {
-                        int index = Parser.parseTaskIndex(input, tasks.size());
+                        int index = Parser.parseTaskIndex(input, tasks.getSize());
                         unmark(index);
                         break;
                     }
                     case DELETE: {
-                        int index = Parser.parseTaskIndex(input, tasks.size());
+                        int index = Parser.parseTaskIndex(input, tasks.getSize());
                         deleteTask(index);
                         break;
                     }
                     case TODO:
+                        // Fallthrough
                     case DEADLINE:
+                        // Fallthrough
                     case EVENT: {
                         Task newTask = Parser.parseTask(input, command);
                         addTask(newTask);
@@ -93,22 +102,22 @@ public class Charlie {
     }
 
     private void mark(int index) {
-        Task curTask = tasks.mark(index);
+        Task currentTask = tasks.mark(index);
         storage.save(tasks.getTasks());
         ui.showMessage("Nice! I've marked this task as done:");
-        ui.showMessage("  " + curTask.toString());
+        ui.showMessage("  " + currentTask.toString());
     }
 
     private void unmark(int index) {
-        Task curTask = tasks.unmark(index);
+        Task currentTask = tasks.unmark(index);
         storage.save(tasks.getTasks());
         ui.showMessage("OK, I've marked this task not done yet:");
-        ui.showMessage("  " + curTask.toString());
+        ui.showMessage("  " + currentTask.toString());
     }
 
     private void showTasks() {
         ui.showMessage("Here are the tasks in your list:");
-        for (int i = 0; i < tasks.size(); i++) {
+        for (int i = 0; i < tasks.getSize(); i++) {
             ui.showMessage((i + 1) + "." + tasks.get(i));
         }
     }
@@ -137,7 +146,7 @@ public class Charlie {
         storage.save(tasks.getTasks());
         ui.showMessage("Got it. I've added this task:");
         ui.showMessage("  " + task.toString());
-        ui.showMessage("Now you have " + tasks.size() + " tasks in the list.");
+        ui.showMessage("Now you have " + tasks.getSize() + " tasks in the list.");
     }
 
     private void deleteTask(int index) {
@@ -145,7 +154,6 @@ public class Charlie {
         storage.save(tasks.getTasks());
         ui.showMessage("Noted. I've removed this task:");
         ui.showMessage("  " + deletedTask.toString());
-        ui.showMessage("Now you have " + tasks.size() + " tasks in the list.");
+        ui.showMessage("Now you have " + tasks.getSize() + " tasks in the list.");
     }
-
 }

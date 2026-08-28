@@ -105,8 +105,8 @@ bye
 ## Session setup
 
 - Required Java version: Java 25
-- Compile command: `javac -d out src/main/java/*.java`
-- Run command: `java -cp out Charlie`
+- Compile command: `javac -d out src/main/java/charlie/*.java`
+- Run command: `java -cp out charlie.Charlie`
 - Before starting Charlie, create `data/charlie.txt` with exactly these lines:
 
 ```text

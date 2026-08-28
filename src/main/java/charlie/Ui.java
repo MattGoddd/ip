@@ -1,18 +1,20 @@
+package charlie;
+
 import java.util.Scanner;
 
 /**
  * Handles console input and presents messages to Charlie's user.
  */
 public class Ui implements AutoCloseable {
-    private static final String BOT_NAME = "Charlie";
-    private static final String HORIZONTAL_LINE =
-            "____________________________________________________________";
-    private static final String INDENT = "    ";
-    private static final String BANNER = "  ____ _   _    _    ____  _     ___ _____\n"
+    private static final String BOT_BANNER = "  ____ _   _    _    ____  _     ___ _____\n"
             + " / ___| | | |  / \\  |  _ \\| |   |_ _| ____|\n"
             + "| |   | |_| | / _ \\ | |_) | |    | ||  _|\n"
             + "| |___|  _  |/ ___ \\|  _ <| |___ | || |___\n"
             + " \\____|_| |_/_/   \\_\\_| \\_\\_____|___|_____|\n";
+    private static final String BOT_HORIZONTAL_LINE =
+            "____________________________________________________________";
+    private static final String BOT_INDENT = "    ";
+    private static final String BOT_NAME = "Charlie";
 
     private final Scanner scanner;
 
@@ -46,7 +48,7 @@ public class Ui implements AutoCloseable {
      */
     public void showIntro() {
         showHorizontalLine();
-        for (String line : BANNER.split("\n")) {
+        for (String line : BOT_BANNER.split("\n")) {
             showMessage(line);
         }
         showMessage("Hello! I'm " + BOT_NAME + "!");
@@ -77,14 +79,14 @@ public class Ui implements AutoCloseable {
      * @param message Message to display.
      */
     public void showMessage(String message) {
-        System.out.println(INDENT + message);
+        System.out.println(BOT_INDENT + message);
     }
 
     /**
      * Displays the separator used to group each command and response.
      */
     public void showHorizontalLine() {
-        showMessage(HORIZONTAL_LINE);
+        showMessage(BOT_HORIZONTAL_LINE);
     }
 
     /**

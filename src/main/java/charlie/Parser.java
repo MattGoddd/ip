@@ -1,3 +1,5 @@
+package charlie;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -7,7 +9,10 @@ import java.time.format.ResolverStyle;
 /**
  * Interprets raw user input and validates command arguments.
  */
-public class Parser {
+public final class Parser {
+    private Parser() {
+    }
+
     /**
      * Converts the first word of a user input line into a command.
      *
@@ -20,7 +25,7 @@ public class Parser {
             throw new CharlieException("Please enter a command.");
         }
         String[] parts = input.trim().split("\\s+");
-        return Command.fromKeyword(parts[0]);
+        return Command.parseKeyword(parts[0]);
     }
 
     /**

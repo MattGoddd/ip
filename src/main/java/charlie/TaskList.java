@@ -1,3 +1,5 @@
+package charlie;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +84,7 @@ public class TaskList {
      *
      * @return Task count.
      */
-    public int size() {
+    public int getSize() {
         return tasks.size();
     }
 

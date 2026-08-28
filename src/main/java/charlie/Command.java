@@ -1,5 +1,7 @@
+package charlie;
+
 /**
- * Represents a command that Charlie can recognise.
+ * Represents a command that Charlie can recognize.
  */
 public enum Command {
     BYE("bye"),
@@ -21,11 +23,11 @@ public enum Command {
     /**
      * Converts a command keyword entered by the user into its corresponding enum value.
      *
-     * @param keyword command keyword entered by the user
-     * @return the matching command
-     * @throws CharlieException if the keyword does not represent a supported command
+     * @param keyword Command keyword entered by the user.
+     * @return The matching command.
+     * @throws CharlieException If the keyword does not represent a supported command.
      */
-    public static Command fromKeyword(String keyword) {
+    public static Command parseKeyword(String keyword) {
         for (Command command : values()) {
             if (command.keyword.equals(keyword)) {
                 return command;
