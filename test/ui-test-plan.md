@@ -683,6 +683,26 @@ deadline return book /by
     ____________________________________________________________
 ```
 
+## UI-PARSER-01 — Reject an event without delimiters
+
+**Aim:** Verify that an event command requires both `/from` and `/to` delimiters.
+
+**Rationale:** Without the delimiters, the parser cannot separate the description, start, and end fields.
+
+**Input:**
+
+```text
+event meeting
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Need to include /from or /to fields.
+    ____________________________________________________________
+```
+
 ## UI-16 — Reject an event without a start
 
 **Aim:** Verify that an event requires text between `/from` and `/to`.

@@ -1,8 +1,4 @@
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 
 /**
@@ -35,13 +31,8 @@ public class Charlie {
         while (ui.hasNextCommand()) {
             try {
                 String input = ui.readCommand();
-                if (input.isBlank()) {
-                    ui.showHorizontalLine();
-                    throw new CharlieException("Please enter a command.");
-                }
-                String[] parts = input.trim().split("\\s+");
                 ui.showHorizontalLine();
-                Command command = Command.fromKeyword(parts[0]);
+                Command command = Parser.parseCommand(input);
                 switch (command) {
                     case BYE:
                         ui.showOutro();
@@ -50,31 +41,27 @@ public class Charlie {
                         listTask(ui);
                         break;
                     case ON:
-                        if (parts.length != 2) {
-                            throw new CharlieException(
-                                    "Please provide exactly one date in yyyy-MM-dd format.");
-                        }
-                        checkDate(parts[1], ui);
+                        checkDate(Parser.parseDate(input), ui);
                         break;
                     case MARK: {
-                        int index = parseTaskIndex(parts);
+                        int index = Parser.parseTaskIndex(input, taskCount);
                         mark(index, ui);
                         break;
                     }
                     case UNMARK: {
-                        int index = parseTaskIndex(parts);
+                        int index = Parser.parseTaskIndex(input, taskCount);
                         unmark(index, ui);
                         break;
                     }
                     case DELETE: {
-                        int index = parseTaskIndex(parts);
+                        int index = Parser.parseTaskIndex(input, taskCount);
                         deleteTask(index, ui);
                         break;
                     }
                     case TODO:
                     case DEADLINE:
                     case EVENT: {
-                        Task newTask = parseTask(input, command);
+                        Task newTask = Parser.parseTask(input, command);
                         addTask(newTask, ui);
                         break;
                     }
@@ -113,17 +100,10 @@ public class Charlie {
      * Prints deadlines and events that occur on the specified date.
      * Deadlines must match the date exactly, while events may span the date.
      *
-     * @param input date to check in yyyy-MM-dd format
+     * @param searchDate date to check
+     * @param ui user interface used to display matching tasks
      */
-    private static void checkDate(String input, Ui ui) {
-        LocalDate searchDate;
-        try {
-            searchDate = LocalDate.parse(input);
-        } catch (DateTimeParseException e) {
-            throw new CharlieException(
-                    "Date must be a valid date in yyyy-MM-dd format.");
-        }
-
+    private static void checkDate(LocalDate searchDate, Ui ui) {
         int matchCount = 0;
         ui.showMessage("Here are the tasks occurring on " + searchDate + ":");
 
@@ -150,81 +130,6 @@ public class Charlie {
         }
     }
 
-    /**
-     * Converts a task command into the corresponding type of task.
-     * Throws a {@link CharlieException} when the command does not have the expected format.
-     *
-     * @param input complete user input containing the task details
-     * @param command type of task to create
-     * @return a task containing the parsed details
-     */
-    private static Task parseTask(String input, Command command) {
-        String[] commandAndArguments = input.trim().split("\\s+", 2);
-        if (commandAndArguments.length < 2) {
-            throw new CharlieException("The task description cannot be empty.");
-        }
-
-        String arguments = commandAndArguments[1];
-
-        if (command == Command.TODO) {
-            return new Todo(arguments, false);
-        } else if (command == Command.DEADLINE) {
-            int byPosition = arguments.indexOf("/by");
-            if (byPosition == -1) {
-                throw new CharlieException("A deadline must include /by followed by a date.");
-            }
-            String description = arguments.substring(0, byPosition).trim();
-            if (description.isEmpty()) {
-                throw new CharlieException("Description cannot be empty.");
-            }
-            String deadlineText = arguments.substring(byPosition + "/by".length()).trim();
-            if (deadlineText.isBlank()) {
-                throw new CharlieException("Deadline cannot be empty.");
-            }
-            try {
-                LocalDate deadline = LocalDate.parse(deadlineText);
-                return new Deadline(description, false, deadline);
-            } catch (DateTimeParseException e) {
-                throw new CharlieException(
-                        "Deadline must be a valid date in yyyy-MM-dd format.");
-            }
-        } else { // readCommand only passes EVENT as the remaining command type.
-            int fromPosition = arguments.indexOf("/from");
-            int toPosition = arguments.indexOf("/to");
-            if (fromPosition == -1 || toPosition == -1) {
-                throw new CharlieException("Need to include /from or /to fields.");
-            } else if (fromPosition > toPosition) {
-                throw new CharlieException("Invalid argument format: /from should appear before /to");
-            }
-
-            String description = arguments.substring(0, fromPosition).trim();
-            if (description.isEmpty()) {
-                throw new CharlieException("Description cannot be empty");
-            }
-            String fromText = arguments.substring(
-                    fromPosition + "/from".length(), toPosition).trim();
-            String toText = arguments.substring(toPosition + "/to".length()).trim();
-            if (fromText.isBlank() || toText.isBlank()) {
-                throw new CharlieException("from/to fields cannot be empty.");
-            }
-
-            DateTimeFormatter formatter = DateTimeFormatter
-                    .ofPattern("uuuu-MM-dd HHmm")
-                    .withResolverStyle(ResolverStyle.STRICT);
-            try {
-                LocalDateTime from = LocalDateTime.parse(fromText, formatter);
-                LocalDateTime to = LocalDateTime.parse(toText, formatter);
-                if (!from.isBefore(to)) {
-                    throw new CharlieException("Event end must be after its start.");
-                }
-                return new Event(description, false, from, to);
-            } catch (DateTimeParseException e) {
-                throw new CharlieException(
-                        "Event dates must use the yyyy-MM-dd HHmm format.");
-            }
-        }
-    }
-
     private static void addTask(Task task, Ui ui) {
         TASKS.add(task);
         taskCount++;
@@ -232,37 +137,6 @@ public class Charlie {
         ui.showMessage("Got it. I've added this task:");
         ui.showMessage("  " + task.toString());
         ui.showMessage("Now you have " + taskCount + " tasks in the list.");
-    }
-
-    /**
-     * Included this to separate parsing from readCommand()
-     * Takes in the parsed String parts, and checks if the 2nd input is a valid int
-     * Returns the index for mark / unmark
-     * Throws a {@link CharlieException} with invalid input
-     */
-    private static int parseTaskIndex(String[] parts) {
-        if (parts.length != 2) {
-            throw new CharlieException("Please provide exactly one task number.");
-        }
-
-        int taskNumber;
-
-        try {
-            taskNumber = Integer.parseInt(parts[1]);
-        } catch (NumberFormatException e) {
-            throw new CharlieException("Please enter a valid task number.");
-        }
-
-        if (taskCount <= 0) {
-            throw new CharlieException("There are no tasks in the list.");
-        }
-
-        if (taskNumber < 1 || taskNumber > taskCount) {
-            throw new CharlieException(
-                    "Please enter a task number from 1 to " + taskCount + ".");
-        }
-
-        return taskNumber - 1;
     }
 
     private static void deleteTask(int index, Ui ui) {
