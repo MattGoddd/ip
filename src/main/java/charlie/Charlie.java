@@ -60,9 +60,14 @@ public class Charlie {
                 ui.showHorizontalLine();
                 CommandType commandType = Parser.parseCommand(input);
                 switch (commandType) {
-                    case BYE:
-                        ui.showOutro();
-                        break commandLoop;
+                    case BYE: {
+                        Command exitCommand = new ExitCommand();
+                        exitCommand.execute(tasks, ui, storage);
+                        if (exitCommand.isExit()) {
+                            break commandLoop;
+                        }
+                        break;
+                    }
                     case LIST:
                         new ListCommand().execute(tasks, ui, storage);
                         break;

@@ -102,6 +102,28 @@ bye
     ____________________________________________________________
 ```
 
+### UI-COMMAND-EXIT-01 — Terminate after the exit command
+
+**Aim:** Verify that Charlie terminates immediately after responding to `bye`.
+
+**Rationale:** Extracting exit behavior into `ExitCommand` must preserve both the farewell and the exit signal.
+
+Run this case in a separate fresh Charlie process with no save file. Enter:
+
+```text
+bye
+```
+
+**Expected output after entering `bye`:**
+
+```text
+    ____________________________________________________________
+    Goodbye! See you next time.
+    ____________________________________________________________
+```
+
+**Expected process state:** Charlie terminates without waiting for another command.
+
 ## Session setup
 
 - Required Java version: Java 25
