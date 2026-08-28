@@ -50,8 +50,10 @@ public class TaskList {
      *
      * @param index Zero-based task index.
      * @return Marked task.
+     * @throws CharlieException If the index does not identify an existing task.
      */
     public Task mark(int index) {
+        validateIndex(index);
         Task task = tasks.get(index);
         task.markDone();
         return task;
@@ -62,8 +64,10 @@ public class TaskList {
      *
      * @param index Zero-based task index.
      * @return Unmarked task.
+     * @throws CharlieException If the index does not identify an existing task.
      */
     public Task unmark(int index) {
+        validateIndex(index);
         Task task = tasks.get(index);
         task.markUndone();
         return task;
@@ -74,9 +78,27 @@ public class TaskList {
      *
      * @param index Zero-based task index.
      * @return Deleted task.
+     * @throws CharlieException If the index does not identify an existing task.
      */
     public Task delete(int index) {
+        validateIndex(index);
         return tasks.remove(index);
+    }
+
+    /**
+     * Verifies that a zero-based task index exists in the current list.
+     *
+     * @param index Zero-based task index to validate.
+     * @throws CharlieException If the task list is empty or the index is outside it.
+     */
+    private void validateIndex(int index) {
+        if (tasks.isEmpty()) {
+            throw new CharlieException("There are no tasks in the list.");
+        }
+        if (index < 0 || index >= tasks.size()) {
+            throw new CharlieException(
+                    "Please enter a task number from 1 to " + tasks.size() + ".");
+        }
     }
 
     /**

@@ -253,6 +253,26 @@ delete 1
     ____________________________________________________________
 ```
 
+## UI-COMMAND-INDEX-01 — Reject marking when the task list is empty
+
+**Aim:** Verify that `mark` reports an empty task list before any new tasks are added.
+
+**Rationale:** Moving range validation into `TaskList` must preserve the dedicated empty-list error.
+
+**Input:**
+
+```text
+mark 1
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    There are no tasks in the list.
+    ____________________________________________________________
+```
+
 ## UI-01 — Add a todo
 
 **Aim:** Verify that `todo` creates an incomplete todo with the correct description and confirmation.
@@ -934,6 +954,26 @@ mark abc
 
 ```text
 mark 999
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Please enter a task number from 1 to 2.
+    ____________________________________________________________
+```
+
+## UI-COMMAND-INDEX-02 — Reject task number zero
+
+**Aim:** Verify that `mark 0` is rejected as below the one-based task range.
+
+**Rationale:** After range validation moves from `Parser` to `TaskList`, zero must still produce the friendly range error.
+
+**Input:**
+
+```text
+mark 0
 ```
 
 **Expected output:**

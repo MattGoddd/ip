@@ -50,14 +50,13 @@ public final class Parser {
     }
 
     /**
-     * Parses and validates the one-based task number supplied to a task command.
+     * Parses the one-based task number supplied to a task command.
      *
      * @param input Complete user input.
-     * @param taskCount Current number of tasks.
      * @return Zero-based task index.
-     * @throws CharlieException If the input does not identify an existing task.
+     * @throws CharlieException If the input does not contain exactly one numeric task number.
      */
-    public static int parseTaskIndex(String input, int taskCount) {
+    public static int parseTaskIndex(String input) {
         String[] parts = input.trim().split("\\s+");
         if (parts.length != 2) {
             throw new CharlieException("Please provide exactly one task number.");
@@ -70,13 +69,6 @@ public final class Parser {
             throw new CharlieException("Please enter a valid task number.");
         }
 
-        if (taskCount <= 0) {
-            throw new CharlieException("There are no tasks in the list.");
-        }
-        if (taskNumber < 1 || taskNumber > taskCount) {
-            throw new CharlieException(
-                    "Please enter a task number from 1 to " + taskCount + ".");
-        }
         return taskNumber - 1;
     }
 

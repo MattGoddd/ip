@@ -73,17 +73,17 @@ public class Charlie {
                         new FindCommand(Parser.parseDate(input)).execute(tasks, ui, storage);
                         break;
                     case MARK: {
-                        int index = Parser.parseTaskIndex(input, tasks.getSize());
+                        int index = Parser.parseTaskIndex(input);
                         new MarkCommand(index).execute(tasks, ui, storage);
                         break;
                     }
                     case UNMARK: {
-                        int index = Parser.parseTaskIndex(input, tasks.getSize());
+                        int index = Parser.parseTaskIndex(input);
                         new UnmarkCommand(index).execute(tasks, ui, storage);
                         break;
                     }
                     case DELETE: {
-                        int index = Parser.parseTaskIndex(input, tasks.getSize());
+                        int index = Parser.parseTaskIndex(input);
                         new DeleteCommand(index).execute(tasks, ui, storage);
                         break;
                     }
