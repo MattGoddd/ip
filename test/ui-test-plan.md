@@ -19,6 +19,7 @@ D | Not done | missing deadline
 Start Charlie, then enter:
 
 ```text
+list
 bye
 ```
 
@@ -26,6 +27,14 @@ bye
 
 ```text
 Error loading saved tasks: Invalid number of fields in saved task.
+```
+
+**Expected output after entering `list`:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    ____________________________________________________________
 ```
 
 **Expected output after entering `bye`:**
