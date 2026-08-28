@@ -81,7 +81,7 @@ public class Charlie {
                     }
                     case UNMARK: {
                         int index = Parser.parseTaskIndex(input, tasks.getSize());
-                        unmark(index);
+                        new UnmarkCommand(index).execute(tasks, ui, storage);
                         break;
                     }
                     case DELETE: {
@@ -104,13 +104,6 @@ public class Charlie {
             }
             ui.showHorizontalLine();
         }
-    }
-
-    private void unmark(int index) {
-        Task currentTask = tasks.unmark(index);
-        storage.save(tasks.getTasks());
-        ui.showMessage("OK, I've marked this task not done yet:");
-        ui.showMessage("  " + currentTask.toString());
     }
 
     /**

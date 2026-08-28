@@ -593,6 +593,29 @@ unmark 2
     ____________________________________________________________
 ```
 
+## UI-COMMAND-UNMARK-01 — List tasks after unmarking
+
+**Aim:** Verify that listing immediately after `unmark` shows the selected task as not done.
+
+**Rationale:** Extracting unmark behavior into `UnmarkCommand` must retain the mutation in `TaskList`.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] borrow book
+    2.[D][ ] return book (by: Sep 20 2026)
+    3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
+    ____________________________________________________________
+```
+
 ## UI-09 — Delete the third task
 
 **Aim:** Verify that `delete 3` removes the selected event and reports the reduced task count.
