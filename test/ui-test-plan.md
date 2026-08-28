@@ -64,6 +64,35 @@ Error loading saved tasks: Could not read the saved task file.
 
 After this case, remove the `data/charlie.txt` directory before preparing the main session fixture.
 
+### UI-STORAGE-01 — Start without a save file
+
+**Aim:** Verify that Charlie starts with an empty task list when no save file exists.
+
+**Rationale:** A missing save file represents a first-time user and must not be treated as a loading error.
+
+Before starting Charlie, ensure that `data/charlie.txt` does not exist. Then enter:
+
+```text
+list
+bye
+```
+
+**Expected output after entering `list`:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    ____________________________________________________________
+```
+
+**Expected output after entering `bye`:**
+
+```text
+    ____________________________________________________________
+    Goodbye! See you next time.
+    ____________________________________________________________
+```
+
 ## Session setup
 
 - Required Java version: Java 25

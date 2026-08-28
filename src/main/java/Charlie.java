@@ -1,27 +1,24 @@
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Starts the CHARLIE chatbot application.
  */
 public class Charlie {
     private static final ArrayList<Task> TASKS = new ArrayList<>();
+    private static final Storage STORAGE = new Storage("data/charlie.txt");
     private static int taskCount = 0;
-    private static final Path SAVE_PATH = Path.of("data", "charlie.txt");
 
     public static void main(String[] args) {
         try (Ui ui = new Ui()) {
             ui.showIntro();
             try {
-                loadTasks();
+                TASKS.addAll(STORAGE.load());
+                taskCount = TASKS.size();
             } catch (CharlieException e) {
                 ui.showLoadingError(e.getMessage());
             }
@@ -92,7 +89,7 @@ public class Charlie {
     private static void mark(int index, Ui ui) {
         Task curTask = TASKS.get(index);
         curTask.markDone();
-        save();
+        STORAGE.save(TASKS);
         ui.showMessage("Nice! I've marked this task as done:");
         ui.showMessage("  " + curTask.toString());
     }
@@ -100,7 +97,7 @@ public class Charlie {
     private static void unmark(int index, Ui ui) {
         Task curTask = TASKS.get(index);
         curTask.markUndone();
-        save();
+        STORAGE.save(TASKS);
         ui.showMessage("OK, I've marked this task not done yet:");
         ui.showMessage("  " + curTask.toString());
     }
@@ -231,7 +228,7 @@ public class Charlie {
     private static void addTask(Task task, Ui ui) {
         TASKS.add(task);
         taskCount++;
-        save();
+        STORAGE.save(TASKS);
         ui.showMessage("Got it. I've added this task:");
         ui.showMessage("  " + task.toString());
         ui.showMessage("Now you have " + taskCount + " tasks in the list.");
@@ -271,90 +268,10 @@ public class Charlie {
     private static void deleteTask(int index, Ui ui) {
         Task deletedTask = TASKS.remove(index);
         taskCount--;
-        save();
+        STORAGE.save(TASKS);
         ui.showMessage("Noted. I've removed this task:");
         ui.showMessage("  " + deletedTask.toString());
         ui.showMessage("Now you have " + taskCount + " tasks in the list.");
     }
 
-    /**
-     *  Saves the list details whenever a command is run into charlie.txt
-     *
-     */
-    private static void save() {
-        StringBuilder content = new StringBuilder();
-        for (Task task : TASKS) {
-            content.append(task.saveFileFormat()).append(System.lineSeparator());
-        }
-        try {
-            Files.createDirectories(SAVE_PATH.getParent());
-            Files.writeString(SAVE_PATH, content.toString());
-        } catch (IOException e) {
-            throw new RuntimeException("Could not save tasks.", e);
-        }
-    }
-
-    /**
-     * Loads all saved tasks into memory when Charlie starts.
-     * A missing save file represents a user who does not have any saved tasks yet.
-     */
-    private static void loadTasks() {
-        // Instance when the file is not created, then we return an empty List to TASKS
-        if (!Files.exists(SAVE_PATH)) {
-            return;
-        }
-
-        try {
-            List<String> savedLines = Files.readAllLines(SAVE_PATH);
-            for (String line : savedLines) {
-                if (!line.isBlank()) {
-                    TASKS.add(parseSavedTask(line));
-                }
-            }
-            taskCount = TASKS.size();
-        } catch (IOException e) {
-            throw new CharlieException("Could not read the saved task file.");
-        }
-    }
-
-    /**
-     * Recreates one task from a line in Charlie's save-file format.
-     *
-     * @param line saved representation of one task
-     * @return the reconstructed task
-     */
-    private static Task parseSavedTask(String line) {
-        String[] fields = line.split(" \\| ", -1);
-        int expectedFieldCount = switch (fields[0]) {
-            case "T" -> 3;
-            case "D" -> 4;
-            case "E" -> 5;
-            default -> throw new CharlieException("Unknown saved task type: " + fields[0]);
-        };
-        if (fields.length != expectedFieldCount) {
-            throw new CharlieException("Invalid number of fields in saved task.");
-        }
-
-        boolean isDone = fields[1].equals("Done");
-
-        try {
-            return switch (fields[0]) {
-                case "T" -> new Todo(fields[2], isDone);
-                case "D" -> new Deadline(fields[2], isDone, LocalDate.parse(fields[3]));
-                case "E" -> {
-                    try {
-                        yield new Event(fields[2], isDone,
-                                LocalDateTime.parse(fields[3]),
-                                LocalDateTime.parse(fields[4]));
-                    } catch (DateTimeParseException e) {
-                        throw new CharlieException("Saved event contains an invalid date-time.");
-                    }
-                }
-                default -> throw new AssertionError("Task type was validated above.");
-            };
-        } catch (DateTimeParseException e) {
-            throw new CharlieException(
-                    "Deadline must be a valid date in yyyy-MM-dd format.");
-        }
-    }
 }
