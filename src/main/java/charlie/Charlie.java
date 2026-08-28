@@ -1,7 +1,5 @@
 package charlie;
 
-import java.time.LocalDate;
-
 /**
  * Starts the CHARLIE chatbot application.
  */
@@ -72,7 +70,7 @@ public class Charlie {
                         new ListCommand().execute(tasks, ui, storage);
                         break;
                     case ON:
-                        showTasksOnDate(Parser.parseDate(input));
+                        new FindCommand(Parser.parseDate(input)).execute(tasks, ui, storage);
                         break;
                     case MARK: {
                         int index = Parser.parseTaskIndex(input, tasks.getSize());
@@ -103,25 +101,6 @@ public class Charlie {
                 ui.showMessage(e.getMessage());
             }
             ui.showHorizontalLine();
-        }
-    }
-
-    /**
-     * Prints deadlines and events that occur on the specified date.
-     * Deadlines must match the date exactly, while events may span the date.
-     *
-     * @param searchDate Date to check.
-     */
-    private void showTasksOnDate(LocalDate searchDate) {
-        ui.showMessage("Here are the tasks occurring on " + searchDate + ":");
-        int matchCount = 0;
-        for (Task task : tasks.findOnDate(searchDate)) {
-            matchCount++;
-            ui.showMessage(matchCount + "." + task);
-        }
-
-        if (matchCount == 0) {
-            ui.showMessage("No deadlines or events occur on this date.");
         }
     }
 

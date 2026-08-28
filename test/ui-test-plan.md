@@ -506,6 +506,29 @@ on 2026-02-30
     ____________________________________________________________
 ```
 
+## UI-COMMAND-FIND-01 — Keep tasks unchanged after date searches
+
+**Aim:** Verify that listing after the date searches displays every original task unchanged.
+
+**Rationale:** Extracting date-search behavior into `FindCommand` must keep the operation read-only.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] borrow book
+    2.[D][ ] return book (by: Sep 20 2026)
+    3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
+    ____________________________________________________________
+```
+
 ## UI-05 — Reject an invalid command
 
 **Aim:** Verify that an unknown command displays a helpful error without terminating Charlie.
