@@ -64,7 +64,7 @@ public class Charlie {
                         ui.showOutro();
                         break commandLoop;
                     case LIST:
-                        showTasks();
+                        new ListCommand().execute(tasks, ui, storage);
                         break;
                     case ON:
                         showTasksOnDate(Parser.parseDate(input));
@@ -113,13 +113,6 @@ public class Charlie {
         storage.save(tasks.getTasks());
         ui.showMessage("OK, I've marked this task not done yet:");
         ui.showMessage("  " + currentTask.toString());
-    }
-
-    private void showTasks() {
-        ui.showMessage("Here are the tasks in your list:");
-        for (int i = 0; i < tasks.getSize(); i++) {
-            ui.showMessage((i + 1) + "." + tasks.get(i));
-        }
     }
 
     /**
