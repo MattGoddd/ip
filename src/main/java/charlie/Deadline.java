@@ -23,6 +23,11 @@ public class Deadline extends Task {
     }
 
     @Override
+    public Task copyWithStatus(boolean isDone) {
+        return new Deadline(description, isDone, deadline);
+    }
+
+    @Override
     public String toString() {
         String formattedDeadline = this.deadline.format(
                 DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH));

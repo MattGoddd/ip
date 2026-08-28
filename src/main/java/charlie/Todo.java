@@ -16,6 +16,11 @@ public class Todo extends Task {
     }
 
     @Override
+    public Task copyWithStatus(boolean isDone) {
+        return new Todo(description, isDone);
+    }
+
+    @Override
     public String toString() {
         return "[T]" + super.toString();
     }

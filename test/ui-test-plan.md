@@ -71,7 +71,65 @@ Error loading saved tasks: Could not read the saved task file.
     ____________________________________________________________
 ```
 
-After this case, remove the `data/charlie.txt` directory before preparing the main session fixture.
+Leave the `data/charlie.txt` directory in place for the following save-error case.
+
+### UI-STORAGE-02 — Handle a save-file write failure
+
+**Aim:** Verify that an I/O failure while saving tasks reports a friendly error.
+
+**Rationale:** A save failure should be handled by Charlie's command loop instead of exposing a Java stack trace or terminating the program.
+
+Using the `data/charlie.txt` directory left by `UI-STARTUP-02`, start a fresh Charlie process. Then enter:
+
+```text
+todo unsaved task
+list
+bye
+```
+
+**Expected startup output after the banner and greeting:**
+
+```text
+Error loading saved tasks: Could not read the saved task file.
+```
+
+**Expected output after entering `todo unsaved task`:**
+
+```text
+    ____________________________________________________________
+    Could not save tasks.
+    ____________________________________________________________
+```
+
+### UI-STORAGE-03 — Keep the list empty after a failed addition
+
+**Aim:** Verify that a task is not added to the in-memory list when it cannot be saved.
+
+**Rationale:** The saved file and current task list should represent the same state after a failed addition.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    ____________________________________________________________
+```
+
+**Expected output after entering `bye`:**
+
+```text
+    ____________________________________________________________
+    Goodbye! See you next time.
+    ____________________________________________________________
+```
+
+After this case, remove the `data/charlie.txt` directory before continuing.
 
 ### UI-STORAGE-01 — Start without a save file
 
@@ -123,6 +181,155 @@ bye
 ```
 
 **Expected process state:** Charlie terminates without waiting for another command.
+
+## Save-failure consistency session
+
+Run the cases in this section in one fresh Charlie process before the main session. First, create `data/charlie.txt` with exactly these lines:
+
+```text
+T | Not done | stable task
+T | Done | completed task
+```
+
+Start Charlie and wait until it has loaded the tasks. Then move the save file aside and create an empty directory named `data/charlie.txt`. This forces subsequent save attempts to fail while preserving the two tasks already loaded in memory.
+
+### UI-STORAGE-CONSISTENCY-STARTUP — Load tasks before forcing save failures
+
+**Aim:** Verify that the consistency session starts normally with its two-task fixture.
+
+**Expected startup output:**
+
+```text
+    ____________________________________________________________
+      ____ _   _    _    ____  _     ___ _____
+     / ___| | | |  / \  |  _ \| |   |_ _| ____|
+    | |   | |_| | / _ \ | |_) | |    | ||  _|
+    | |___|  _  |/ ___ \|  _ <| |___ | || |___
+     \____|_| |_/_/   \_\_| \_\_____|___|_____|
+    Hello! I'm Charlie!
+    What do you want to do today?
+    ____________________________________________________________
+```
+
+### UI-STORAGE-CONSISTENCY-01 — Reject marking when saving fails
+
+**Input:**
+
+```text
+mark 1
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Could not save tasks.
+    ____________________________________________________________
+```
+
+### UI-STORAGE-CONSISTENCY-02 — Keep status unchanged after failed marking
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] stable task
+    2.[T][X] completed task
+    ____________________________________________________________
+```
+
+### UI-STORAGE-CONSISTENCY-03 — Reject unmarking when saving fails
+
+**Input:**
+
+```text
+unmark 2
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Could not save tasks.
+    ____________________________________________________________
+```
+
+### UI-STORAGE-CONSISTENCY-04 — Keep status unchanged after failed unmarking
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] stable task
+    2.[T][X] completed task
+    ____________________________________________________________
+```
+
+### UI-STORAGE-CONSISTENCY-05 — Reject deletion when saving fails
+
+**Input:**
+
+```text
+delete 1
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Could not save tasks.
+    ____________________________________________________________
+```
+
+### UI-STORAGE-CONSISTENCY-06 — Keep tasks after failed deletion
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] stable task
+    2.[T][X] completed task
+    ____________________________________________________________
+```
+
+### UI-STORAGE-CONSISTENCY-07 — Exit the consistency session
+
+**Input:**
+
+```text
+bye
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Goodbye! See you next time.
+    ____________________________________________________________
+```
+
+After this session, remove the `data/charlie.txt` directory before preparing the main session fixture.
 
 ## Session setup
 

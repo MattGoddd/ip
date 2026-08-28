@@ -32,6 +32,14 @@ public abstract class Task {
         this.isDone = false;
     }
 
+    /**
+     * Creates an independent copy of this task with the requested completion status.
+     *
+     * @param isDone Completion status for the copy.
+     * @return Copied task with the requested status.
+     */
+    public abstract Task copyWithStatus(boolean isDone);
+
     @Override
     public String toString() {
         String status = (this.isDone) ? "X" : " ";

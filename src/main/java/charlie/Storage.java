@@ -53,6 +53,7 @@ public class Storage {
      * Saves every task using Charlie's line-based file format.
      *
      * @param tasks Tasks to save.
+     * @throws CharlieException If the tasks cannot be written to the save file.
      */
     public void save(List<Task> tasks) {
         StringBuilder content = new StringBuilder();
@@ -63,7 +64,7 @@ public class Storage {
             Files.createDirectories(filePath.getParent());
             Files.writeString(filePath, content.toString());
         } catch (IOException e) {
-            throw new RuntimeException("Could not save tasks.", e);
+            throw new CharlieException("Could not save tasks.");
         }
     }
 

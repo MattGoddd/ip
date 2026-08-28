@@ -26,6 +26,11 @@ public class Event extends Task {
     }
 
     @Override
+    public Task copyWithStatus(boolean isDone) {
+        return new Event(description, isDone, from, to);
+    }
+
+    @Override
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
                 "MMM dd yyyy, h:mm a", Locale.ENGLISH);

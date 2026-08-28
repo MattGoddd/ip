@@ -36,6 +36,18 @@ public class TaskList {
     }
 
     /**
+     * Returns the task state that would result from adding a task.
+     *
+     * @param task Task to include in the proposed state.
+     * @return Proposed tasks without changing this task list.
+     */
+    public List<Task> getTasksAfterAdding(Task task) {
+        List<Task> proposedTasks = new ArrayList<>(tasks);
+        proposedTasks.add(task);
+        return List.copyOf(proposedTasks);
+    }
+
+    /**
      * Returns the task at the given zero-based index.
      *
      * @param index Zero-based task index.
@@ -83,6 +95,35 @@ public class TaskList {
     public Task delete(int index) {
         validateIndex(index);
         return tasks.remove(index);
+    }
+
+    /**
+     * Returns the task state that would result from deleting a task.
+     *
+     * @param index Zero-based index of the task to omit.
+     * @return Proposed tasks without changing this task list.
+     * @throws CharlieException If the index does not identify an existing task.
+     */
+    public List<Task> getTasksAfterDeleting(int index) {
+        validateIndex(index);
+        List<Task> proposedTasks = new ArrayList<>(tasks);
+        proposedTasks.remove(index);
+        return List.copyOf(proposedTasks);
+    }
+
+    /**
+     * Returns the task state that would result from changing one task's status.
+     *
+     * @param index Zero-based index of the task to copy with a new status.
+     * @param isDone Completion status for the copied task.
+     * @return Proposed tasks without changing this task list.
+     * @throws CharlieException If the index does not identify an existing task.
+     */
+    public List<Task> getTasksAfterChangingStatus(int index, boolean isDone) {
+        validateIndex(index);
+        List<Task> proposedTasks = new ArrayList<>(tasks);
+        proposedTasks.set(index, tasks.get(index).copyWithStatus(isDone));
+        return List.copyOf(proposedTasks);
     }
 
     /**
