@@ -8,146 +8,107 @@ import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 /**
  * Starts the CHARLIE chatbot application.
  */
 public class Charlie {
-    private static final String BOT_NAME = "Charlie";
-    private static final String HORIZONTAL_LINE = "____________________________________________________________";
-    private static final String INDENT = "    ";
     private static final ArrayList<Task> TASKS = new ArrayList<>();
     private static int taskCount = 0;
     private static final Path SAVE_PATH = Path.of("data", "charlie.txt");
 
     public static void main(String[] args) {
-        String banner = "  ____ _   _    _    ____  _     ___ _____\n"
-                + " / ___| | | |  / \\  |  _ \\| |   |_ _| ____|\n"
-                + "| |   | |_| | / _ \\ | |_) | |    | ||  _|\n"
-                + "| |___|  _  |/ ___ \\|  _ <| |___ | || |___\n"
-                + " \\____|_| |_/_/   \\_\\_| \\_\\_____|___|_____|\n";
-        intro(banner);
-        try {
-            loadTasks();
-        } catch (CharlieException e) {
-            System.out.println("Error loading saved tasks: " + e.getMessage());
+        try (Ui ui = new Ui()) {
+            ui.showIntro();
+            try {
+                loadTasks();
+            } catch (CharlieException e) {
+                ui.showLoadingError(e.getMessage());
+            }
+            readCommand(ui);
         }
-        readCommand();
-    }
-
-    private static void horizontalLine() {
-        System.out.println(INDENT + HORIZONTAL_LINE);
-    }
-
-    private static void printBotLine(String message) {
-        System.out.println(INDENT + message);
-    }
-
-    /**
-     * Prints every row of the banner using the standard bot indentation.
-     */
-    private static void printBanner(String banner) {
-        for (String line : banner.split("\n")) {
-            printBotLine(line);
-        }
-    }
-
-    private static void intro(String banner) {
-        horizontalLine();
-        printBanner(banner);
-        printBotLine("Hello! I'm " + BOT_NAME + "!");
-        printBotLine("What do you want to do today?");
-        horizontalLine();
-    }
-
-    private static void outro() {
-        printBotLine("Goodbye! See you next time.");
-        horizontalLine();
     }
 
     /**
      * Reads commands until the user enters {@code bye}.
      * Other input is stored as a task, while {@code list} displays all stored tasks.
      */
-    private static void readCommand() {
-        try (Scanner scanner = new Scanner(System.in)) {
-            label:
-            while (scanner.hasNextLine()) {
-                try {
-                    String input = scanner.nextLine();
-                    if (input.isBlank()) {
-                        horizontalLine();
-                        throw new CharlieException("Please enter a command.");
-                    }
-                    String[] parts = input.trim().split("\\s+");
-                    horizontalLine();
-                    Command command = Command.fromKeyword(parts[0]);
-                    switch (command) {
-                        case BYE:
-                            outro();
-                            break label;
-                        case LIST:
-                            listTask();
-                            break;
-                        case ON:
-                            if (parts.length != 2) {
-                                throw new CharlieException(
-                                        "Please provide exactly one date in yyyy-MM-dd format.");
-                            }
-                            checkDate(parts[1]);
-                            break;
-                        case MARK: {
-                            int index = parseTaskIndex(parts);
-                            mark(index);
-                            break;
-                        }
-                        case UNMARK: {
-                            int index = parseTaskIndex(parts);
-                            unmark(index);
-                            break;
-                        }
-                        case DELETE: {
-                            int index = parseTaskIndex(parts);
-                            deleteTask(index);
-                            break;
-                        }
-                        case TODO:
-                        case DEADLINE:
-                        case EVENT: {
-                            Task newTask = parseTask(input, command);
-                            addTask(newTask);
-                            break;
-                        }
-                    }
-                } catch (CharlieException e) {
-                    printBotLine(e.getMessage());
+    private static void readCommand(Ui ui) {
+        label:
+        while (ui.hasNextCommand()) {
+            try {
+                String input = ui.readCommand();
+                if (input.isBlank()) {
+                    ui.showHorizontalLine();
+                    throw new CharlieException("Please enter a command.");
                 }
-                horizontalLine();
+                String[] parts = input.trim().split("\\s+");
+                ui.showHorizontalLine();
+                Command command = Command.fromKeyword(parts[0]);
+                switch (command) {
+                    case BYE:
+                        ui.showOutro();
+                        break label;
+                    case LIST:
+                        listTask(ui);
+                        break;
+                    case ON:
+                        if (parts.length != 2) {
+                            throw new CharlieException(
+                                    "Please provide exactly one date in yyyy-MM-dd format.");
+                        }
+                        checkDate(parts[1], ui);
+                        break;
+                    case MARK: {
+                        int index = parseTaskIndex(parts);
+                        mark(index, ui);
+                        break;
+                    }
+                    case UNMARK: {
+                        int index = parseTaskIndex(parts);
+                        unmark(index, ui);
+                        break;
+                    }
+                    case DELETE: {
+                        int index = parseTaskIndex(parts);
+                        deleteTask(index, ui);
+                        break;
+                    }
+                    case TODO:
+                    case DEADLINE:
+                    case EVENT: {
+                        Task newTask = parseTask(input, command);
+                        addTask(newTask, ui);
+                        break;
+                    }
+                }
+            } catch (CharlieException e) {
+                ui.showMessage(e.getMessage());
             }
+            ui.showHorizontalLine();
         }
     }
 
-    private static void mark(int index) {
+    private static void mark(int index, Ui ui) {
         Task curTask = TASKS.get(index);
         curTask.markDone();
         save();
-        printBotLine("Nice! I've marked this task as done:");
-        printBotLine("  " + curTask.toString());
+        ui.showMessage("Nice! I've marked this task as done:");
+        ui.showMessage("  " + curTask.toString());
     }
 
-    private static void unmark(int index) {
+    private static void unmark(int index, Ui ui) {
         Task curTask = TASKS.get(index);
         curTask.markUndone();
         save();
-        printBotLine("OK, I've marked this task not done yet:");
-        printBotLine("  " + curTask.toString());
+        ui.showMessage("OK, I've marked this task not done yet:");
+        ui.showMessage("  " + curTask.toString());
     }
 
-    private static void listTask() {
-        printBotLine("Here are the tasks in your list:");
+    private static void listTask(Ui ui) {
+        ui.showMessage("Here are the tasks in your list:");
         for (int i = 0; i < taskCount; i++) {
-            printBotLine((i + 1) + "." + TASKS.get(i));
+            ui.showMessage((i + 1) + "." + TASKS.get(i));
         }
     }
 
@@ -157,7 +118,7 @@ public class Charlie {
      *
      * @param input date to check in yyyy-MM-dd format
      */
-    private static void checkDate(String input) {
+    private static void checkDate(String input, Ui ui) {
         LocalDate searchDate;
         try {
             searchDate = LocalDate.parse(input);
@@ -167,7 +128,7 @@ public class Charlie {
         }
 
         int matchCount = 0;
-        printBotLine("Here are the tasks occurring on " + searchDate + ":");
+        ui.showMessage("Here are the tasks occurring on " + searchDate + ":");
 
         for (Task task : TASKS) {
             boolean matches = false;
@@ -183,12 +144,12 @@ public class Charlie {
 
             if (matches) {
                 matchCount++;
-                printBotLine(matchCount + "." + task);
+                ui.showMessage(matchCount + "." + task);
             }
         }
 
         if (matchCount == 0) {
-            printBotLine("No deadlines or events occur on this date.");
+            ui.showMessage("No deadlines or events occur on this date.");
         }
     }
 
@@ -267,13 +228,13 @@ public class Charlie {
         }
     }
 
-    private static void addTask(Task task) {
+    private static void addTask(Task task, Ui ui) {
         TASKS.add(task);
         taskCount++;
         save();
-        printBotLine("Got it. I've added this task:");
-        printBotLine("  " + task.toString());
-        printBotLine("Now you have " + taskCount + " tasks in the list.");
+        ui.showMessage("Got it. I've added this task:");
+        ui.showMessage("  " + task.toString());
+        ui.showMessage("Now you have " + taskCount + " tasks in the list.");
     }
 
     /**
@@ -307,13 +268,13 @@ public class Charlie {
         return taskNumber - 1;
     }
 
-    private static void deleteTask(int index) {
+    private static void deleteTask(int index, Ui ui) {
         Task deletedTask = TASKS.remove(index);
         taskCount--;
         save();
-        printBotLine("Noted. I've removed this task:");
-        printBotLine("  " + deletedTask.toString());
-        printBotLine("Now you have " + taskCount + " tasks in the list.");
+        ui.showMessage("Noted. I've removed this task:");
+        ui.showMessage("  " + deletedTask.toString());
+        ui.showMessage("Now you have " + taskCount + " tasks in the list.");
     }
 
     /**

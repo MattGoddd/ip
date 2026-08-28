@@ -82,6 +82,28 @@ E | Done | loaded event | 2026-09-18T09:00 | 2026-09-18T10:00
 - Each expected-output block starts with the horizontal line printed after entering the command and ends with that command's final horizontal line.
 - Console input echo is part of the transcript but is not part of the expected application output.
 
+## UI-STARTUP-03 — Display the startup greeting
+
+**Aim:** Verify that Charlie displays its banner and greeting when the main test session starts.
+
+**Rationale:** Extracting console interactions into a `Ui` class must preserve the startup presentation exactly.
+
+**Input:** Start Charlie and wait for the initial output. Do not enter a command yet.
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+      ____ _   _    _    ____  _     ___ _____
+     / ___| | | |  / \  |  _ \| |   |_ _| ____|
+    | |   | |_| | / _ \ | |_) | |    | ||  _|
+    | |___|  _  |/ ___ \|  _ <| |___ | || |___
+     \____|_| |_/_/   \_\_| \_\_____|___|_____|
+    Hello! I'm Charlie!
+    What do you want to do today?
+    ____________________________________________________________
+```
+
 ## UI-LOAD-01 — List tasks loaded at startup
 
 **Aim:** Verify that Charlie restores todos, deadlines, events, and their completion states from the save file.
