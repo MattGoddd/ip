@@ -275,6 +275,27 @@ todo borrow book
     ____________________________________________________________
 ```
 
+## UI-COMMAND-ADD-01 — List tasks after adding a todo
+
+**Aim:** Verify that listing immediately after adding a todo shows the new task.
+
+**Rationale:** Extracting task creation into `AddCommand` must add the task to the shared `TaskList`.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] borrow book
+    ____________________________________________________________
+```
+
 ## UI-02 — Add a deadline
 
 **Aim:** Verify that `/by` separates the deadline description from its date or time.

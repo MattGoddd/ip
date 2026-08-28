@@ -1,6 +1,3 @@
-D | Not done | submit report | 2026-09-20
-D | Not done | renew passport | 2027-01-05
-T | Not done | buy groceries
-D | Not done | impssoble data | 2028-01-01
-D | Not done | ahhh | 2029-01-01
-D | Not done | ahhhhhh | 9891-01-01
+T | Done | loaded todo
+D | Not done | loaded deadline | 2026-09-18
+E | Done | loaded event | 2026-09-18T09:00 | 2026-09-18T10:00

@@ -95,7 +95,7 @@ public class Charlie {
                         // Fallthrough
                     case EVENT: {
                         Task newTask = Parser.parseTask(input, commandType);
-                        addTask(newTask);
+                        new AddCommand(newTask).execute(tasks, ui, storage);
                         break;
                     }
                 }
@@ -123,14 +123,6 @@ public class Charlie {
         if (matchCount == 0) {
             ui.showMessage("No deadlines or events occur on this date.");
         }
-    }
-
-    private void addTask(Task task) {
-        tasks.add(task);
-        storage.save(tasks.getTasks());
-        ui.showMessage("Got it. I've added this task:");
-        ui.showMessage("  " + task.toString());
-        ui.showMessage("Now you have " + tasks.getSize() + " tasks in the list.");
     }
 
 }
