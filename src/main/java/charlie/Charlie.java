@@ -13,7 +13,7 @@ import charlie.ui.Ui;
 public class Charlie {
     private Storage storage;
     private Ui ui;
-    private TaskList tasks;
+    private TaskList taskList;
 
     /**
      * Creates Charlie with collaborators for user interaction and task persistence.
@@ -23,7 +23,7 @@ public class Charlie {
     public Charlie(String filePath) {
         this.ui = new Ui();
         this.storage = new Storage(filePath);
-        this.tasks = new TaskList();
+        this.taskList = new TaskList();
     }
 
     /**
@@ -42,10 +42,10 @@ public class Charlie {
         try {
             ui.showIntro();
             try {
-                tasks = new TaskList(storage.load());
+                taskList = new TaskList(storage.load());
             } catch (CharlieException e) {
                 ui.showLoadingError(e.getMessage());
-                tasks = new TaskList();
+                taskList = new TaskList();
             }
             readCommands();
         } finally {
@@ -63,7 +63,7 @@ public class Charlie {
                 String input = ui.readCommand();
                 ui.showHorizontalLine();
                 Command command = Parser.parse(input);
-                command.execute(tasks, ui, storage);
+                command.execute(taskList, ui, storage);
                 if (command.isExit()) {
                     break;
                 }
@@ -73,5 +73,4 @@ public class Charlie {
             ui.showHorizontalLine();
         }
     }
-
 }
