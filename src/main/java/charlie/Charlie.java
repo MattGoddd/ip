@@ -1,5 +1,12 @@
 package charlie;
 
+import charlie.command.Command;
+import charlie.exception.CharlieException;
+import charlie.parser.Parser;
+import charlie.storage.Storage;
+import charlie.task.TaskList;
+import charlie.ui.Ui;
+
 /**
  * Starts the CHARLIE chatbot application.
  */
