@@ -23,3 +23,18 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    ```
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+
+## Creating and running the fat JAR
+
+The Gradle build uses the Shadow plugin to package Charlie and all of its runtime
+dependencies into one executable file.
+
+1. Open a terminal in the project directory.
+2. Create the fat JAR:
+   - Windows: `gradlew.bat shadowJar`
+   - macOS/Linux: `./gradlew shadowJar`
+3. Find the generated file at `build/libs/charlie.jar`.
+4. Run it from the project directory with `java -jar build/libs/charlie.jar`.
+
+Run the JAR from the project directory so that Charlie reads and writes its task
+data at `data/charlie.txt`. JDK 25 is required both to build and run the project.
