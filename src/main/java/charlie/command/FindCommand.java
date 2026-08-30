@@ -1,30 +1,27 @@
 package charlie.command;
 
-import java.time.LocalDate;
-
 import charlie.storage.Storage;
 import charlie.task.Task;
 import charlie.task.TaskList;
 import charlie.ui.Ui;
 
 /**
- * Displays deadlines and events occurring on a specified date.
+ * Displays tasks whose descriptions contain a requested keyword or phrase.
  */
 public class FindCommand extends Command {
-    /** Date on which matching tasks must occur. */
-    private final LocalDate searchDate;
+    private final String keyword;
 
     /**
-     * Creates a command for the date to search.
+     * Creates a command that searches task descriptions.
      *
-     * @param searchDate Date on which tasks must occur.
+     * @param keyword Keyword or phrase that matching descriptions must contain.
      */
-    public FindCommand(LocalDate searchDate) {
-        this.searchDate = searchDate;
+    public FindCommand(String keyword) {
+        this.keyword = keyword;
     }
 
     /**
-     * Finds and displays dated tasks occurring on the requested date.
+     * Finds and displays matching tasks without changing or saving the task list.
      *
      * @param tasks Task collection to search.
      * @param ui User interface used to display the results.
@@ -32,15 +29,15 @@ public class FindCommand extends Command {
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
-        ui.showMessage("Here are the tasks occurring on " + searchDate + ":");
+        ui.showMessage("Here are the matching tasks in your list:");
         int matchCount = 0;
-        for (Task task : tasks.findOnDate(searchDate)) {
+        for (Task task : tasks.findByKeyword(this.keyword)) {
             matchCount++;
             ui.showMessage(matchCount + "." + task);
         }
 
         if (matchCount == 0) {
-            ui.showMessage("No deadlines or events occur on this date.");
+            ui.showMessage("No task contains this keyword.");
         }
     }
 }

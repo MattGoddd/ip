@@ -1,13 +1,13 @@
 package charlie.task;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 public class TaskListTest {
     @Test
@@ -62,5 +62,41 @@ public class TaskListTest {
         assertEquals(1, taskList.findOnDate(
                 LocalDate.of(2026, 1, 5)
         ).size());
+    }
+
+    @Test
+    public void findByKeyword_multipleMatches_returnsMatchesInOriginalOrder() {
+        Todo firstMatch = new Todo("borrow book", false);
+        Todo nonMatch = new Todo("submit report", false);
+        Todo secondMatch = new Todo("return book", false);
+        TaskList taskList = new TaskList(List.of(firstMatch, nonMatch, secondMatch));
+
+        assertEquals(List.of(firstMatch, secondMatch), taskList.findByKeyword("book"));
+    }
+
+    @Test
+    public void findByKeyword_phraseMatches_returnsMatchingTask() {
+        Todo matchingTask = new Todo("project meeting", false);
+        TaskList taskList = new TaskList(List.of(
+                new Todo("project report", false),
+                matchingTask
+        ));
+
+        assertEquals(List.of(matchingTask), taskList.findByKeyword("project meeting"));
+    }
+
+    @Test
+    public void findByKeyword_mixedCaseDescriptionAndKeyword_returnsMatchingTask() {
+        Todo matchingTask = new Todo("boRRoW boOk", false);
+        TaskList taskList = new TaskList(List.of(matchingTask));
+
+        assertEquals(List.of(matchingTask), taskList.findByKeyword("BOOK"));
+    }
+
+    @Test
+    public void findByKeyword_noMatch_returnsEmptyList() {
+        TaskList taskList = new TaskList(List.of(new Todo("borrow book", false)));
+
+        assertTrue(taskList.findByKeyword("report").isEmpty());
     }
 }

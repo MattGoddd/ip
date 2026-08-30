@@ -1,11 +1,12 @@
 package charlie.parser;
 
-import charlie.command.CommandType;
-import charlie.exception.CharlieException;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
+
+import charlie.command.CommandType;
+import charlie.exception.CharlieException;
 
 public class ParserTest {
     @Test
@@ -25,6 +26,20 @@ public class ParserTest {
                 () -> Parser.parseDate(invalidInput)
         );
         assertEquals("Date must be a valid date in yyyy-MM-dd format.", exception.getMessage());
+    }
+
+    @Test
+    public void parseFindKeyword_multipleWords_returnsEntireSearchText() {
+        assertEquals("return book", Parser.parseFindKeyword("find return book"));
+    }
+
+    @Test
+    public void parseFindKeyword_missingKeyword_exceptionThrown() {
+        CharlieException exception = assertThrows(
+                CharlieException.class,
+                () -> Parser.parseFindKeyword("find")
+        );
+        assertEquals("Please provide a keyword to find.", exception.getMessage());
     }
 
     @Test
