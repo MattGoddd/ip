@@ -22,11 +22,22 @@ public class Deadline extends Task {
         this.deadline = deadline;
     }
 
+    /**
+     * Creates a copy of this deadline with the requested completion status.
+     *
+     * @param isDone Completion status for the copy.
+     * @return Copied deadline with the requested status.
+     */
     @Override
     public Task copyWithStatus(boolean isDone) {
         return new Deadline(description, isDone, deadline);
     }
 
+    /**
+     * Returns the display representation of this deadline.
+     *
+     * @return Deadline type, completion status, description, and due date.
+     */
     @Override
     public String toString() {
         String formattedDeadline = this.deadline.format(
@@ -34,6 +45,11 @@ public class Deadline extends Task {
         return "[D]" + super.toString() + " (by: " + formattedDeadline + ")";
     }
 
+    /**
+     * Converts this deadline into the format used in the save file.
+     *
+     * @return Serialized deadline data.
+     */
     @Override
     public String saveFileFormat() {
         String status = isDone ? "Done" : "Not done";
