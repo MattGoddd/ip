@@ -4,7 +4,10 @@ package charlie.task;
  * Represents a task with a description and completion status.
  */
 public abstract class Task {
+    /** Description supplied by the user. */
     protected String description;
+
+    /** Whether this task has been completed. */
     protected boolean isDone;
 
     /**
@@ -40,6 +43,11 @@ public abstract class Task {
      */
     public abstract Task copyWithStatus(boolean isDone);
 
+    /**
+     * Returns the shared display representation of a task.
+     *
+     * @return Completion status and description.
+     */
     @Override
     public String toString() {
         String status = (this.isDone) ? "X" : " ";

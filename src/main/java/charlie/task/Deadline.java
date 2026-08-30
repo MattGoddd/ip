@@ -8,6 +8,7 @@ import java.util.Locale;
  * Represents a task that must be completed by a specific calendar date.
  */
 public class Deadline extends Task {
+    /** Date by which this task must be completed. */
     protected LocalDate deadline;
 
     /**

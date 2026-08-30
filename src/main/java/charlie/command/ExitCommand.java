@@ -9,6 +9,12 @@ import charlie.ui.Ui;
  */
 public class ExitCommand extends Command {
     /**
+     * Creates an exit command.
+     */
+    public ExitCommand() {
+    }
+
+    /**
      * Displays Charlie's farewell message.
      *
      * @param tasks Task collection, which this command does not use.

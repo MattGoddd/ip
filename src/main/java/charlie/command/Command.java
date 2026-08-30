@@ -9,6 +9,12 @@ import charlie.ui.Ui;
  */
 public abstract class Command {
     /**
+     * Creates a command.
+     */
+    public Command() {
+    }
+
+    /**
      * Performs this command using Charlie's application collaborators.
      *
      * @param tasks Task collection on which the command operates.

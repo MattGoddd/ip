@@ -6,14 +6,23 @@ import charlie.exception.CharlieException;
  * Identifies a command that Charlie can recognize.
  */
 public enum CommandType {
+    /** Ends the current Charlie session. */
     BYE("bye"),
+    /** Displays all tasks. */
     LIST("list"),
+    /** Marks a task as completed. */
     MARK("mark"),
+    /** Marks a task as not completed. */
     UNMARK("unmark"),
+    /** Deletes a task. */
     DELETE("delete"),
+    /** Finds dated tasks occurring on a date. */
     ON("on"),
+    /** Adds a todo. */
     TODO("todo"),
+    /** Adds a deadline. */
     DEADLINE("deadline"),
+    /** Adds an event. */
     EVENT("event");
 
     private final String keyword;

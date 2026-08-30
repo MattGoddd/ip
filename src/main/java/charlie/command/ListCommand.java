@@ -9,6 +9,12 @@ import charlie.ui.Ui;
  */
 public class ListCommand extends Command {
     /**
+     * Creates a list command.
+     */
+    public ListCommand() {
+    }
+
+    /**
      * Displays the current tasks in their list order with one-based numbering.
      *
      * @param tasks Task collection to display.

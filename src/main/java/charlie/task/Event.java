@@ -8,7 +8,10 @@ import java.util.Locale;
  * Represents an event occurring between two specific date-times.
  */
 public class Event extends Task {
+    /** Date and time at which this event starts. */
     protected LocalDateTime from;
+
+    /** Date and time at which this event ends. */
     protected LocalDateTime to;
 
     /**
