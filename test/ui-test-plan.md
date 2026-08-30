@@ -590,16 +590,16 @@ list
     ____________________________________________________________
 ```
 
-## UI-FIND-01 — Find multiple tasks containing a keyword
+## UI-FIND-01 — Find multiple tasks using different keyword capitalization
 
-**Aim:** Verify that `find` displays every task whose description contains the keyword.
+**Aim:** Verify that `find` displays every task whose description contains the keyword regardless of capitalization.
 
-**Rationale:** Both book-related descriptions should match while the unrelated event should be omitted, and result numbering should be consecutive.
+**Rationale:** An uppercase keyword should match both lowercase book-related descriptions while omitting the unrelated event, and result numbering should be consecutive.
 
 **Input:**
 
 ```text
-find book
+find BOOK
 ```
 
 **Expected output:**

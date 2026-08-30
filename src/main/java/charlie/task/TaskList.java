@@ -3,6 +3,7 @@ package charlie.task;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import charlie.exception.CharlieException;
 
@@ -188,13 +189,15 @@ public class TaskList {
     /**
      * Finds tasks whose descriptions contain the requested keyword or phrase.
      *
-     * @param keyword Keyword or phrase to search for using case-sensitive matching.
+     * @param keyword Keyword or phrase to search for using case-insensitive matching.
      * @return Matching tasks in their original list order.
      */
     public List<Task> findByKeyword(String keyword) {
         List<Task> matches = new ArrayList<>();
+        String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
         for (Task task : tasks) {
-            if (task.description.contains(keyword)) {
+            String normalizedDescription = task.description.toLowerCase(Locale.ROOT);
+            if (normalizedDescription.contains(normalizedKeyword)) {
                 matches.add(task);
             }
         }

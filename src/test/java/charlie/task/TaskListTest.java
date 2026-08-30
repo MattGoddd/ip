@@ -86,6 +86,14 @@ public class TaskListTest {
     }
 
     @Test
+    public void findByKeyword_mixedCaseDescriptionAndKeyword_returnsMatchingTask() {
+        Todo matchingTask = new Todo("boRRoW boOk", false);
+        TaskList taskList = new TaskList(List.of(matchingTask));
+
+        assertEquals(List.of(matchingTask), taskList.findByKeyword("BOOK"));
+    }
+
+    @Test
     public void findByKeyword_noMatch_returnsEmptyList() {
         TaskList taskList = new TaskList(List.of(new Todo("borrow book", false)));
 
