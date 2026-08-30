@@ -10,6 +10,7 @@ import charlie.exception.CharlieException;
  * Owns Charlie's collection of tasks and provides operations on that collection.
  */
 public class TaskList {
+    /** Tasks in their current list order. */
     private final List<Task> tasks;
 
     /**

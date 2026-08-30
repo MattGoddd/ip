@@ -25,8 +25,14 @@ public enum CommandType {
     /** Adds an event. */
     EVENT("event");
 
+    /** Keyword that identifies this command in user input. */
     private final String keyword;
 
+    /**
+     * Associates a command type with its input keyword.
+     *
+     * @param keyword Keyword entered to invoke the command.
+     */
     CommandType(String keyword) {
         this.keyword = keyword;
     }

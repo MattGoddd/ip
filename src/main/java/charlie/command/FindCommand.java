@@ -11,6 +11,7 @@ import charlie.ui.Ui;
  * Displays deadlines and events occurring on a specified date.
  */
 public class FindCommand extends Command {
+    /** Date on which matching tasks must occur. */
     private final LocalDate searchDate;
 
     /**

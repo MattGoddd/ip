@@ -25,6 +25,9 @@ import charlie.task.Todo;
  * Interprets raw user input and validates command arguments.
  */
 public final class Parser {
+    /**
+     * Prevents instantiation of this utility class.
+     */
     private Parser() {
     }
 
@@ -133,6 +136,9 @@ public final class Parser {
 
     /**
      * Parses the description and date fields of a deadline.
+     *
+     * @param arguments Deadline description and date arguments.
+     * @return Deadline containing the parsed arguments.
      */
     private static Task parseDeadline(String arguments) {
         int byPosition = arguments.indexOf("/by");
@@ -157,6 +163,9 @@ public final class Parser {
 
     /**
      * Parses the description, start, and end fields of an event.
+     *
+     * @param arguments Event description, start, and end arguments.
+     * @return Event containing the parsed arguments.
      */
     private static Task parseEvent(String arguments) {
         int fromPosition = arguments.indexOf("/from");

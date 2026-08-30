@@ -19,6 +19,7 @@ import charlie.task.Todo;
  * Loads tasks from a save file and writes the current task list back to it.
  */
 public class Storage {
+    /** Location of Charlie's save file. */
     private final Path filePath;
 
     /**

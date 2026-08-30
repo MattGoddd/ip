@@ -9,6 +9,7 @@ import charlie.ui.Ui;
  * Deletes one task from the task list.
  */
 public class DeleteCommand extends Command {
+    /** Zero-based index of the task to delete. */
     private final int index;
 
     /**

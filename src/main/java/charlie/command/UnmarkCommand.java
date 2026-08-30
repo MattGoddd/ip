@@ -9,6 +9,7 @@ import charlie.ui.Ui;
  * Marks one task as not done.
  */
 public class UnmarkCommand extends Command {
+    /** Zero-based index of the task to unmark. */
     private final int index;
 
     /**
