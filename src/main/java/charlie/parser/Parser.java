@@ -38,13 +38,13 @@ public final class Parser {
     public static Command parse(String input) {
         CommandType commandType = parseCommand(input);
         return switch (commandType) {
-        case BYE -> new ExitCommand();
-        case LIST -> new ListCommand();
-        case ON -> new FindCommand(parseDate(input));
-        case MARK -> new MarkCommand(parseTaskIndex(input));
-        case UNMARK -> new UnmarkCommand(parseTaskIndex(input));
-        case DELETE -> new DeleteCommand(parseTaskIndex(input));
-        case TODO, DEADLINE, EVENT -> new AddCommand(parseTask(input, commandType));
+            case BYE -> new ExitCommand();
+            case LIST -> new ListCommand();
+            case ON -> new FindCommand(parseDate(input));
+            case MARK -> new MarkCommand(parseTaskIndex(input));
+            case UNMARK -> new UnmarkCommand(parseTaskIndex(input));
+            case DELETE -> new DeleteCommand(parseTaskIndex(input));
+            case TODO, DEADLINE, EVENT -> new AddCommand(parseTask(input, commandType));
         };
     }
 
