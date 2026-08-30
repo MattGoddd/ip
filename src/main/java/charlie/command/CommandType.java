@@ -18,8 +18,9 @@ public enum CommandType {
     DELETE("delete"),
     /** Finds dated tasks occurring on a date. */
     ON("on"),
-    /** Adds a todo. */
+    /** Finds tasks whose descriptions contain a keyword. */
     FIND("find"),
+    /** Adds a todo. */
     TODO("todo"),
     /** Adds a deadline. */
     DEADLINE("deadline"),

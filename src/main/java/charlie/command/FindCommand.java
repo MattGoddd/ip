@@ -9,6 +9,7 @@ import charlie.ui.Ui;
  * Displays tasks whose descriptions contain a requested keyword or phrase.
  */
 public class FindCommand extends Command {
+    /** Keyword or phrase to find in task descriptions. */
     private final String keyword;
 
     /**
