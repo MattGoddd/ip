@@ -29,6 +29,20 @@ public class ParserTest {
     }
 
     @Test
+    public void parseFindKeyword_multipleWords_returnsEntireSearchText() {
+        assertEquals("return book", Parser.parseFindKeyword("find return book"));
+    }
+
+    @Test
+    public void parseFindKeyword_missingKeyword_exceptionThrown() {
+        CharlieException exception = assertThrows(
+                CharlieException.class,
+                () -> Parser.parseFindKeyword("find")
+        );
+        assertEquals("Please provide a keyword to find.", exception.getMessage());
+    }
+
+    @Test
     public void parseTask_eventEndsBeforeStart_exceptionThrown() {
         String invalidInput = "event meeting /from 2026-09-01 1600 /to 2026-09-01 1400";
         CharlieException exception = assertThrows(
