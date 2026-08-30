@@ -184,4 +184,20 @@ public class TaskList {
         }
         return matches;
     }
+
+    /**
+     * Finds tasks whose descriptions contain the requested keyword or phrase.
+     *
+     * @param keyword Keyword or phrase to search for using case-sensitive matching.
+     * @return Matching tasks in their original list order.
+     */
+    public List<Task> findByKeyword(String keyword) {
+        List<Task> matches = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task.description.contains(keyword)) {
+                matches.add(task);
+            }
+        }
+        return matches;
+    }
 }

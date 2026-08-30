@@ -590,6 +590,113 @@ list
     ____________________________________________________________
 ```
 
+## UI-FIND-01 — Find multiple tasks containing a keyword
+
+**Aim:** Verify that `find` displays every task whose description contains the keyword.
+
+**Rationale:** Both book-related descriptions should match while the unrelated event should be omitted, and result numbering should be consecutive.
+
+**Input:**
+
+```text
+find book
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the matching tasks in your list:
+    1.[T][ ] borrow book
+    2.[D][ ] return book (by: Sep 20 2026)
+    ____________________________________________________________
+```
+
+## UI-FIND-02 — Find a task using a phrase
+
+**Aim:** Verify that all text after `find` is used as the search phrase.
+
+**Rationale:** Splitting the input only once preserves the complete multi-word phrase instead of searching only for its first word.
+
+**Input:**
+
+```text
+find project meeting
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the matching tasks in your list:
+    1.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
+    ____________________________________________________________
+```
+
+## UI-FIND-03 — Report that no task matches
+
+**Aim:** Verify that `find` clearly reports an unsuccessful search.
+
+**Rationale:** A heading without a result or explanation could leave the user unsure whether the command completed.
+
+**Input:**
+
+```text
+find missing
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the matching tasks in your list:
+    No task contains this keyword.
+    ____________________________________________________________
+```
+
+## UI-FIND-04 — Reject `find` without search text
+
+**Aim:** Verify that the `find` command requires a keyword or phrase.
+
+**Rationale:** Missing search text must produce a friendly error instead of an array-index failure.
+
+**Input:**
+
+```text
+find
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Please provide a keyword to find.
+    ____________________________________________________________
+```
+
+## UI-FIND-05 — Keep tasks unchanged after searching
+
+**Aim:** Verify that all original tasks remain unchanged after the keyword searches.
+
+**Rationale:** `find` is a read-only command and must not alter task contents, status, order, or persistence.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] borrow book
+    2.[D][ ] return book (by: Sep 20 2026)
+    3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
+    ____________________________________________________________
+```
+
 ## UI-DATE-01 — Find a deadline on an exact date
 
 **Aim:** Verify that `on` prints a deadline whose date exactly matches the requested date.

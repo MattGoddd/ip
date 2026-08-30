@@ -63,4 +63,32 @@ public class TaskListTest {
                 LocalDate.of(2026, 1, 5)
         ).size());
     }
+
+    @Test
+    public void findByKeyword_multipleMatches_returnsMatchesInOriginalOrder() {
+        Todo firstMatch = new Todo("borrow book", false);
+        Todo nonMatch = new Todo("submit report", false);
+        Todo secondMatch = new Todo("return book", false);
+        TaskList taskList = new TaskList(List.of(firstMatch, nonMatch, secondMatch));
+
+        assertEquals(List.of(firstMatch, secondMatch), taskList.findByKeyword("book"));
+    }
+
+    @Test
+    public void findByKeyword_phraseMatches_returnsMatchingTask() {
+        Todo matchingTask = new Todo("project meeting", false);
+        TaskList taskList = new TaskList(List.of(
+                new Todo("project report", false),
+                matchingTask
+        ));
+
+        assertEquals(List.of(matchingTask), taskList.findByKeyword("project meeting"));
+    }
+
+    @Test
+    public void findByKeyword_noMatch_returnsEmptyList() {
+        TaskList taskList = new TaskList(List.of(new Todo("borrow book", false)));
+
+        assertTrue(taskList.findByKeyword("report").isEmpty());
+    }
 }

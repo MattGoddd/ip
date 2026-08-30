@@ -11,6 +11,7 @@ import charlie.command.Command;
 import charlie.command.CommandType;
 import charlie.command.DeleteCommand;
 import charlie.command.ExitCommand;
+import charlie.command.FindCommand;
 import charlie.command.ListCommand;
 import charlie.command.MarkCommand;
 import charlie.command.OnCommand;
@@ -41,6 +42,7 @@ public final class Parser {
         case BYE -> new ExitCommand();
         case LIST -> new ListCommand();
         case ON -> new OnCommand(parseDate(input));
+        case FIND -> new FindCommand(parseFindKeyword(input));
         case MARK -> new MarkCommand(parseTaskIndex(input));
         case UNMARK -> new UnmarkCommand(parseTaskIndex(input));
         case DELETE -> new DeleteCommand(parseTaskIndex(input));
@@ -105,6 +107,23 @@ public final class Parser {
         }
 
         return taskNumber - 1;
+    }
+
+    /**
+     * Parses all search text supplied after a {@code find} command.
+     *
+     * @param input Complete user input.
+     * @return Keyword or phrase to search for.
+     * @throws CharlieException If the input does not contain a keyword.
+     */
+    public static String parseFindKeyword(String input) {
+        String[] commandAndKeyword = input.trim().split("\\s+", 2);
+
+        if (commandAndKeyword.length < 2 || commandAndKeyword[1].isBlank()) {
+            throw new CharlieException("Please provide a keyword to find.");
+        }
+
+        return commandAndKeyword[1].trim();
     }
 
     /**
