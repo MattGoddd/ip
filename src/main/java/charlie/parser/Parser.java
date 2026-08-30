@@ -11,9 +11,9 @@ import charlie.command.Command;
 import charlie.command.CommandType;
 import charlie.command.DeleteCommand;
 import charlie.command.ExitCommand;
-import charlie.command.FindCommand;
 import charlie.command.ListCommand;
 import charlie.command.MarkCommand;
+import charlie.command.OnCommand;
 import charlie.command.UnmarkCommand;
 import charlie.exception.CharlieException;
 import charlie.task.Deadline;
@@ -40,7 +40,7 @@ public final class Parser {
         return switch (commandType) {
         case BYE -> new ExitCommand();
         case LIST -> new ListCommand();
-        case ON -> new FindCommand(parseDate(input));
+        case ON -> new OnCommand(parseDate(input));
         case MARK -> new MarkCommand(parseTaskIndex(input));
         case UNMARK -> new UnmarkCommand(parseTaskIndex(input));
         case DELETE -> new DeleteCommand(parseTaskIndex(input));

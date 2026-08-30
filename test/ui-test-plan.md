@@ -733,11 +733,11 @@ on 2026-02-30
     ____________________________________________________________
 ```
 
-## UI-COMMAND-FIND-01 — Keep tasks unchanged after date searches
+## UI-COMMAND-ON-01 — Keep tasks unchanged after date searches
 
 **Aim:** Verify that listing after the date searches displays every original task unchanged.
 
-**Rationale:** Extracting date-search behavior into `FindCommand` must keep the operation read-only.
+**Rationale:** Extracting date-search behavior into `OnCommand` must keep the operation read-only.
 
 **Input:**
 

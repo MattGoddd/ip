@@ -10,7 +10,7 @@ import charlie.ui.Ui;
 /**
  * Displays deadlines and events occurring on a specified date.
  */
-public class FindCommand extends Command {
+public class OnCommand extends Command {
     private final LocalDate searchDate;
 
     /**
@@ -18,7 +18,7 @@ public class FindCommand extends Command {
      *
      * @param searchDate Date on which tasks must occur.
      */
-    public FindCommand(LocalDate searchDate) {
+    public OnCommand(LocalDate searchDate) {
         this.searchDate = searchDate;
     }
 
