@@ -47,6 +47,13 @@ If the test session fails, follow the skill's stop-on-first-failure rule and rep
 
 ## Git
 
+For every proposed or created commit and every new branch:
+
+1. Invoke the project-specific `$seedu-git-standard` skill.
+2. Follow its SE-EDU Git conventions for commit messages and branch names.
+3. Keep each commit focused on one logical change instead of batching unrelated work.
+4. Generate the project visual diff and show the exact proposed commit message before seeking approval.
+5. Obtain the user's explicit approval immediately before creating each commit.
+
 Use lightweight tags unless the user requests an annotated tag.
-When proposing or creating a commit message, include enough detail to explain the rationale for the change.
-Do not commit or push unless explicitly asked.
+Do not push, merge, delete branches, or rewrite history unless explicitly asked.
