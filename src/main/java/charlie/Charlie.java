@@ -11,8 +11,13 @@ import charlie.ui.Ui;
  * Starts the CHARLIE chatbot application.
  */
 public class Charlie {
+    /** Saves and loads Charlie's task data. */
     private Storage storage;
+
+    /** Handles console input and output. */
     private Ui ui;
+
+    /** Stores the tasks in the current session. */
     private TaskList taskList;
 
     /**

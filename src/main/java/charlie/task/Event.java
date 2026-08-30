@@ -8,7 +8,10 @@ import java.util.Locale;
  * Represents an event occurring between two specific date-times.
  */
 public class Event extends Task {
+    /** Date and time at which this event starts. */
     protected LocalDateTime from;
+
+    /** Date and time at which this event ends. */
     protected LocalDateTime to;
 
     /**
@@ -25,11 +28,22 @@ public class Event extends Task {
         this.to = to;
     }
 
+    /**
+     * Creates a copy of this event with the requested completion status.
+     *
+     * @param isDone Completion status for the copy.
+     * @return Copied event with the requested status.
+     */
     @Override
     public Task copyWithStatus(boolean isDone) {
         return new Event(description, isDone, from, to);
     }
 
+    /**
+     * Returns the display representation of this event.
+     *
+     * @return Event type, completion status, description, start, and end.
+     */
     @Override
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
@@ -38,6 +52,11 @@ public class Event extends Task {
                 + " to: " + this.to.format(formatter) + ")";
     }
 
+    /**
+     * Converts this event into the format used in the save file.
+     *
+     * @return Serialized event data.
+     */
     @Override
     public String saveFileFormat() {
         String status = isDone ? "Done" : "Not done";

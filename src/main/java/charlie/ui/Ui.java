@@ -6,16 +6,23 @@ import java.util.Scanner;
  * Handles console input and presents messages to Charlie's user.
  */
 public class Ui implements AutoCloseable {
+    /** ASCII-art banner displayed when Charlie starts. */
     private static final String BOT_BANNER = "  ____ _   _    _    ____  _     ___ _____\n"
             + " / ___| | | |  / \\  |  _ \\| |   |_ _| ____|\n"
             + "| |   | |_| | / _ \\ | |_) | |    | ||  _|\n"
             + "| |___|  _  |/ ___ \\|  _ <| |___ | || |___\n"
             + " \\____|_| |_/_/   \\_\\_| \\_\\_____|___|_____|\n";
+    /** Separator displayed around each command response. */
     private static final String BOT_HORIZONTAL_LINE =
             "____________________________________________________________";
+
+    /** Indentation applied to Charlie's console output. */
     private static final String BOT_INDENT = "    ";
+
+    /** Name used in Charlie's greeting. */
     private static final String BOT_NAME = "Charlie";
 
+    /** Reads commands from standard input. */
     private final Scanner scanner;
 
     /**

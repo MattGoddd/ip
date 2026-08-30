@@ -9,6 +9,7 @@ import charlie.ui.Ui;
  * Marks one task as done.
  */
 public class MarkCommand extends Command {
+    /** Zero-based index of the task to mark. */
     private final int index;
 
     /**

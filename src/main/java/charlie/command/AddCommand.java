@@ -9,6 +9,7 @@ import charlie.ui.Ui;
  * Adds one task to the task list.
  */
 public class AddCommand extends Command {
+    /** Task to add when this command executes. */
     private final Task task;
 
     /**
