@@ -24,13 +24,10 @@ public class TaskListTest {
             taskList.add(new Deadline(
                     "sample " + i,
                     false,
-                    LocalDate.of(2026, 1, 1)
-            ));
+                    LocalDate.of(2026, 1, 1)));
         }
-        assertEquals(10,
-                taskList.findOnDate(
-                        LocalDate.of(2026, 1, 1)).size()
-        );
+
+        assertEquals(10, taskList.findOnDate(LocalDate.of(2026, 1, 1)).size());
     }
 
     @Test
@@ -40,28 +37,22 @@ public class TaskListTest {
             taskList.add(new Deadline(
                     "sample " + i,
                     false,
-                    LocalDate.of(2026, 1, 1)
-            ));
+                    LocalDate.of(2026, 1, 1)));
         }
-        assertEquals(0,
-                taskList.findOnDate(
-                        LocalDate.of(2025, 1, 1)
-                ).size());
+
+        assertEquals(0, taskList.findOnDate(LocalDate.of(2025, 1, 1)).size());
     }
 
     @Test
     public void findOnDate_dateWithinEventRange_returnsEvent() {
-        TaskList taskList = new TaskList(
-                List.of(
-                        new Event("sample",
-                                false,
-                                LocalDateTime.of(2026, 1, 1, 0, 0),
-                                LocalDateTime.of(2026, 1, 10, 0, 0))
-                )
-        );
-        assertEquals(1, taskList.findOnDate(
-                LocalDate.of(2026, 1, 5)
-        ).size());
+        TaskList taskList = new TaskList(List.of(
+                new Event(
+                        "sample",
+                        false,
+                        LocalDateTime.of(2026, 1, 1, 0, 0),
+                        LocalDateTime.of(2026, 1, 10, 0, 0))));
+
+        assertEquals(1, taskList.findOnDate(LocalDate.of(2026, 1, 5)).size());
     }
 
     @Test
@@ -79,8 +70,7 @@ public class TaskListTest {
         Todo matchingTask = new Todo("project meeting", false);
         TaskList taskList = new TaskList(List.of(
                 new Todo("project report", false),
-                matchingTask
-        ));
+                matchingTask));
 
         assertEquals(List.of(matchingTask), taskList.findByKeyword("project meeting"));
     }
