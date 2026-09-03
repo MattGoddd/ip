@@ -1,6 +1,7 @@
 package charlie.ui;
 
 import java.util.Scanner;
+import java.util.function.Consumer;
 
 /**
  * Handles console input and presents messages to Charlie's user.
@@ -25,11 +26,31 @@ public class Ui implements AutoCloseable {
     /** Reads commands from standard input. */
     private final Scanner scanner;
 
+    /** Receives each message produced by Charlie. */
+    private final Consumer<String> outputConsumer;
+
+    /** Indicates whether output should use console-specific formatting. */
+    private final boolean isConsoleUi;
+
     /**
      * Creates a user interface that reads commands from standard input.
      */
     public Ui() {
         this.scanner = new Scanner(System.in);
+        this.outputConsumer = System.out::println;
+        this.isConsoleUi = true;
+    }
+
+    /**
+     * Creates a user interface that sends unindented messages to the given consumer.
+     * This is used to collect command responses for the graphical interface.
+     *
+     * @param outputConsumer Consumer that receives each output line.
+     */
+    public Ui(Consumer<String> outputConsumer) {
+        this.scanner = null;
+        this.outputConsumer = outputConsumer;
+        this.isConsoleUi = false;
     }
 
     /**
@@ -38,6 +59,7 @@ public class Ui implements AutoCloseable {
      * @return True when another input line can be read.
      */
     public boolean hasNextCommand() {
+        assert scanner != null : "Only the console UI can read commands";
         return scanner.hasNextLine();
     }
 
@@ -47,6 +69,7 @@ public class Ui implements AutoCloseable {
      * @return The next input line.
      */
     public String readCommand() {
+        assert scanner != null : "Only the console UI can read commands";
         return scanner.nextLine();
     }
 
@@ -78,7 +101,7 @@ public class Ui implements AutoCloseable {
      * @param message Explanation of the loading problem.
      */
     public void showLoadingError(String message) {
-        System.out.println("Error loading saved tasks: " + message);
+        outputConsumer.accept("Error loading saved tasks: " + message);
     }
 
     /**
@@ -87,7 +110,8 @@ public class Ui implements AutoCloseable {
      * @param message Message to display.
      */
     public void showMessage(String message) {
-        System.out.println(BOT_INDENT + message);
+        String indent = isConsoleUi ? BOT_INDENT : "";
+        outputConsumer.accept(indent + message);
     }
 
     /**
@@ -105,7 +129,9 @@ public class Ui implements AutoCloseable {
      * Displays the separator used to group each command and response.
      */
     public void showHorizontalLine() {
-        showMessage(BOT_HORIZONTAL_LINE);
+        if (isConsoleUi) {
+            showMessage(BOT_HORIZONTAL_LINE);
+        }
     }
 
     /**
@@ -113,6 +139,8 @@ public class Ui implements AutoCloseable {
      */
     @Override
     public void close() {
-        scanner.close();
+        if (scanner != null) {
+            scanner.close();
+        }
     }
 }
