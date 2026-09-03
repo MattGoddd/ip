@@ -58,8 +58,9 @@ public class Ui implements AutoCloseable {
         for (String line : BOT_BANNER.split("\n")) {
             showMessage(line);
         }
-        showMessage("Hello! I'm " + BOT_NAME + "!");
-        showMessage("What do you want to do today?");
+        showMessages(
+                "Hello! I'm " + BOT_NAME + "!",
+                "What do you want to do today?");
         showHorizontalLine();
     }
 
@@ -87,6 +88,17 @@ public class Ui implements AutoCloseable {
      */
     public void showMessage(String message) {
         System.out.println(BOT_INDENT + message);
+    }
+
+    /**
+     * Displays multiple messages in the given order using Charlie's standard indentation.
+     *
+     * @param messages Messages to display.
+     */
+    public void showMessages(String... messages) {
+        for (String message : messages) {
+            showMessage(message);
+        }
     }
 
     /**

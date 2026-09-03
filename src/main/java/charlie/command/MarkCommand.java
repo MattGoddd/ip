@@ -32,7 +32,8 @@ public class MarkCommand extends Command {
     public void execute(TaskList tasks, Ui ui, Storage storage) {
         storage.save(tasks.getTasksAfterChangingStatus(index, true));
         Task markedTask = tasks.mark(index);
-        ui.showMessage("Nice! I've marked this task as done:");
-        ui.showMessage("  " + markedTask);
+        ui.showMessages(
+                "Nice! I've marked this task as done:",
+                "  " + markedTask);
     }
 }
