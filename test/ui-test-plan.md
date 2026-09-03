@@ -334,8 +334,8 @@ After this session, remove the `data/charlie.txt` directory before preparing the
 ## Session setup
 
 - Required Java version: Java 25
-- Compile command: `javac -d out (Get-ChildItem -Path src/main/java -Recurse -Filter '*.java').FullName`
-- Run command: `java -cp out charlie.Charlie`
+- Compile command: `.\gradlew.bat classes`
+- Run command: `java -cp build/classes/java/main charlie.Charlie`
 - Before starting Charlie, create `data/charlie.txt` with exactly these lines:
 
 ```text
