@@ -32,8 +32,9 @@ public class AddCommand extends Command {
     public void execute(TaskList tasks, Ui ui, Storage storage) {
         storage.save(tasks.getTasksAfterAdding(task));
         tasks.add(task);
-        ui.showMessage("Got it. I've added this task:");
-        ui.showMessage("  " + task);
-        ui.showMessage("Now you have " + tasks.getSize() + " tasks in the list.");
+        ui.showMessages(
+                "Got it. I've added this task:",
+                "  " + task,
+                "Now you have " + tasks.getSize() + " tasks in the list.");
     }
 }
