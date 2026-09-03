@@ -177,9 +177,9 @@ public class TaskList {
                     && deadlineTask.deadline.equals(searchDate)) {
                 matches.add(task);
             } else if (task instanceof Event eventTask) {
-                LocalDate fromDate = eventTask.from.toLocalDate();
-                LocalDate toDate = eventTask.to.toLocalDate();
-                if (!searchDate.isBefore(fromDate) && !searchDate.isAfter(toDate)) {
+                LocalDate startDate = eventTask.startDateTime.toLocalDate();
+                LocalDate endDate = eventTask.endDateTime.toLocalDate();
+                if (!searchDate.isBefore(startDate) && !searchDate.isAfter(endDate)) {
                     matches.add(task);
                 }
             }

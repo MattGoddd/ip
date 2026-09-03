@@ -145,7 +145,7 @@ public class Charlie {
 
     /**
      * Reads commands until the user enters {@code bye}.
-     * Other input is stored as a task, while {@code list} displays all stored tasks.
+     * Each recognized command performs its requested task-list operation.
      */
     private void readCommands() {
         while (ui.hasNextCommand()) {

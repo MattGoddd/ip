@@ -52,6 +52,7 @@ public enum CommandType {
                 return commandType;
             }
         }
+
         throw new CharlieException("Oops, this is an invalid command");
     }
 }

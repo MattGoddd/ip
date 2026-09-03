@@ -42,14 +42,14 @@ public final class Parser {
     public static Command parse(String input) {
         CommandType commandType = parseCommand(input);
         return switch (commandType) {
-        case BYE -> new ExitCommand();
-        case LIST -> new ListCommand();
-        case ON -> new OnCommand(parseDate(input));
-        case FIND -> new FindCommand(parseFindKeyword(input));
-        case MARK -> new MarkCommand(parseTaskIndex(input));
-        case UNMARK -> new UnmarkCommand(parseTaskIndex(input));
-        case DELETE -> new DeleteCommand(parseTaskIndex(input));
-        case TODO, DEADLINE, EVENT -> new AddCommand(parseTask(input, commandType));
+            case BYE -> new ExitCommand();
+            case LIST -> new ListCommand();
+            case ON -> new OnCommand(parseDate(input));
+            case FIND -> new FindCommand(parseFindKeyword(input));
+            case MARK -> new MarkCommand(parseTaskIndex(input));
+            case UNMARK -> new UnmarkCommand(parseTaskIndex(input));
+            case DELETE -> new DeleteCommand(parseTaskIndex(input));
+            case TODO, DEADLINE, EVENT -> new AddCommand(parseTask(input, commandType));
         };
     }
 
@@ -64,6 +64,7 @@ public final class Parser {
         if (input.isBlank()) {
             throw new CharlieException("Please enter a command.");
         }
+
         String[] parts = input.trim().split("\\s+");
         return CommandType.parseKeyword(parts[0]);
     }
@@ -81,6 +82,7 @@ public final class Parser {
             throw new CharlieException(
                     "Please provide exactly one date in yyyy-MM-dd format.");
         }
+
         try {
             return LocalDate.parse(parts[1]);
         } catch (DateTimeParseException e) {
@@ -120,13 +122,13 @@ public final class Parser {
      * @throws CharlieException If the input does not contain a keyword.
      */
     public static String parseFindKeyword(String input) {
-        String[] commandAndKeyword = input.trim().split("\\s+", 2);
+        String[] commandAndKeywordParts = input.trim().split("\\s+", 2);
 
-        if (commandAndKeyword.length < 2 || commandAndKeyword[1].isBlank()) {
+        if (commandAndKeywordParts.length < 2 || commandAndKeywordParts[1].isBlank()) {
             throw new CharlieException("Please provide a keyword to find.");
         }
 
-        return commandAndKeyword[1].trim();
+        return commandAndKeywordParts[1].trim();
     }
 
     /**
@@ -138,12 +140,12 @@ public final class Parser {
      * @throws CharlieException If the command does not have the expected format.
      */
     public static Task parseTask(String input, CommandType commandType) {
-        String[] commandAndArguments = input.trim().split("\\s+", 2);
-        if (commandAndArguments.length < 2) {
+        String[] commandAndArgumentParts = input.trim().split("\\s+", 2);
+        if (commandAndArgumentParts.length < 2) {
             throw new CharlieException("The task description cannot be empty.");
         }
 
-        String arguments = commandAndArguments[1];
+        String arguments = commandAndArgumentParts[1];
         if (commandType == CommandType.TODO) {
             return new Todo(arguments, false);
         } else if (commandType == CommandType.DEADLINE) {
@@ -164,14 +166,17 @@ public final class Parser {
         if (byPosition == -1) {
             throw new CharlieException("A deadline must include /by followed by a date.");
         }
+
         String description = arguments.substring(0, byPosition).trim();
         if (description.isEmpty()) {
             throw new CharlieException("Description cannot be empty.");
         }
+
         String deadlineText = arguments.substring(byPosition + "/by".length()).trim();
         if (deadlineText.isBlank()) {
             throw new CharlieException("Deadline cannot be empty.");
         }
+
         try {
             return new Deadline(description, false, LocalDate.parse(deadlineText));
         } catch (DateTimeParseException e) {
@@ -199,6 +204,7 @@ public final class Parser {
         if (description.isEmpty()) {
             throw new CharlieException("Description cannot be empty");
         }
+
         String fromText = arguments.substring(
                 fromPosition + "/from".length(), toPosition).trim();
         String toText = arguments.substring(toPosition + "/to".length()).trim();
@@ -206,16 +212,17 @@ public final class Parser {
             throw new CharlieException("from/to fields cannot be empty.");
         }
 
-        DateTimeFormatter formatter = DateTimeFormatter
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter
                 .ofPattern("uuuu-MM-dd HHmm")
                 .withResolverStyle(ResolverStyle.STRICT);
         try {
-            LocalDateTime from = LocalDateTime.parse(fromText, formatter);
-            LocalDateTime to = LocalDateTime.parse(toText, formatter);
-            if (!from.isBefore(to)) {
+            LocalDateTime startDateTime = LocalDateTime.parse(fromText, dateTimeFormatter);
+            LocalDateTime endDateTime = LocalDateTime.parse(toText, dateTimeFormatter);
+            if (!startDateTime.isBefore(endDateTime)) {
                 throw new CharlieException("Event end must be after its start.");
             }
-            return new Event(description, false, from, to);
+
+            return new Event(description, false, startDateTime, endDateTime);
         } catch (DateTimeParseException e) {
             throw new CharlieException(
                     "Event dates must use the yyyy-MM-dd HHmm format.");
