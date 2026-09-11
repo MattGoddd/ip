@@ -212,6 +212,18 @@ public final class Parser {
             throw new CharlieException("from/to fields cannot be empty.");
         }
 
+        return parseEventDateTimes(description, fromText, toText);
+    }
+
+    /**
+     * Converts validated event fields into an event with a chronological date-time range.
+     *
+     * @param description Description of the event.
+     * @param fromText Start date-time text.
+     * @param toText End date-time text.
+     * @return Event containing the parsed fields.
+     */
+    private static Event parseEventDateTimes(String description, String fromText, String toText) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter
                 .ofPattern("uuuu-MM-dd HHmm")
                 .withResolverStyle(ResolverStyle.STRICT);
