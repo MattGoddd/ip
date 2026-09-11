@@ -140,6 +140,11 @@ public final class Parser {
      * @throws CharlieException If the command does not have the expected format.
      */
     public static Task parseTask(String input, CommandType commandType) {
+        assert commandType == CommandType.TODO
+                || commandType == CommandType.DEADLINE
+                || commandType == CommandType.EVENT
+                : "Only task-creation command types can be parsed as tasks";
+
         String[] commandAndArgumentParts = input.trim().split("\\s+", 2);
         if (commandAndArgumentParts.length < 2) {
             throw new CharlieException("The task description cannot be empty.");
