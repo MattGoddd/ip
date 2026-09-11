@@ -16,6 +16,7 @@ import charlie.command.ListCommand;
 import charlie.command.MarkCommand;
 import charlie.command.OnCommand;
 import charlie.command.UnmarkCommand;
+import charlie.command.UpdateCommand;
 import charlie.exception.CharlieException;
 import charlie.task.Deadline;
 import charlie.task.Event;
@@ -45,11 +46,12 @@ public final class Parser {
             case BYE -> new ExitCommand();
             case LIST -> new ListCommand();
             case ON -> new OnCommand(parseDate(input));
-            case FIND -> new FindCommand(parseFindKeyword(input));
+            case FIND   -> new FindCommand(parseFindKeyword(input));
             case MARK -> new MarkCommand(parseTaskIndex(input));
             case UNMARK -> new UnmarkCommand(parseTaskIndex(input));
             case DELETE -> new DeleteCommand(parseTaskIndex(input));
             case TODO, DEADLINE, EVENT -> new AddCommand(parseTask(input, commandType));
+            case UPDATE -> new UpdateCommand(parseUpdate(input, commandType));
         };
     }
 
@@ -244,5 +246,11 @@ public final class Parser {
             throw new CharlieException(
                     "Event dates must use the yyyy-MM-dd HHmm format.");
         }
+    }
+
+    private static Command parseUpdate(String input, CommandType command) {
+        String[] commandAndKeywordParts = input.trim().split("\\s+", 4);
+        int taskIndex = parseTaskIndex(input);
+
     }
 }
