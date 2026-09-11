@@ -171,20 +171,28 @@ public class TaskList {
      * @return Matching tasks in their original list order.
      */
     public List<Task> findOnDate(LocalDate searchDate) {
-        List<Task> matches = new ArrayList<>();
-        for (Task task : tasks) {
-            if (task instanceof Deadline deadlineTask
-                    && deadlineTask.deadline.equals(searchDate)) {
-                matches.add(task);
-            } else if (task instanceof Event eventTask) {
-                LocalDate startDate = eventTask.startDateTime.toLocalDate();
-                LocalDate endDate = eventTask.endDateTime.toLocalDate();
-                if (!searchDate.isBefore(startDate) && !searchDate.isAfter(endDate)) {
-                    matches.add(task);
-                }
-            }
+        return tasks.stream()
+                .filter(task -> occursOnDate(task, searchDate))
+                .toList();
+    }
+
+    /**
+     * Returns whether a deadline or event occurs on the requested date.
+     *
+     * @param task Task to check.
+     * @param searchDate Date on which the task must occur.
+     * @return True when the task is dated and occurs on the requested date.
+     */
+    private boolean occursOnDate(Task task, LocalDate searchDate) {
+        if (task instanceof Deadline deadlineTask) {
+            return deadlineTask.deadline.equals(searchDate);
         }
-        return matches;
+        if (task instanceof Event eventTask) {
+            LocalDate startDate = eventTask.startDateTime.toLocalDate();
+            LocalDate endDate = eventTask.endDateTime.toLocalDate();
+            return !searchDate.isBefore(startDate) && !searchDate.isAfter(endDate);
+        }
+        return false;
     }
 
     /**
@@ -194,14 +202,9 @@ public class TaskList {
      * @return Matching tasks in their original list order.
      */
     public List<Task> findByKeyword(String keyword) {
-        List<Task> matches = new ArrayList<>();
         String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
-        for (Task task : tasks) {
-            String normalizedDescription = task.description.toLowerCase(Locale.ROOT);
-            if (normalizedDescription.contains(normalizedKeyword)) {
-                matches.add(task);
-            }
-        }
-        return matches;
+        return tasks.stream()
+                .filter(task -> task.description.toLowerCase(Locale.ROOT).contains(normalizedKeyword))
+                .toList();
     }
 }
