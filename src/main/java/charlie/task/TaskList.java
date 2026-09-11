@@ -127,6 +127,8 @@ public class TaskList {
         validateIndex(index);
         List<Task> proposedTasks = new ArrayList<>(tasks);
         proposedTasks.set(index, tasks.get(index).copyWithStatus(isDone));
+        assert proposedTasks.get(index).isDone == isDone
+                : "Copied task must have the requested completion status";
         return List.copyOf(proposedTasks);
     }
 
