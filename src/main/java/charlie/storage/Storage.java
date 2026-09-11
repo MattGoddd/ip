@@ -95,24 +95,48 @@ public class Storage {
 
         boolean isDone = fields[1].equals("Done");
 
+        return switch (fields[0]) {
+            case "T" -> new Todo(fields[2], isDone);
+            case "D" -> parseSavedDeadline(fields, isDone);
+            case "E" -> parseSavedEvent(fields, isDone);
+            default -> throw new AssertionError("Task type was validated above.");
+        };
+    }
+
+    /**
+     * Reconstructs a deadline from validated save-file fields.
+     *
+     * @param arguments Saved fields containing the description and due date.
+     * @param isDone Whether the reconstructed deadline is completed.
+     * @return Deadline reconstructed from the saved fields.
+     * @throws CharlieException If the saved deadline contains an invalid date.
+     */
+    private Deadline parseSavedDeadline(String[] arguments, boolean isDone) {
+        String description = arguments[2];
         try {
-            return switch (fields[0]) {
-                case "T" -> new Todo(fields[2], isDone);
-                case "D" -> new Deadline(fields[2], isDone, LocalDate.parse(fields[3]));
-                case "E" -> {
-                    try {
-                        yield new Event(fields[2], isDone,
-                                LocalDateTime.parse(fields[3]),
-                                LocalDateTime.parse(fields[4]));
-                    } catch (DateTimeParseException e) {
-                        throw new CharlieException("Saved event contains an invalid date-time.");
-                    }
-                }
-                default -> throw new AssertionError("Task type was validated above.");
-            };
+            LocalDate dueDate = LocalDate.parse(arguments[3]);
+            return new Deadline(description, isDone, dueDate);
         } catch (DateTimeParseException e) {
-            throw new CharlieException(
-                    "Deadline must be a valid date in yyyy-MM-dd format.");
+            throw new CharlieException("Deadline must be a valid date in yyyy-MM-dd format.");
+        }
+    }
+
+    /**
+     * Reconstructs an event from validated save-file fields.
+     *
+     * @param arguments Saved fields containing the description, start, and end.
+     * @param isDone Whether the reconstructed event is completed.
+     * @return Event reconstructed from the saved fields.
+     * @throws CharlieException If the saved event contains an invalid date-time.
+     */
+    private Event parseSavedEvent(String[] arguments, boolean isDone) {
+        String description = arguments[2];
+        try {
+            LocalDateTime startDateTime = LocalDateTime.parse(arguments[3]);
+            LocalDateTime endDateTime = LocalDateTime.parse(arguments[4]);
+            return new Event(description, isDone, startDateTime, endDateTime);
+        } catch (DateTimeParseException e) {
+            throw new CharlieException("Saved event contains an invalid date-time.");
         }
     }
 }
