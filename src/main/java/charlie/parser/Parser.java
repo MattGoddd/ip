@@ -6,17 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 
-import charlie.command.AddCommand;
-import charlie.command.Command;
-import charlie.command.CommandType;
-import charlie.command.DeleteCommand;
-import charlie.command.ExitCommand;
-import charlie.command.FindCommand;
-import charlie.command.ListCommand;
-import charlie.command.MarkCommand;
-import charlie.command.OnCommand;
-import charlie.command.UnmarkCommand;
-import charlie.command.UpdateCommand;
+import charlie.command.*;
 import charlie.exception.CharlieException;
 import charlie.task.Deadline;
 import charlie.task.Event;
@@ -51,7 +41,10 @@ public final class Parser {
             case UNMARK -> new UnmarkCommand(parseTaskIndex(input));
             case DELETE -> new DeleteCommand(parseTaskIndex(input));
             case TODO, DEADLINE, EVENT -> new AddCommand(parseTask(input, commandType));
-            case UPDATE -> new UpdateCommand(parseUpdate(input, commandType));
+            case UPDATE -> new UpdateCommand(
+                    parseUpdateIndex(input),
+                    parseUpdateField(input),
+                    parseUpdateValue(input));
         };
     }
 
@@ -248,9 +241,27 @@ public final class Parser {
         }
     }
 
-    private static Command parseUpdate(String input, CommandType command) {
-        String[] commandAndKeywordParts = input.trim().split("\\s+", 4);
-        int taskIndex = parseTaskIndex(input);
+    private static int parseUpdateIndex(String input) {
+        return parseTaskIndex(input);
+    }
 
+    private static UpdateField parseUpdateField(String input) {
+        String[] commandAndArgumentParts = input.trim().split("\\s+", 4);
+        if (commandAndArgumentParts.length < 4) {
+            throw new CharlieException("Not enough fields for update command");
+        }
+
+        String field = commandAndArgumentParts[2];
+        return UpdateField.parseKeyword(field);
+    }
+
+    private static String parseUpdateValue(String input) {
+        String[] commandAndArgumentParts = input.trim().split("\\s+", 4);
+        if (commandAndArgumentParts.length < 4) {
+            throw new CharlieException("Not enough fields for update command");
+        }
+
+        String updateValue = commandAndArgumentParts[3];
+        return updateValue;
     }
 }

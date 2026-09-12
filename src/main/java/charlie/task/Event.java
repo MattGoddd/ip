@@ -1,7 +1,12 @@
 package charlie.task;
 
+import charlie.command.UpdateField;
+import charlie.exception.CharlieException;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.Locale;
 
 /**
@@ -62,5 +67,53 @@ public class Event extends Task {
         String status = isDone ? "Done" : "Not done";
         return "E" + " | " + status + " | " + this.description + " | "
                 + this.startDateTime + " | " + this.endDateTime;
+    }
+
+    @Override
+    public Task createUpdatedTask(UpdateField updateField, String newValue) {
+        return switch (updateField) {
+          case DESCRIPTION -> createTaskWithDescription(newValue);
+          case FROM -> createTaskWithStart(newValue);
+          case TO -> createTaskWithEnd(newValue);
+          case DEADLINE -> throw new CharlieException("There is no deadline for Event");
+        };
+    }
+
+    private Task createTaskWithDescription(String newValue) {
+        return new Event(newValue, this.isDone, this.startDateTime, this.endDateTime);
+    }
+
+    private Task createTaskWithStart(String newValue) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter
+                .ofPattern("uuuu-MM-dd HHmm")
+                .withResolverStyle(ResolverStyle.STRICT);
+        try {
+            LocalDateTime newStartDateTime = LocalDateTime.parse(newValue, dateTimeFormatter);
+            if (!newStartDateTime.isBefore(endDateTime)) {
+                throw new CharlieException("Event end must be after its start.");
+            }
+
+            return new Event(description, this.isDone, newStartDateTime, endDateTime);
+        } catch (DateTimeParseException e) {
+            throw new CharlieException(
+                    "Event dates must use the yyyy-MM-dd HHmm format.");
+        }
+    }
+
+    private Task createTaskWithEnd(String newValue) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter
+                .ofPattern("uuuu-MM-dd HHmm")
+                .withResolverStyle(ResolverStyle.STRICT);
+        try {
+            LocalDateTime newEndDateTime = LocalDateTime.parse(newValue, dateTimeFormatter);
+            if (!startDateTime.isBefore(newEndDateTime)) {
+                throw new CharlieException("Event end must be after its start.");
+            }
+
+            return new Event(description, this.isDone, startDateTime, newEndDateTime);
+        } catch (DateTimeParseException e) {
+            throw new CharlieException(
+                    "Event dates must use the yyyy-MM-dd HHmm format.");
+        }
     }
 }

@@ -1,5 +1,7 @@
 package charlie.task;
 
+import charlie.command.UpdateField;
+
 /**
  * Represents a task without an associated date or time.
  */
@@ -46,4 +48,10 @@ public class Todo extends Task {
         String status = isDone ? "Done" : "Not done";
         return "T" + " | " + status + " | " + this.description;
     }
+
+    @Override
+    public Task createUpdatedTask(UpdateField updateField, String newValue) {
+
+    }
+
 }

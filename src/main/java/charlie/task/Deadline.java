@@ -1,5 +1,7 @@
 package charlie.task;
 
+import charlie.command.UpdateField;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -56,4 +58,10 @@ public class Deadline extends Task {
         String status = isDone ? "Done" : "Not done";
         return "D" + " | " + status + " | " + this.description + " | " + this.deadline;
     }
+
+    @Override
+    public Task createUpdatedTask(UpdateField updateField, String newValue) {
+
+    }
+
 }

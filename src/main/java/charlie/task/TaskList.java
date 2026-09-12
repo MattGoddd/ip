@@ -56,9 +56,40 @@ public class TaskList {
      *
      * @param index Zero-based task index.
      * @return Selected task.
+     * @throws CharlieException If the index does not identify an existing task.
      */
     public Task get(int index) {
+        validateIndex(index);
         return tasks.get(index);
+    }
+
+    /**
+     * Returns the task state that would result from replacing one task.
+     *
+     * @param index Zero-based index of the task to replace.
+     * @param updatedTask Task to store at the selected index.
+     * @return Proposed tasks without changing this task list.
+     * @throws CharlieException If the index does not identify an existing task.
+     */
+    public List<Task> getTasksAfterReplacing(int index, Task updatedTask) {
+        validateIndex(index);
+        List<Task> proposedTasks = new ArrayList<>(tasks);
+        proposedTasks.set(index, updatedTask);
+        return List.copyOf(proposedTasks);
+    }
+
+    /**
+     * Replaces the task at the given zero-based index.
+     *
+     * @param index Zero-based index of the task to replace.
+     * @param updatedTask Task to store at the selected index.
+     * @return Updated task.
+     * @throws CharlieException If the index does not identify an existing task.
+     */
+    public Task replace(int index, Task updatedTask) {
+        validateIndex(index);
+        tasks.set(index, updatedTask);
+        return updatedTask;
     }
 
     /**

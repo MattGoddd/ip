@@ -1,5 +1,7 @@
 package charlie.task;
 
+import charlie.command.UpdateField;
+
 /**
  * Represents a task with a description and completion status.
  */
@@ -60,4 +62,7 @@ public abstract class Task {
      * @return The task data to write to the save file.
      */
     public abstract String saveFileFormat();
+
+
+    public abstract Task createUpdatedTask(UpdateField updateField, String newValue);
 }
