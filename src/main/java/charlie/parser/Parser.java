@@ -13,6 +13,8 @@ import charlie.task.Event;
 import charlie.task.Task;
 import charlie.task.Todo;
 
+import javax.print.attribute.standard.NumberOfDocuments;
+
 /**
  * Interprets raw user input and validates command arguments.
  */
@@ -41,10 +43,7 @@ public final class Parser {
             case UNMARK -> new UnmarkCommand(parseTaskIndex(input));
             case DELETE -> new DeleteCommand(parseTaskIndex(input));
             case TODO, DEADLINE, EVENT -> new AddCommand(parseTask(input, commandType));
-            case UPDATE -> new UpdateCommand(
-                    parseUpdateIndex(input),
-                    parseUpdateField(input),
-                    parseUpdateValue(input));
+            case UPDATE -> parseUpdateCommand(input);
         };
     }
 
@@ -241,27 +240,45 @@ public final class Parser {
         }
     }
 
+    private static UpdateCommand parseUpdateCommand(String input) {
+        String[] commandAndArgumentParts = input.trim().split("\\s+", 4);
+
+        if (commandAndArgumentParts.length < 4) {
+            throw new CharlieException(
+                    "Update command requires 4 fields.");
+        }
+
+        int taskIndex = parseUpdateIndex(commandAndArgumentParts[1]);
+        UpdateField updateField =
+                parseUpdateField(commandAndArgumentParts[2]);
+        String newValue = parseUpdateValue(commandAndArgumentParts[3].trim());
+
+        if (newValue.isBlank()) {
+            throw new CharlieException(
+                    "The updated value cannot be empty.");
+        }
+
+        updateField.validateValueWithField(newValue);
+
+        return new UpdateCommand(taskIndex, updateField, newValue);
+    }
+
     private static int parseUpdateIndex(String input) {
-        return parseTaskIndex(input);
+        try {
+            int onesIndex = Integer.parseInt(input);
+            return onesIndex - 1;
+        } catch (NumberFormatException e) {
+            throw new CharlieException(
+                    "Enter a valid task index.");
+        }
     }
 
     private static UpdateField parseUpdateField(String input) {
-        String[] commandAndArgumentParts = input.trim().split("\\s+", 4);
-        if (commandAndArgumentParts.length < 4) {
-            throw new CharlieException("Not enough fields for update command");
-        }
-
-        String field = commandAndArgumentParts[2];
-        return UpdateField.parseKeyword(field);
+        return UpdateField.parseKeyword(input);
     }
 
     private static String parseUpdateValue(String input) {
-        String[] commandAndArgumentParts = input.trim().split("\\s+", 4);
-        if (commandAndArgumentParts.length < 4) {
-            throw new CharlieException("Not enough fields for update command");
-        }
-
-        String updateValue = commandAndArgumentParts[3];
+        String updateValue = input;
         return updateValue;
     }
 }

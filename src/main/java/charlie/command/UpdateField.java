@@ -2,6 +2,12 @@ package charlie.command;
 
 import charlie.exception.CharlieException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+
 public enum UpdateField {
     /** Description of task */
     DESCRIPTION("description"),
@@ -34,5 +40,36 @@ public enum UpdateField {
             }
         }
         throw new CharlieException("Oops, this is an invalid field");
+    }
+
+    public void validateValueWithField(String value) {
+
+        switch (this) {
+            case DESCRIPTION -> { }
+            case DEADLINE -> validateDeadline(value);
+            case TO, FROM -> validateDateTime(value);
+        }
+    }
+
+    private static void validateDeadline(String value) {
+        try {
+            LocalDate.parse(value);
+        } catch (DateTimeParseException e) {
+            throw new CharlieException(
+                    "Deadline must use the yyyy-MM-dd format.");
+        }
+    }
+
+    private static void validateDateTime(String value) {
+        DateTimeFormatter formatter = DateTimeFormatter
+                .ofPattern("uuuu-MM-dd HHmm")
+                .withResolverStyle(ResolverStyle.STRICT);
+
+        try {
+            LocalDateTime.parse(value, formatter);
+        } catch (DateTimeParseException e) {
+            throw new CharlieException(
+                    "Event dates must use the yyyy-MM-dd HHmm format.");
+        }
     }
 }
