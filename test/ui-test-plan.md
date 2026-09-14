@@ -313,7 +313,41 @@ list
     ____________________________________________________________
 ```
 
-### UI-STORAGE-CONSISTENCY-07 — Exit the consistency session
+### UI-STORAGE-CONSISTENCY-07 — Reject updating when saving fails
+
+**Input:**
+
+```text
+update 1 description changed task
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Could not save tasks.
+    ____________________________________________________________
+```
+
+### UI-STORAGE-CONSISTENCY-08 — Keep task details unchanged after failed updating
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] stable task
+    2.[T][X] completed task
+    ____________________________________________________________
+```
+
+### UI-STORAGE-CONSISTENCY-09 — Exit the consistency session
 
 **Input:**
 
@@ -1444,6 +1478,49 @@ list
     ____________________________________________________________
 ```
 
+## UI-UPDATE-01 — Update a todo description
+
+**Aim:** Verify that `update` replaces the selected task's description and displays the replacement.
+
+**Rationale:** Updating should preserve the task's type, completion status, and list position while changing only the requested field.
+
+**Input:**
+
+```text
+update 1 description borrow library book
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Updated this task:
+      [T][ ] borrow library book
+    ____________________________________________________________
+```
+
+## UI-UPDATE-02 — List tasks after updating
+
+**Aim:** Verify that the replacement remains at the selected list position.
+
+**Rationale:** The confirmation alone does not prove that `TaskList` retained the updated task.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] borrow library book
+    2.[D][ ] return book (by: Sep 20 2026)
+    ____________________________________________________________
+```
+
 ## UI-24 — Exit after persistence checks
 
 **Aim:** End the test session normally and verify the final persisted task list.
@@ -1467,6 +1544,6 @@ bye
 **Expected `data/charlie.txt` contents after exit:**
 
 ```text
-T | Not done | borrow book
+T | Not done | borrow library book
 D | Not done | return book | 2026-09-20
 ```
