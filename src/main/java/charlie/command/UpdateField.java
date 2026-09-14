@@ -46,7 +46,8 @@ public enum UpdateField {
                 return updateField;
             }
         }
-        throw new CharlieException("Oops, this is an invalid field");
+        throw new CharlieException(
+                "Supported update fields are description, deadline, from, and to.");
     }
 
     /**

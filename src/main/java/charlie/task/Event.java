@@ -84,7 +84,8 @@ public class Event extends Task {
             case DESCRIPTION -> createTaskWithDescription(newValue);
             case FROM -> createTaskWithStart(newValue);
             case TO -> createTaskWithEnd(newValue);
-            case DEADLINE -> throw new CharlieException("There is no deadline for Event");
+            case DEADLINE -> throw new CharlieException(
+                    "An event does not have a deadline field.");
         };
     }
 

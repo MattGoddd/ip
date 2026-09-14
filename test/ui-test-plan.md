@@ -428,6 +428,26 @@ list
     ____________________________________________________________
 ```
 
+## UI-UPDATE-ERROR-01 — Reject a deadline field for an event
+
+**Aim:** Verify that an event rejects a field belonging only to deadlines.
+
+**Rationale:** Field-format validation is insufficient when the selected task type does not own that field.
+
+**Input:**
+
+```text
+update 3 deadline 2026-09-20
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    An event does not have a deadline field.
+    ____________________________________________________________
+```
+
 ## UI-LOAD-02 — Remove the loaded event
 
 **Aim:** Remove the preloaded event as part of returning to an empty list for the existing test sequence.
@@ -1475,6 +1495,86 @@ list
     Here are the tasks in your list:
     1.[T][ ] borrow book
     2.[D][ ] return book (by: Sep 20 2026)
+    ____________________________________________________________
+```
+
+## UI-UPDATE-ERROR-02 — Reject an update with a missing value
+
+**Aim:** Verify that `update` explains its required command structure when an argument is missing.
+
+**Rationale:** Rejecting incomplete input early prevents access to absent argument positions.
+
+**Input:**
+
+```text
+update 1 description
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Usage: update TASK_NUMBER FIELD NEW_VALUE.
+    ____________________________________________________________
+```
+
+## UI-UPDATE-ERROR-03 — Reject a non-numeric update task number
+
+**Aim:** Verify that `update` requires a numeric task number.
+
+**Rationale:** Number conversion failures should produce a user-friendly message instead of terminating Charlie.
+
+**Input:**
+
+```text
+update first description changed task
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Please enter a valid task number.
+    ____________________________________________________________
+```
+
+## UI-UPDATE-ERROR-04 — Reject an unsupported update field
+
+**Aim:** Verify that `update` lists the fields users can select.
+
+**Rationale:** Naming the supported fields helps users correct an unrecognized field without guessing.
+
+**Input:**
+
+```text
+update 1 priority high
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Supported update fields are description, deadline, from, and to.
+    ____________________________________________________________
+```
+
+## UI-UPDATE-ERROR-05 — Reject an event field for a deadline
+
+**Aim:** Verify that a deadline rejects fields belonging only to events.
+
+**Rationale:** A valid date-time value must not allow an incompatible field to reach task replacement.
+
+**Input:**
+
+```text
+update 2 from 2026-09-20 0900
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    A deadline does not have from or to fields.
     ____________________________________________________________
 ```
 

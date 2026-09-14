@@ -261,7 +261,7 @@ public final class Parser {
 
         if (commandAndArgumentParts.length < 4) {
             throw new CharlieException(
-                    "Update command requires 4 fields.");
+                    "Usage: update TASK_NUMBER FIELD NEW_VALUE.");
         }
 
         int taskIndex = parseUpdateIndex(commandAndArgumentParts[1]);
@@ -287,7 +287,7 @@ public final class Parser {
             return oneBasedIndex - 1;
         } catch (NumberFormatException e) {
             throw new CharlieException(
-                    "Enter a valid task index.");
+                    "Please enter a valid task number.");
         }
     }
 

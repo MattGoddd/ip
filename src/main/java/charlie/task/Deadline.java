@@ -75,7 +75,8 @@ public class Deadline extends Task {
         return switch (updateField) {
             case DESCRIPTION -> createTaskWithDescription(newValue);
             case DEADLINE -> createTaskWithDeadline(newValue);
-            case FROM, TO -> throw new CharlieException("There is no from / to for Deadline");
+            case FROM, TO -> throw new CharlieException(
+                    "A deadline does not have from or to fields.");
         };
     }
 
