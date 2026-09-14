@@ -448,6 +448,92 @@ update 3 deadline 2026-09-20
     ____________________________________________________________
 ```
 
+## UI-UPDATE-DEADLINE-01 — Update a deadline date
+
+**Aim:** Verify that `update` replaces a Deadline's date.
+
+**Rationale:** A successful replacement must retain the Deadline's description, completion status, and list position.
+
+**Input:**
+
+```text
+update 2 deadline 2026-09-19
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Updated this task:
+      [D][ ] loaded deadline (by: Sep 19 2026)
+    ____________________________________________________________
+```
+
+## UI-UPDATE-EVENT-01 — Update an event start date-time
+
+**Aim:** Verify that `update` replaces an Event's start date-time.
+
+**Rationale:** Replacing the start should retain the Event's other fields and completed status.
+
+**Input:**
+
+```text
+update 3 from 2026-09-18 0830
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Updated this task:
+      [E][X] loaded event (from: Sep 18 2026, 8:30 AM to: Sep 18 2026, 10:00 AM)
+    ____________________________________________________________
+```
+
+## UI-UPDATE-EVENT-02 — Update an event end date-time
+
+**Aim:** Verify that `update` replaces an Event's end date-time.
+
+**Rationale:** Replacing the end should retain the previously updated start and the completed status.
+
+**Input:**
+
+```text
+update 3 to 2026-09-18 1030
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Updated this task:
+      [E][X] loaded event (from: Sep 18 2026, 8:30 AM to: Sep 18 2026, 10:30 AM)
+    ____________________________________________________________
+```
+
+## UI-UPDATE-TYPES-01 — List tasks after type-specific updates
+
+**Aim:** Verify that Deadline and Event replacements remain in their original list positions.
+
+**Rationale:** Confirmation messages alone do not prove that the replacements were retained by `TaskList`.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][X] loaded todo
+    2.[D][ ] loaded deadline (by: Sep 19 2026)
+    3.[E][X] loaded event (from: Sep 18 2026, 8:30 AM to: Sep 18 2026, 10:30 AM)
+    ____________________________________________________________
+```
+
 ## UI-LOAD-02 — Remove the loaded event
 
 **Aim:** Remove the preloaded event as part of returning to an empty list for the existing test sequence.
@@ -465,7 +551,7 @@ delete 3
 ```text
     ____________________________________________________________
     Noted. I've removed this task:
-      [E][X] loaded event (from: Sep 18 2026, 9:00 AM to: Sep 18 2026, 10:00 AM)
+      [E][X] loaded event (from: Sep 18 2026, 8:30 AM to: Sep 18 2026, 10:30 AM)
     Now you have 2 tasks in the list.
     ____________________________________________________________
 ```
@@ -487,7 +573,7 @@ delete 2
 ```text
     ____________________________________________________________
     Noted. I've removed this task:
-      [D][ ] loaded deadline (by: Sep 18 2026)
+      [D][ ] loaded deadline (by: Sep 19 2026)
     Now you have 1 tasks in the list.
     ____________________________________________________________
 ```

@@ -38,3 +38,33 @@ dependencies into one executable file.
 
 Run the JAR from the project directory so that Charlie reads and writes its task
 data at `data/charlie.txt`. JDK 25 is required both to build and run the project.
+
+## Updating a task
+
+Use the `update` command to replace one detail of an existing task without deleting
+and recreating it:
+
+```text
+update TASK_NUMBER FIELD NEW_VALUE
+```
+
+Use the task number shown by the `list` command. The supported fields are:
+
+| Field | Applicable task type | Value format |
+| --- | --- | --- |
+| `description` | Todo, Deadline, and Event | Any non-blank text |
+| `deadline` | Deadline | `yyyy-MM-dd` |
+| `from` | Event | `yyyy-MM-dd HHmm` |
+| `to` | Event | `yyyy-MM-dd HHmm` |
+
+For example:
+
+```text
+update 1 description borrow library book
+update 2 deadline 2026-09-20
+update 3 from 2026-09-21 1400
+update 3 to 2026-09-21 1600
+```
+
+The updated task remains at the same list position and keeps its existing completion
+status. For an Event, the updated end date-time must remain later than its start.
