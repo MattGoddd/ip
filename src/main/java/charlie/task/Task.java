@@ -1,6 +1,7 @@
 package charlie.task;
 
 import charlie.command.UpdateField;
+import charlie.exception.CharlieException;
 
 /**
  * Represents a task with a description and completion status.
@@ -63,6 +64,13 @@ public abstract class Task {
      */
     public abstract String saveFileFormat();
 
-
+    /**
+     * Creates a copy of this task with one field replaced.
+     *
+     * @param updateField Field to replace.
+     * @param newValue Replacement value for the field.
+     * @return Updated copy of this task.
+     * @throws CharlieException If the field is unsupported or the replacement value is invalid.
+     */
     public abstract Task createUpdatedTask(UpdateField updateField, String newValue);
 }

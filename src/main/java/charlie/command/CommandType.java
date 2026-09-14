@@ -29,7 +29,6 @@ public enum CommandType {
     /** Updates a task. */
     UPDATE("update");
 
-
     /** Keyword that identifies this command in user input. */
     private final String keyword;
 

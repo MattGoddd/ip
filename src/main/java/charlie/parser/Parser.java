@@ -6,14 +6,23 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 
-import charlie.command.*;
+import charlie.command.AddCommand;
+import charlie.command.Command;
+import charlie.command.CommandType;
+import charlie.command.DeleteCommand;
+import charlie.command.ExitCommand;
+import charlie.command.FindCommand;
+import charlie.command.ListCommand;
+import charlie.command.MarkCommand;
+import charlie.command.OnCommand;
+import charlie.command.UnmarkCommand;
+import charlie.command.UpdateCommand;
+import charlie.command.UpdateField;
 import charlie.exception.CharlieException;
 import charlie.task.Deadline;
 import charlie.task.Event;
 import charlie.task.Task;
 import charlie.task.Todo;
-
-import javax.print.attribute.standard.NumberOfDocuments;
 
 /**
  * Interprets raw user input and validates command arguments.
@@ -38,7 +47,7 @@ public final class Parser {
             case BYE -> new ExitCommand();
             case LIST -> new ListCommand();
             case ON -> new OnCommand(parseDate(input));
-            case FIND   -> new FindCommand(parseFindKeyword(input));
+            case FIND -> new FindCommand(parseFindKeyword(input));
             case MARK -> new MarkCommand(parseTaskIndex(input));
             case UNMARK -> new UnmarkCommand(parseTaskIndex(input));
             case DELETE -> new DeleteCommand(parseTaskIndex(input));
@@ -240,6 +249,13 @@ public final class Parser {
         }
     }
 
+    /**
+     * Parses the task index, field, and replacement value of an update command.
+     *
+     * @param input Complete update command entered by the user.
+     * @return Update command containing the parsed arguments.
+     * @throws CharlieException If an argument is missing or invalid.
+     */
     private static UpdateCommand parseUpdateCommand(String input) {
         String[] commandAndArgumentParts = input.trim().split("\\s+", 4);
 
@@ -251,29 +267,48 @@ public final class Parser {
         int taskIndex = parseUpdateIndex(commandAndArgumentParts[1]);
         UpdateField updateField =
                 parseUpdateField(commandAndArgumentParts[2]);
-        String newValue = parseUpdateValue(commandAndArgumentParts[3].trim());
+        String newValue = parseUpdateValue(commandAndArgumentParts[3]);
 
         updateField.validateNewValue(newValue);
 
         return new UpdateCommand(taskIndex, updateField, newValue);
     }
 
+    /**
+     * Converts a one-based update task number into a zero-based index.
+     *
+     * @param input Task number entered by the user.
+     * @return Zero-based task index.
+     * @throws CharlieException If the task number is not an integer.
+     */
     private static int parseUpdateIndex(String input) {
         try {
-            int onesIndex = Integer.parseInt(input);
-            return onesIndex - 1;
+            int oneBasedIndex = Integer.parseInt(input);
+            return oneBasedIndex - 1;
         } catch (NumberFormatException e) {
             throw new CharlieException(
                     "Enter a valid task index.");
         }
     }
 
+    /**
+     * Converts an update-field keyword into its corresponding field.
+     *
+     * @param input Update-field keyword entered by the user.
+     * @return Matching update field.
+     * @throws CharlieException If the keyword does not represent a supported field.
+     */
     private static UpdateField parseUpdateField(String input) {
         return UpdateField.parseKeyword(input);
     }
 
+    /**
+     * Removes surrounding whitespace from an update replacement value.
+     *
+     * @param input Replacement value entered by the user.
+     * @return Trimmed replacement value.
+     */
     private static String parseUpdateValue(String input) {
-        String updateValue = input;
-        return updateValue;
+        return input.trim();
     }
 }

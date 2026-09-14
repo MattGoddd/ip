@@ -50,6 +50,14 @@ public class Todo extends Task {
         return "T" + " | " + status + " | " + this.description;
     }
 
+    /**
+     * Creates a copy of this todo with the requested field replaced.
+     *
+     * @param updateField Field to replace.
+     * @param newValue Replacement value for the field.
+     * @return Updated copy of this todo.
+     * @throws CharlieException If the requested field does not belong to a todo.
+     */
     @Override
     public Task createUpdatedTask(UpdateField updateField, String newValue) {
         return switch (updateField) {
@@ -59,6 +67,12 @@ public class Todo extends Task {
         };
     }
 
+    /**
+     * Creates a copy of this todo with a replacement description.
+     *
+     * @param newValue Replacement description.
+     * @return Updated todo copy.
+     */
     private Todo createTaskWithDescription(String newValue) {
         return new Todo(newValue, isDone);
     }

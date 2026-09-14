@@ -1,37 +1,44 @@
 package charlie.command;
 
-import charlie.exception.CharlieException;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 
+import charlie.exception.CharlieException;
+
+/**
+ * Identifies a task field that can be changed by an update command.
+ */
 public enum UpdateField {
-    /** Description of task */
+    /** Description of a task. */
     DESCRIPTION("description"),
-    /** Deadline of task */
+    /** Due date of a deadline. */
     DEADLINE("deadline"),
-    /** Start time of task */
+    /** Start date and time of an event. */
     FROM("from"),
-    /** End time of task */
+    /** End date and time of an event. */
     TO("to");
 
-
-    /** Keyword to identify the UpdateField */
+    /** Keyword that identifies this update field in user input. */
     private final String keyword;
 
+    /**
+     * Creates an update field associated with its user-facing keyword.
+     *
+     * @param keyword Keyword that identifies the field.
+     */
     UpdateField(String keyword) {
         this.keyword = keyword;
     }
 
     /**
-     * Converts a updateField keyword entered by the user into its corresponding enum value.
+     * Converts an update-field keyword into its corresponding enum value.
      *
-     * @param keyword updatefield keyword entered by the user.
-     * @return The matching command.
-     * @throws CharlieException If the keyword does not represent a supported command.
+     * @param keyword Update-field keyword entered by the user.
+     * @return Matching update field.
+     * @throws CharlieException If the keyword does not represent a supported field.
      */
     public static UpdateField parseKeyword(String keyword) {
         for (UpdateField updateField : values()) {
@@ -42,6 +49,12 @@ public enum UpdateField {
         throw new CharlieException("Oops, this is an invalid field");
     }
 
+    /**
+     * Verifies that a replacement value has the format required by this field.
+     *
+     * @param value Replacement value to validate.
+     * @throws CharlieException If the value is empty or has an invalid format.
+     */
     public void validateNewValue(String value) {
         if (value.isBlank()) {
             throw new CharlieException(
@@ -52,9 +65,16 @@ public enum UpdateField {
             case DESCRIPTION -> { }
             case DEADLINE -> validateDeadline(value);
             case TO, FROM -> validateDateTime(value);
+            default -> throw new AssertionError("Every update field must define validation");
         }
     }
 
+    /**
+     * Verifies that a replacement deadline uses the required date format.
+     *
+     * @param value Replacement deadline to validate.
+     * @throws CharlieException If the value is not a valid date.
+     */
     private static void validateDeadline(String value) {
         try {
             LocalDate.parse(value);
@@ -64,6 +84,12 @@ public enum UpdateField {
         }
     }
 
+    /**
+     * Verifies that a replacement event time uses the required date-time format.
+     *
+     * @param value Replacement event time to validate.
+     * @throws CharlieException If the value is not a valid date-time.
+     */
     private static void validateDateTime(String value) {
         DateTimeFormatter formatter = DateTimeFormatter
                 .ofPattern("uuuu-MM-dd HHmm")
