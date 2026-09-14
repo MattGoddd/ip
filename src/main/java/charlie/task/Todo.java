@@ -1,6 +1,7 @@
 package charlie.task;
 
 import charlie.command.UpdateField;
+import charlie.exception.CharlieException;
 
 /**
  * Represents a task without an associated date or time.
@@ -51,7 +52,14 @@ public class Todo extends Task {
 
     @Override
     public Task createUpdatedTask(UpdateField updateField, String newValue) {
-
+        return switch (updateField) {
+            case DESCRIPTION -> createTaskWithDescription(newValue);
+            case DEADLINE, FROM, TO -> throw new CharlieException(
+                    "A todo only has a description field.");
+        };
     }
 
+    private Todo createTaskWithDescription(String newValue) {
+        return new Todo(newValue, isDone);
+    }
 }

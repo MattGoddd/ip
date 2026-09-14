@@ -253,12 +253,7 @@ public final class Parser {
                 parseUpdateField(commandAndArgumentParts[2]);
         String newValue = parseUpdateValue(commandAndArgumentParts[3].trim());
 
-        if (newValue.isBlank()) {
-            throw new CharlieException(
-                    "The updated value cannot be empty.");
-        }
-
-        updateField.validateValueWithField(newValue);
+        updateField.validateNewValue(newValue);
 
         return new UpdateCommand(taskIndex, updateField, newValue);
     }

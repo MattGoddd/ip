@@ -1,9 +1,13 @@
 package charlie.task;
 
 import charlie.command.UpdateField;
+import charlie.exception.CharlieException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.Locale;
 
 /**
@@ -61,7 +65,28 @@ public class Deadline extends Task {
 
     @Override
     public Task createUpdatedTask(UpdateField updateField, String newValue) {
+        return switch (updateField) {
+            case DESCRIPTION -> createTaskWithDescription(newValue);
+            case DEADLINE -> createTaskWithDeadline(newValue);
+            case FROM, TO -> throw new CharlieException("There is no from / to for Deadline");
+        };
+    }
 
+    private Task createTaskWithDescription(String newValue) {
+        return new Deadline(newValue, this.isDone, this.deadline);
+    }
+
+    private Task createTaskWithDeadline(String newValue) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter
+                .ofPattern("uuuu-MM-dd")
+                .withResolverStyle(ResolverStyle.STRICT);
+        try {
+            LocalDate newDeadline = LocalDate.parse(newValue, dateTimeFormatter);
+            return new Deadline(this.description, this.isDone, newDeadline);
+        } catch (DateTimeParseException e) {
+            throw new CharlieException(
+                    "Event dates must use the yyyy-MM-dd format.");
+        }
     }
 
 }

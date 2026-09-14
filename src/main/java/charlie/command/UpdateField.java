@@ -42,7 +42,11 @@ public enum UpdateField {
         throw new CharlieException("Oops, this is an invalid field");
     }
 
-    public void validateValueWithField(String value) {
+    public void validateNewValue(String value) {
+        if (value.isBlank()) {
+            throw new CharlieException(
+                    "The updated value cannot be empty.");
+        }
 
         switch (this) {
             case DESCRIPTION -> { }
