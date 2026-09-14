@@ -21,8 +21,15 @@ public class UpdateCommand extends Command {
 
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
-        Task task = tasks.get(this.index);
-        tasks.replace(this.index, task.createUpdatedTask(this.updateField, this.newValue));
+        Task originalTask = tasks.get(this.index);
+        Task updatedTask = originalTask.createUpdatedTask(this.updateField, this.newValue);
 
+        storage.save(tasks.getTasksAfterReplacing(this.index, updatedTask));
+        tasks.replace(this.index, updatedTask);
+
+        ui.showMessages(
+                "Updated this task:",
+                "  " + updatedTask);
     }
 }
+

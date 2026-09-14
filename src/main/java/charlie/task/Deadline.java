@@ -4,7 +4,6 @@ import charlie.command.UpdateField;
 import charlie.exception.CharlieException;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
@@ -85,7 +84,7 @@ public class Deadline extends Task {
             return new Deadline(this.description, this.isDone, newDeadline);
         } catch (DateTimeParseException e) {
             throw new CharlieException(
-                    "Event dates must use the yyyy-MM-dd format.");
+                    "Deadline date must use the yyyy-MM-dd format.");
         }
     }
 
