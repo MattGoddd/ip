@@ -1,20 +1,112 @@
 package charlie.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import charlie.exception.CharlieException;
+
 public class TaskListTest {
+    @Test
+    public void constructor_initialTasks_copiesInputList() {
+        ArrayList<Task> initialTasks = new ArrayList<>();
+        initialTasks.add(new Todo("first", false));
+        TaskList taskList = new TaskList(initialTasks);
+
+        initialTasks.clear();
+
+        assertEquals(1, taskList.getSize());
+    }
+
+    @Test
+    public void addGetReplaceAndDelete_validIndexes_updateList() {
+        TaskList taskList = new TaskList();
+        Todo firstTask = new Todo("first", false);
+        Todo replacementTask = new Todo("replacement", false);
+
+        taskList.add(firstTask);
+        assertEquals(firstTask, taskList.get(0));
+        assertEquals(replacementTask, taskList.replace(0, replacementTask));
+        assertEquals(replacementTask, taskList.get(0));
+        assertEquals(replacementTask, taskList.delete(0));
+        assertEquals(0, taskList.getSize());
+    }
+
+    @Test
+    public void proposedTaskStates_doNotMutateOriginalList() {
+        Todo firstTask = new Todo("first", false);
+        Todo secondTask = new Todo("second", false);
+        Todo replacementTask = new Todo("replacement", true);
+        TaskList taskList = new TaskList(List.of(firstTask, secondTask));
+
+        List<Task> afterAdding = taskList.getTasksAfterAdding(replacementTask);
+        List<Task> afterDeleting = taskList.getTasksAfterDeleting(0);
+        List<Task> afterReplacing = taskList.getTasksAfterReplacing(0, replacementTask);
+        List<Task> afterMarking = taskList.getTasksAfterChangingStatus(0, true);
+
+        assertEquals(List.of(firstTask, secondTask, replacementTask), afterAdding);
+        assertEquals(List.of(secondTask), afterDeleting);
+        assertEquals(List.of(replacementTask, secondTask), afterReplacing);
+        assertEquals("[T][X] first", afterMarking.get(0).toString());
+        assertEquals(List.of(firstTask, secondTask), taskList.getTasks());
+        assertEquals("[T][ ] first", taskList.get(0).toString());
+        assertThrows(UnsupportedOperationException.class, () -> afterAdding.add(firstTask));
+    }
+
+    @Test
+    public void getTasks_returnedSnapshotCannotChangeTaskMembership() {
+        TaskList taskList = new TaskList(List.of(new Todo("first", false)));
+        List<Task> snapshot = taskList.getTasks();
+
+        assertThrows(UnsupportedOperationException.class, snapshot::clear);
+        taskList.add(new Todo("second", false));
+
+        assertEquals(1, snapshot.size());
+        assertEquals(2, taskList.getSize());
+    }
+
+    @Test
+    public void indexedOperations_emptyList_exceptionThrown() {
+        TaskList taskList = new TaskList();
+
+        CharlieException exception = assertThrows(CharlieException.class, () -> taskList.get(0));
+
+        assertEquals("There are no tasks in the list.", exception.getMessage());
+    }
+
+    @Test
+    public void indexedOperations_outOfRange_exceptionThrown() {
+        TaskList taskList = new TaskList(List.of(new Todo("first", false)));
+
+        CharlieException belowRange = assertThrows(
+                CharlieException.class, () -> taskList.mark(-1));
+        CharlieException aboveRange = assertThrows(
+                CharlieException.class, () -> taskList.delete(1));
+
+        assertEquals("Please enter a task number from 1 to 1.", belowRange.getMessage());
+        assertEquals("Please enter a task number from 1 to 1.", aboveRange.getMessage());
+    }
+
     @Test
     public void mark_changedFromUndoneToDone_returnsDoneTask() {
         Todo todo = new Todo("sample", false);
         TaskList taskList = new TaskList(List.of(todo));
         assertTrue(taskList.mark(0).isDone);
+    }
+
+    @Test
+    public void unmark_changedFromDoneToUndone_returnsUndoneTask() {
+        Todo todo = new Todo("sample", true);
+        TaskList taskList = new TaskList(List.of(todo));
+
+        assertEquals("[T][ ] sample", taskList.unmark(0).toString());
     }
 
     @Test
@@ -53,6 +145,20 @@ public class TaskListTest {
                         LocalDateTime.of(2026, 1, 10, 0, 0))));
 
         assertEquals(1, taskList.findOnDate(LocalDate.of(2026, 1, 5)).size());
+    }
+
+    @Test
+    public void findOnDate_eventBoundaryDates_returnsEvent() {
+        Event event = new Event(
+                "sample",
+                false,
+                LocalDateTime.of(2026, 1, 1, 23, 0),
+                LocalDateTime.of(2026, 1, 3, 1, 0));
+        TaskList taskList = new TaskList(List.of(event, new Todo("undated", false)));
+
+        assertEquals(List.of(event), taskList.findOnDate(LocalDate.of(2026, 1, 1)));
+        assertEquals(List.of(event), taskList.findOnDate(LocalDate.of(2026, 1, 3)));
+        assertTrue(taskList.findOnDate(LocalDate.of(2026, 1, 4)).isEmpty());
     }
 
     @Test
