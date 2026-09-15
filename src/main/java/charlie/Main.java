@@ -37,7 +37,7 @@ public class Main extends Application {
     private final TextField userInput = new TextField();
 
     /** Submits the command currently in the text field. */
-    private final Button sendButton = new Button("Send");
+    private final Button sendButton = new Button("Roar!");
 
     /** Main application window, closed after the {@code bye} command. */
     private Stage stage;
@@ -59,7 +59,7 @@ public class Main extends Application {
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.getStyleClass().add("conversation-scroll");
 
-        userInput.setPromptText("Enter a command, e.g. list");
+        userInput.setPromptText("Tell Charlie what to remember...");
         HBox.setHgrow(userInput, Priority.ALWAYS);
         HBox inputArea = new HBox(8, userInput, sendButton);
         inputArea.getStyleClass().add("input-area");
@@ -79,7 +79,7 @@ public class Main extends Application {
                 Main.class.getResource("/styles.css"),
                 "Missing stylesheet resource").toExternalForm());
 
-        stage.setTitle("Charlie");
+        stage.setTitle("Charlie's Task Nest");
         stage.setMinWidth(360);
         stage.setMinHeight(420);
         stage.setResizable(true);

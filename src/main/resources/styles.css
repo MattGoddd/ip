@@ -1,5 +1,5 @@
 .main-layout {
-    -fx-background-color: #f4f6fa;
+    -fx-background-color: #f7f4e8;
     -fx-font-family: "Segoe UI";
 }
 
@@ -15,51 +15,51 @@
 
 .dialog-text {
     -fx-font-size: 14px;
-    -fx-text-fill: #1f2937;
+    -fx-text-fill: #2f3d2c;
     -fx-padding: 9px 12px;
 }
 
 .charlie-dialog {
-    -fx-background-color: #ffffff;
+    -fx-background-color: #eef4df;
     -fx-background-radius: 5px 14px 14px 14px;
-    -fx-border-color: #e1e6ee;
+    -fx-border-color: #cbd8bf;
     -fx-border-radius: 5px 14px 14px 14px;
 }
 
 .user-dialog {
-    -fx-background-color: #dcecff;
+    -fx-background-color: #e4ecdf;
     -fx-background-radius: 14px 5px 14px 14px;
 }
 
 .avatar-frame {
-    -fx-background-color: #ffffff;
+    -fx-background-color: #fffdf5;
     -fx-background-radius: 999px;
-    -fx-border-color: #d8dee8;
+    -fx-border-color: #b8c8aa;
     -fx-border-radius: 999px;
     -fx-padding: 2px;
-    -fx-effect: dropshadow(gaussian, rgba(31, 41, 55, 0.15), 4, 0.1, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(47, 61, 44, 0.15), 4, 0.1, 0, 1);
 }
 
 .input-area {
     -fx-padding: 10px 12px;
-    -fx-background-color: #ffffff;
-    -fx-border-color: #dfe4ec transparent transparent transparent;
+    -fx-background-color: #fffdf5;
+    -fx-border-color: #d7ddc9 transparent transparent transparent;
 }
 
 .text-field {
-    -fx-background-color: #f8fafc;
+    -fx-background-color: #faf9f0;
     -fx-background-radius: 8px;
-    -fx-border-color: #cfd7e3;
+    -fx-border-color: #c4cfb8;
     -fx-border-radius: 8px;
     -fx-padding: 8px 10px;
 }
 
 .text-field:focused {
-    -fx-border-color: #4386d8;
+    -fx-border-color: #6f8f65;
 }
 
 .send-button {
-    -fx-background-color: #3578c7;
+    -fx-background-color: #6f8f65;
     -fx-background-radius: 8px;
     -fx-text-fill: #ffffff;
     -fx-font-weight: bold;
@@ -67,9 +67,9 @@
 }
 
 .send-button:hover {
-    -fx-background-color: #2d68ae;
+    -fx-background-color: #5d7c55;
 }
 
 .send-button:pressed {
-    -fx-background-color: #255891;
+    -fx-background-color: #4d6847;
 }
