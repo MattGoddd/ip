@@ -2,6 +2,7 @@ package charlie.storage;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,7 +29,11 @@ public class Storage {
      * @param filePath Path to Charlie's save file.
      */
     public Storage(String filePath) {
-        this.filePath = Path.of(filePath);
+        try {
+            this.filePath = Path.of(filePath);
+        } catch (InvalidPathException | NullPointerException e) {
+            throw new CharlieException("Invalid save-file path.");
+        }
     }
 
     /**
@@ -39,19 +44,19 @@ public class Storage {
      * @throws CharlieException If the file cannot be read or contains invalid task data.
      */
     public List<Task> load() {
-        if (!Files.exists(filePath)) {
-            return new ArrayList<>();
-        }
-
-        List<Task> tasks = new ArrayList<>();
         try {
+            if (Files.notExists(filePath)) {
+                return new ArrayList<>();
+            }
+
+            List<Task> tasks = new ArrayList<>();
             for (String line : Files.readAllLines(filePath)) {
                 if (!line.isBlank()) {
                     tasks.add(parseSavedTask(line));
                 }
             }
             return tasks;
-        } catch (IOException e) {
+        } catch (IOException | SecurityException e) {
             throw new CharlieException("Could not read the saved task file.");
         }
     }
@@ -68,9 +73,12 @@ public class Storage {
             content.append(task.saveFileFormat()).append(System.lineSeparator());
         }
         try {
-            Files.createDirectories(filePath.getParent());
+            Path parentDirectory = filePath.getParent();
+            if (parentDirectory != null) {
+                Files.createDirectories(parentDirectory);
+            }
             Files.writeString(filePath, content.toString());
-        } catch (IOException e) {
+        } catch (IOException | SecurityException e) {
             throw new CharlieException("Could not save tasks.");
         }
     }
@@ -93,13 +101,28 @@ public class Storage {
             throw new CharlieException("Invalid number of fields in saved task.");
         }
 
-        boolean isDone = fields[1].equals("Done");
+        boolean isDone = parseSavedStatus(fields[1]);
 
         return switch (fields[0]) {
             case "T" -> new Todo(fields[2], isDone);
             case "D" -> parseSavedDeadline(fields, isDone);
             case "E" -> parseSavedEvent(fields, isDone);
             default -> throw new AssertionError("Task type was validated above.");
+        };
+    }
+
+    /**
+     * Converts a saved completion status into its boolean representation.
+     *
+     * @param status Saved status field.
+     * @return True for {@code Done}; false for {@code Not done}.
+     * @throws CharlieException If the status is not one of Charlie's supported values.
+     */
+    private boolean parseSavedStatus(String status) {
+        return switch (status) {
+            case "Done" -> true;
+            case "Not done" -> false;
+            default -> throw new CharlieException("Invalid completion status in saved task.");
         };
     }
 

@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import charlie.command.AddCommand;
 import charlie.command.Command;
@@ -28,6 +30,15 @@ import charlie.task.Todo;
  * Interprets raw user input and validates command arguments.
  */
 public final class Parser {
+    /** Matches a deadline delimiter used as a separate command token. */
+    private static final Pattern BY_DELIMITER = Pattern.compile("(?<!\\S)/by(?!\\S)");
+
+    /** Matches an event-start delimiter used as a separate command token. */
+    private static final Pattern FROM_DELIMITER = Pattern.compile("(?<!\\S)/from(?!\\S)");
+
+    /** Matches an event-end delimiter used as a separate command token. */
+    private static final Pattern TO_DELIMITER = Pattern.compile("(?<!\\S)/to(?!\\S)");
+
     /**
      * Prevents instantiation of this utility class.
      */
@@ -44,8 +55,8 @@ public final class Parser {
     public static Command parse(String input) {
         CommandType commandType = parseCommand(input);
         return switch (commandType) {
-            case BYE -> new ExitCommand();
-            case LIST -> new ListCommand();
+            case BYE -> parseExitCommand(input);
+            case LIST -> parseListCommand(input);
             case ON -> new OnCommand(parseDate(input));
             case FIND -> new FindCommand(parseFindKeyword(input));
             case MARK -> new MarkCommand(parseTaskIndex(input));
@@ -64,7 +75,7 @@ public final class Parser {
      * @throws CharlieException If the input is empty or starts with an unknown command.
      */
     public static CommandType parseCommand(String input) {
-        if (input.isBlank()) {
+        if (input == null || input.isBlank()) {
             throw new CharlieException("Please enter a command.");
         }
 
@@ -153,9 +164,9 @@ public final class Parser {
             throw new CharlieException("The task description cannot be empty.");
         }
 
-        String arguments = commandAndArgumentParts[1];
+        String arguments = commandAndArgumentParts[1].trim();
         if (commandType == CommandType.TODO) {
-            return new Todo(arguments, false);
+            return new Todo(parseDescription(arguments), false);
         } else if (commandType == CommandType.DEADLINE) {
             return parseDeadline(arguments);
         } else {
@@ -170,17 +181,19 @@ public final class Parser {
      * @return Deadline containing the parsed arguments.
      */
     private static Task parseDeadline(String arguments) {
-        int byPosition = arguments.indexOf("/by");
-        if (byPosition == -1) {
+        Matcher byMatcher = BY_DELIMITER.matcher(arguments);
+        if (!byMatcher.find()) {
             throw new CharlieException("A deadline must include /by followed by a date.");
         }
-
-        String description = arguments.substring(0, byPosition).trim();
-        if (description.isEmpty()) {
-            throw new CharlieException("Description cannot be empty.");
+        int byPosition = byMatcher.start();
+        int deadlineStartPosition = byMatcher.end();
+        if (byMatcher.find()) {
+            throw new CharlieException("A deadline must include /by exactly once.");
         }
 
-        String deadlineText = arguments.substring(byPosition + "/by".length()).trim();
+        String description = parseDescription(arguments.substring(0, byPosition));
+
+        String deadlineText = arguments.substring(deadlineStartPosition).trim();
         if (deadlineText.isBlank()) {
             throw new CharlieException("Deadline cannot be empty.");
         }
@@ -200,22 +213,26 @@ public final class Parser {
      * @return Event containing the parsed arguments.
      */
     private static Task parseEvent(String arguments) {
-        int fromPosition = arguments.indexOf("/from");
-        int toPosition = arguments.indexOf("/to");
-        if (fromPosition == -1 || toPosition == -1) {
+        Matcher fromMatcher = FROM_DELIMITER.matcher(arguments);
+        Matcher toMatcher = TO_DELIMITER.matcher(arguments);
+        if (!fromMatcher.find() || !toMatcher.find()) {
             throw new CharlieException("Need to include /from or /to fields.");
+        }
+
+        int fromPosition = fromMatcher.start();
+        int fromValuePosition = fromMatcher.end();
+        int toPosition = toMatcher.start();
+        int toValuePosition = toMatcher.end();
+        if (fromMatcher.find() || toMatcher.find()) {
+            throw new CharlieException("An event must include /from and /to exactly once.");
         } else if (fromPosition > toPosition) {
             throw new CharlieException("Invalid argument format: /from should appear before /to");
         }
 
-        String description = arguments.substring(0, fromPosition).trim();
-        if (description.isEmpty()) {
-            throw new CharlieException("Description cannot be empty");
-        }
+        String description = parseDescription(arguments.substring(0, fromPosition));
 
-        String fromText = arguments.substring(
-                fromPosition + "/from".length(), toPosition).trim();
-        String toText = arguments.substring(toPosition + "/to".length()).trim();
+        String fromText = arguments.substring(fromValuePosition, toPosition).trim();
+        String toText = arguments.substring(toValuePosition).trim();
         if (fromText.isBlank() || toText.isBlank()) {
             throw new CharlieException("from/to fields cannot be empty.");
         }
@@ -267,7 +284,7 @@ public final class Parser {
         int taskIndex = parseUpdateIndex(commandAndArgumentParts[1]);
         UpdateField updateField =
                 parseUpdateField(commandAndArgumentParts[2]);
-        String newValue = parseUpdateValue(commandAndArgumentParts[3]);
+        String newValue = parseUpdateValue(commandAndArgumentParts[3], updateField);
 
         updateField.validateNewValue(newValue);
 
@@ -308,7 +325,64 @@ public final class Parser {
      * @param input Replacement value entered by the user.
      * @return Trimmed replacement value.
      */
-    private static String parseUpdateValue(String input) {
+    private static String parseUpdateValue(String input, UpdateField updateField) {
+        if (updateField == UpdateField.DESCRIPTION) {
+            return parseDescription(input);
+        }
         return input.trim();
+    }
+
+    /**
+     * Validates and normalizes a task description.
+     *
+     * @param input Description entered by the user.
+     * @return Description with surrounding and repeated whitespace removed.
+     * @throws CharlieException If the description is empty or contains the save-file delimiter.
+     */
+    private static String parseDescription(String input) {
+        String description = input.trim().replaceAll("\\s+", " ");
+        if (description.isEmpty()) {
+            throw new CharlieException("Description cannot be empty.");
+        }
+        if (description.contains("|")) {
+            throw new CharlieException("A task description cannot contain |.");
+        }
+        return description;
+    }
+
+    /**
+     * Parses a {@code bye} command that has no arguments.
+     *
+     * @param input Complete user input.
+     * @return Exit command represented by the input.
+     */
+    private static ExitCommand parseExitCommand(String input) {
+        validateNoArguments(input, "bye");
+        return new ExitCommand();
+    }
+
+    /**
+     * Parses a {@code list} command that has no arguments.
+     *
+     * @param input Complete user input.
+     * @return List command represented by the input.
+     */
+    private static ListCommand parseListCommand(String input) {
+        validateNoArguments(input, "list");
+        return new ListCommand();
+    }
+
+    /**
+     * Verifies that a command which takes no arguments contains only its keyword.
+     *
+     * @param input Complete user input.
+     * @param commandKeyword Command keyword used in the error message.
+     * @throws CharlieException If unexpected arguments follow the keyword.
+     */
+    private static void validateNoArguments(String input, String commandKeyword) {
+        if (input.trim().split("\\s+").length != 1) {
+            throw new CharlieException(
+                    "The " + commandKeyword + " command does not accept arguments.");
+        }
     }
 }

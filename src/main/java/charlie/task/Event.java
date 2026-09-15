@@ -26,10 +26,17 @@ public class Event extends Task {
      * @param isDone Whether the event task is completed.
      * @param startDateTime Date and time at which the event starts.
      * @param endDateTime Date and time at which the event ends.
+     * @throws CharlieException If the description or date-time range is invalid.
      */
     public Event(
             String description, boolean isDone, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         super(description, isDone);
+        if (startDateTime == null || endDateTime == null) {
+            throw new CharlieException("Event dates cannot be empty.");
+        }
+        if (!startDateTime.isBefore(endDateTime)) {
+            throw new CharlieException("Event end must be after its start.");
+        }
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
     }
@@ -43,6 +50,19 @@ public class Event extends Task {
     @Override
     public Task copyWithStatus(boolean isDone) {
         return new Event(description, isDone, startDateTime, endDateTime);
+    }
+
+    /**
+     * Returns whether another event has the same description, start, and end.
+     *
+     * @param other Task to compare with this event.
+     * @return True when both events contain the same identifying details.
+     */
+    @Override
+    public boolean hasSameDetails(Task other) {
+        return super.hasSameDetails(other)
+                && startDateTime.equals(((Event) other).startDateTime)
+                && endDateTime.equals(((Event) other).endDateTime);
     }
 
     /**

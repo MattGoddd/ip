@@ -18,10 +18,30 @@ public abstract class Task {
      *
      * @param description Description of the task.
      * @param isDone Whether the task is completed.
+     * @throws CharlieException If the description is empty or cannot be stored safely.
      */
     public Task(String description, boolean isDone) {
+        if (description == null || description.isBlank()) {
+            throw new CharlieException("Description cannot be empty.");
+        }
+        if (description.contains("|")) {
+            throw new CharlieException("A task description cannot contain |.");
+        }
         this.description = description;
         this.isDone = isDone;
+    }
+
+    /**
+     * Returns whether another task has the same type and user-provided details.
+     * Completion status is deliberately ignored when checking task uniqueness.
+     *
+     * @param other Task to compare with this task.
+     * @return True when both tasks contain the same identifying details.
+     */
+    public boolean hasSameDetails(Task other) {
+        return other != null
+                && getClass().equals(other.getClass())
+                && description.equals(other.description);
     }
 
     /**
