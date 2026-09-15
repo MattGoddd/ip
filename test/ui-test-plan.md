@@ -313,7 +313,41 @@ list
     ____________________________________________________________
 ```
 
-### UI-STORAGE-CONSISTENCY-07 — Exit the consistency session
+### UI-STORAGE-CONSISTENCY-07 — Reject updating when saving fails
+
+**Input:**
+
+```text
+update 1 description changed task
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Could not save tasks.
+    ____________________________________________________________
+```
+
+### UI-STORAGE-CONSISTENCY-08 — Keep task details unchanged after failed updating
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] stable task
+    2.[T][X] completed task
+    ____________________________________________________________
+```
+
+### UI-STORAGE-CONSISTENCY-09 — Exit the consistency session
 
 **Input:**
 
@@ -394,6 +428,112 @@ list
     ____________________________________________________________
 ```
 
+## UI-UPDATE-ERROR-01 — Reject a deadline field for an event
+
+**Aim:** Verify that an event rejects a field belonging only to deadlines.
+
+**Rationale:** Field-format validation is insufficient when the selected task type does not own that field.
+
+**Input:**
+
+```text
+update 3 deadline 2026-09-20
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    An event does not have a deadline field.
+    ____________________________________________________________
+```
+
+## UI-UPDATE-DEADLINE-01 — Update a deadline date
+
+**Aim:** Verify that `update` replaces a Deadline's date.
+
+**Rationale:** A successful replacement must retain the Deadline's description, completion status, and list position.
+
+**Input:**
+
+```text
+update 2 deadline 2026-09-19
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Updated this task:
+      [D][ ] loaded deadline (by: Sep 19 2026)
+    ____________________________________________________________
+```
+
+## UI-UPDATE-EVENT-01 — Update an event start date-time
+
+**Aim:** Verify that `update` replaces an Event's start date-time.
+
+**Rationale:** Replacing the start should retain the Event's other fields and completed status.
+
+**Input:**
+
+```text
+update 3 from 2026-09-18 0830
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Updated this task:
+      [E][X] loaded event (from: Sep 18 2026, 8:30 AM to: Sep 18 2026, 10:00 AM)
+    ____________________________________________________________
+```
+
+## UI-UPDATE-EVENT-02 — Update an event end date-time
+
+**Aim:** Verify that `update` replaces an Event's end date-time.
+
+**Rationale:** Replacing the end should retain the previously updated start and the completed status.
+
+**Input:**
+
+```text
+update 3 to 2026-09-18 1030
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Updated this task:
+      [E][X] loaded event (from: Sep 18 2026, 8:30 AM to: Sep 18 2026, 10:30 AM)
+    ____________________________________________________________
+```
+
+## UI-UPDATE-TYPES-01 — List tasks after type-specific updates
+
+**Aim:** Verify that Deadline and Event replacements remain in their original list positions.
+
+**Rationale:** Confirmation messages alone do not prove that the replacements were retained by `TaskList`.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][X] loaded todo
+    2.[D][ ] loaded deadline (by: Sep 19 2026)
+    3.[E][X] loaded event (from: Sep 18 2026, 8:30 AM to: Sep 18 2026, 10:30 AM)
+    ____________________________________________________________
+```
+
 ## UI-LOAD-02 — Remove the loaded event
 
 **Aim:** Remove the preloaded event as part of returning to an empty list for the existing test sequence.
@@ -411,7 +551,7 @@ delete 3
 ```text
     ____________________________________________________________
     Noted. I've removed this task:
-      [E][X] loaded event (from: Sep 18 2026, 9:00 AM to: Sep 18 2026, 10:00 AM)
+      [E][X] loaded event (from: Sep 18 2026, 8:30 AM to: Sep 18 2026, 10:30 AM)
     Now you have 2 tasks in the list.
     ____________________________________________________________
 ```
@@ -433,7 +573,7 @@ delete 2
 ```text
     ____________________________________________________________
     Noted. I've removed this task:
-      [D][ ] loaded deadline (by: Sep 18 2026)
+      [D][ ] loaded deadline (by: Sep 19 2026)
     Now you have 1 tasks in the list.
     ____________________________________________________________
 ```
@@ -1444,6 +1584,129 @@ list
     ____________________________________________________________
 ```
 
+## UI-UPDATE-ERROR-02 — Reject an update with a missing value
+
+**Aim:** Verify that `update` explains its required command structure when an argument is missing.
+
+**Rationale:** Rejecting incomplete input early prevents access to absent argument positions.
+
+**Input:**
+
+```text
+update 1 description
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Usage: update TASK_NUMBER FIELD NEW_VALUE.
+    ____________________________________________________________
+```
+
+## UI-UPDATE-ERROR-03 — Reject a non-numeric update task number
+
+**Aim:** Verify that `update` requires a numeric task number.
+
+**Rationale:** Number conversion failures should produce a user-friendly message instead of terminating Charlie.
+
+**Input:**
+
+```text
+update first description changed task
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Please enter a valid task number.
+    ____________________________________________________________
+```
+
+## UI-UPDATE-ERROR-04 — Reject an unsupported update field
+
+**Aim:** Verify that `update` lists the fields users can select.
+
+**Rationale:** Naming the supported fields helps users correct an unrecognized field without guessing.
+
+**Input:**
+
+```text
+update 1 priority high
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Supported update fields are description, deadline, from, and to.
+    ____________________________________________________________
+```
+
+## UI-UPDATE-ERROR-05 — Reject an event field for a deadline
+
+**Aim:** Verify that a deadline rejects fields belonging only to events.
+
+**Rationale:** A valid date-time value must not allow an incompatible field to reach task replacement.
+
+**Input:**
+
+```text
+update 2 from 2026-09-20 0900
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    A deadline does not have from or to fields.
+    ____________________________________________________________
+```
+
+## UI-UPDATE-01 — Update a todo description
+
+**Aim:** Verify that `update` replaces the selected task's description and displays the replacement.
+
+**Rationale:** Updating should preserve the task's type, completion status, and list position while changing only the requested field.
+
+**Input:**
+
+```text
+update 1 description borrow library book
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Updated this task:
+      [T][ ] borrow library book
+    ____________________________________________________________
+```
+
+## UI-UPDATE-02 — List tasks after updating
+
+**Aim:** Verify that the replacement remains at the selected list position.
+
+**Rationale:** The confirmation alone does not prove that `TaskList` retained the updated task.
+
+**Input:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    Here are the tasks in your list:
+    1.[T][ ] borrow library book
+    2.[D][ ] return book (by: Sep 20 2026)
+    ____________________________________________________________
+```
+
 ## UI-24 — Exit after persistence checks
 
 **Aim:** End the test session normally and verify the final persisted task list.
@@ -1467,6 +1730,6 @@ bye
 **Expected `data/charlie.txt` contents after exit:**
 
 ```text
-T | Not done | borrow book
+T | Not done | borrow library book
 D | Not done | return book | 2026-09-20
 ```

@@ -2,7 +2,12 @@ package charlie.task;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.Locale;
+
+import charlie.command.UpdateField;
+import charlie.exception.CharlieException;
 
 /**
  * Represents a task that must be completed by a specific calendar date.
@@ -56,4 +61,53 @@ public class Deadline extends Task {
         String status = isDone ? "Done" : "Not done";
         return "D" + " | " + status + " | " + this.description + " | " + this.deadline;
     }
+
+    /**
+     * Creates a copy of this deadline with the requested field replaced.
+     *
+     * @param updateField Field to replace.
+     * @param newValue Replacement value for the field.
+     * @return Updated copy of this deadline.
+     * @throws CharlieException If the field is unsupported or the replacement value is invalid.
+     */
+    @Override
+    public Task createUpdatedTask(UpdateField updateField, String newValue) {
+        return switch (updateField) {
+            case DESCRIPTION -> createTaskWithDescription(newValue);
+            case DEADLINE -> createTaskWithDeadline(newValue);
+            case FROM, TO -> throw new CharlieException(
+                    "A deadline does not have from or to fields.");
+        };
+    }
+
+    /**
+     * Creates a copy of this deadline with a replacement description.
+     *
+     * @param newValue Replacement description.
+     * @return Updated deadline copy.
+     */
+    private Task createTaskWithDescription(String newValue) {
+        return new Deadline(newValue, this.isDone, this.deadline);
+    }
+
+    /**
+     * Creates a copy of this deadline with a replacement due date.
+     *
+     * @param newValue Replacement date in {@code yyyy-MM-dd} format.
+     * @return Updated deadline copy.
+     * @throws CharlieException If the replacement is not a valid date.
+     */
+    private Task createTaskWithDeadline(String newValue) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter
+                .ofPattern("uuuu-MM-dd")
+                .withResolverStyle(ResolverStyle.STRICT);
+        try {
+            LocalDate newDeadline = LocalDate.parse(newValue, dateTimeFormatter);
+            return new Deadline(this.description, this.isDone, newDeadline);
+        } catch (DateTimeParseException e) {
+            throw new CharlieException(
+                    "Deadline date must use the yyyy-MM-dd format.");
+        }
+    }
+
 }

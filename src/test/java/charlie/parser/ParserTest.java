@@ -43,4 +43,27 @@ public class ParserTest {
                 CharlieException.class, () -> Parser.parseTask(invalidInput, CommandType.EVENT));
         assertEquals("Event end must be after its start.", exception.getMessage());
     }
+
+    @Test
+    public void parseUpdate_missingArguments_exceptionThrown() {
+        CharlieException exception = assertThrows(
+                CharlieException.class, () -> Parser.parse("update 1 description"));
+        assertEquals("Usage: update TASK_NUMBER FIELD NEW_VALUE.", exception.getMessage());
+    }
+
+    @Test
+    public void parseUpdate_nonNumericTaskNumber_exceptionThrown() {
+        CharlieException exception = assertThrows(
+                CharlieException.class, () -> Parser.parse("update first description changed"));
+        assertEquals("Please enter a valid task number.", exception.getMessage());
+    }
+
+    @Test
+    public void parseUpdate_unsupportedField_exceptionThrown() {
+        CharlieException exception = assertThrows(
+                CharlieException.class, () -> Parser.parse("update 1 priority high"));
+        assertEquals(
+                "Supported update fields are description, deadline, from, and to.",
+                exception.getMessage());
+    }
 }

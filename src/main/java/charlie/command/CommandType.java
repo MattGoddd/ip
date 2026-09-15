@@ -25,7 +25,9 @@ public enum CommandType {
     /** Adds a deadline. */
     DEADLINE("deadline"),
     /** Adds an event. */
-    EVENT("event");
+    EVENT("event"),
+    /** Updates a task. */
+    UPDATE("update");
 
     /** Keyword that identifies this command in user input. */
     private final String keyword;
