@@ -33,7 +33,7 @@ Error loading saved tasks: Invalid number of fields in saved task.
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     ____________________________________________________________
 ```
 
@@ -41,7 +41,7 @@ Error loading saved tasks: Invalid number of fields in saved task.
 
 ```text
     ____________________________________________________________
-    Goodbye! See you next time.
+    Bye for now! I'll guard the task nest until you return.
     ____________________________________________________________
 ```
 
@@ -67,7 +67,7 @@ Error loading saved tasks: Could not read the saved task file.
 
 ```text
     ____________________________________________________________
-    Goodbye! See you next time.
+    Bye for now! I'll guard the task nest until you return.
     ____________________________________________________________
 ```
 
@@ -117,7 +117,7 @@ list
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     ____________________________________________________________
 ```
 
@@ -125,7 +125,7 @@ list
 
 ```text
     ____________________________________________________________
-    Goodbye! See you next time.
+    Bye for now! I'll guard the task nest until you return.
     ____________________________________________________________
 ```
 
@@ -148,7 +148,7 @@ bye
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     ____________________________________________________________
 ```
 
@@ -156,7 +156,7 @@ bye
 
 ```text
     ____________________________________________________________
-    Goodbye! See you next time.
+    Bye for now! I'll guard the task nest until you return.
     ____________________________________________________________
 ```
 
@@ -176,7 +176,7 @@ bye
 
 ```text
     ____________________________________________________________
-    Goodbye! See you next time.
+    Bye for now! I'll guard the task nest until you return.
     ____________________________________________________________
 ```
 
@@ -206,8 +206,8 @@ Start Charlie and wait until it has loaded the tasks. Then move the save file as
     | |   | |_| | / _ \ | |_) | |    | ||  _|
     | |___|  _  |/ ___ \|  _ <| |___ | || |___
      \____|_| |_/_/   \_\_| \_\_____|___|_____|
-    Hello! I'm Charlie!
-    What do you want to do today?
+    Oh, hello! I'm Charlie.
+    Ready to tackle some tasks together?
     ____________________________________________________________
 ```
 
@@ -239,7 +239,7 @@ list
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     1.[T][ ] stable task
     2.[T][X] completed task
     ____________________________________________________________
@@ -273,7 +273,7 @@ list
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     1.[T][ ] stable task
     2.[T][X] completed task
     ____________________________________________________________
@@ -307,7 +307,7 @@ list
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     1.[T][ ] stable task
     2.[T][X] completed task
     ____________________________________________________________
@@ -341,7 +341,7 @@ list
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     1.[T][ ] stable task
     2.[T][X] completed task
     ____________________________________________________________
@@ -359,7 +359,7 @@ bye
 
 ```text
     ____________________________________________________________
-    Goodbye! See you next time.
+    Bye for now! I'll guard the task nest until you return.
     ____________________________________________________________
 ```
 
@@ -400,8 +400,8 @@ E | Done | loaded event | 2026-09-18T09:00 | 2026-09-18T10:00
     | |   | |_| | / _ \ | |_) | |    | ||  _|
     | |___|  _  |/ ___ \|  _ <| |___ | || |___
      \____|_| |_/_/   \_\_| \_\_____|___|_____|
-    Hello! I'm Charlie!
-    What do you want to do today?
+    Oh, hello! I'm Charlie.
+    Ready to tackle some tasks together?
     ____________________________________________________________
 ```
 
@@ -421,7 +421,7 @@ list
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     1.[T][X] loaded todo
     2.[D][ ] loaded deadline (by: Sep 18 2026)
     3.[E][X] loaded event (from: Sep 18 2026, 9:00 AM to: Sep 18 2026, 10:00 AM)
@@ -464,7 +464,7 @@ update 2 deadline 2026-09-19
 
 ```text
     ____________________________________________________________
-    Updated this task:
+    All changed! Here's the updated task:
       [D][ ] loaded deadline (by: Sep 19 2026)
     ____________________________________________________________
 ```
@@ -485,7 +485,7 @@ update 3 from 2026-09-18 0830
 
 ```text
     ____________________________________________________________
-    Updated this task:
+    All changed! Here's the updated task:
       [E][X] loaded event (from: Sep 18 2026, 8:30 AM to: Sep 18 2026, 10:00 AM)
     ____________________________________________________________
 ```
@@ -506,7 +506,7 @@ update 3 to 2026-09-18 1030
 
 ```text
     ____________________________________________________________
-    Updated this task:
+    All changed! Here's the updated task:
       [E][X] loaded event (from: Sep 18 2026, 8:30 AM to: Sep 18 2026, 10:30 AM)
     ____________________________________________________________
 ```
@@ -527,7 +527,7 @@ list
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     1.[T][X] loaded todo
     2.[D][ ] loaded deadline (by: Sep 19 2026)
     3.[E][X] loaded event (from: Sep 18 2026, 8:30 AM to: Sep 18 2026, 10:30 AM)
@@ -550,9 +550,9 @@ delete 3
 
 ```text
     ____________________________________________________________
-    Noted. I've removed this task:
+    I've cleared this task from our trail:
       [E][X] loaded event (from: Sep 18 2026, 8:30 AM to: Sep 18 2026, 10:30 AM)
-    Now you have 2 tasks in the list.
+    There are now 2 tasks in our nest.
     ____________________________________________________________
 ```
 
@@ -572,9 +572,9 @@ delete 2
 
 ```text
     ____________________________________________________________
-    Noted. I've removed this task:
+    I've cleared this task from our trail:
       [D][ ] loaded deadline (by: Sep 19 2026)
-    Now you have 1 tasks in the list.
+    There is now 1 task in our nest.
     ____________________________________________________________
 ```
 
@@ -594,9 +594,9 @@ delete 1
 
 ```text
     ____________________________________________________________
-    Noted. I've removed this task:
+    I've cleared this task from our trail:
       [T][X] loaded todo
-    Now you have 0 tasks in the list.
+    There are now 0 tasks in our nest.
     ____________________________________________________________
 ```
 
@@ -636,9 +636,9 @@ todo borrow book
 
 ```text
     ____________________________________________________________
-    Got it. I've added this task:
+    A happy little roar! I've tucked this task safely into the nest:
       [T][ ] borrow book
-    Now you have 1 tasks in the list.
+    There is now 1 task in our nest.
     ____________________________________________________________
 ```
 
@@ -658,7 +658,7 @@ list
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     1.[T][ ] borrow book
     ____________________________________________________________
 ```
@@ -679,9 +679,9 @@ deadline return book /by 2026-09-20
 
 ```text
     ____________________________________________________________
-    Got it. I've added this task:
+    A happy little roar! I've tucked this task safely into the nest:
       [D][ ] return book (by: Sep 20 2026)
-    Now you have 2 tasks in the list.
+    There are now 2 tasks in our nest.
     ____________________________________________________________
 ```
 
@@ -701,9 +701,9 @@ event project meeting /from 2026-09-21 1400 /to 2026-09-23 1600
 
 ```text
     ____________________________________________________________
-    Got it. I've added this task:
+    A happy little roar! I've tucked this task safely into the nest:
       [E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
-    Now you have 3 tasks in the list.
+    There are now 3 tasks in our nest.
     ____________________________________________________________
 ```
 
@@ -723,7 +723,7 @@ list
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     1.[T][ ] borrow book
     2.[D][ ] return book (by: Sep 20 2026)
     3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
@@ -746,7 +746,7 @@ find BOOK
 
 ```text
     ____________________________________________________________
-    Here are the matching tasks in your list:
+    I sniffed around and found these matching tasks:
     1.[T][ ] borrow book
     2.[D][ ] return book (by: Sep 20 2026)
     ____________________________________________________________
@@ -768,7 +768,7 @@ find project meeting
 
 ```text
     ____________________________________________________________
-    Here are the matching tasks in your list:
+    I sniffed around and found these matching tasks:
     1.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
     ____________________________________________________________
 ```
@@ -789,8 +789,8 @@ find missing
 
 ```text
     ____________________________________________________________
-    Here are the matching tasks in your list:
-    No task contains this keyword.
+    I sniffed around and found these matching tasks:
+    Hmm... I couldn't track down a matching task.
     ____________________________________________________________
 ```
 
@@ -830,7 +830,7 @@ list
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     1.[T][ ] borrow book
     2.[D][ ] return book (by: Sep 20 2026)
     3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
@@ -853,7 +853,7 @@ on 2026-09-20
 
 ```text
     ____________________________________________________________
-    Here are the tasks occurring on 2026-09-20:
+    Here's what I found for 2026-09-20:
     1.[D][ ] return book (by: Sep 20 2026)
     ____________________________________________________________
 ```
@@ -874,7 +874,7 @@ on 2026-09-22
 
 ```text
     ____________________________________________________________
-    Here are the tasks occurring on 2026-09-22:
+    Here's what I found for 2026-09-22:
     1.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
     ____________________________________________________________
 ```
@@ -895,8 +895,8 @@ on 2026-09-19
 
 ```text
     ____________________________________________________________
-    Here are the tasks occurring on 2026-09-19:
-    No deadlines or events occur on this date.
+    Here's what I found for 2026-09-19:
+    Hmm... I couldn't track down anything for this date.
     ____________________________________________________________
 ```
 
@@ -996,7 +996,7 @@ list
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     1.[T][ ] borrow book
     2.[D][ ] return book (by: Sep 20 2026)
     3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
@@ -1019,7 +1019,7 @@ hello
 
 ```text
     ____________________________________________________________
-    Oops, this is an invalid command
+    Oh! I don't recognize that command yet.
     ____________________________________________________________
 ```
 
@@ -1039,7 +1039,7 @@ list
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     1.[T][ ] borrow book
     2.[D][ ] return book (by: Sep 20 2026)
     3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
@@ -1062,7 +1062,7 @@ mark 2
 
 ```text
     ____________________________________________________________
-    Nice! I've marked this task as done:
+    Tiny victory roar! This task is done:
       [D][X] return book (by: Sep 20 2026)
     ____________________________________________________________
 ```
@@ -1083,7 +1083,7 @@ list
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     1.[T][ ] borrow book
     2.[D][X] return book (by: Sep 20 2026)
     3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
@@ -1106,7 +1106,7 @@ unmark 2
 
 ```text
     ____________________________________________________________
-    OK, I've marked this task not done yet:
+    That's okay - this task isn't quite ready yet:
       [D][ ] return book (by: Sep 20 2026)
     ____________________________________________________________
 ```
@@ -1127,7 +1127,7 @@ list
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     1.[T][ ] borrow book
     2.[D][ ] return book (by: Sep 20 2026)
     3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
@@ -1150,9 +1150,9 @@ delete 3
 
 ```text
     ____________________________________________________________
-    Noted. I've removed this task:
+    I've cleared this task from our trail:
       [E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
-    Now you have 2 tasks in the list.
+    There are now 2 tasks in our nest.
     ____________________________________________________________
 ```
 
@@ -1192,7 +1192,7 @@ list
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     1.[T][ ] borrow book
     2.[D][ ] return book (by: Sep 20 2026)
     ____________________________________________________________
@@ -1214,7 +1214,7 @@ list
 
 ```text
     ____________________________________________________________
-    Please enter a command.
+    Um... please give me a command first.
     ____________________________________________________________
 ```
 
@@ -1474,7 +1474,7 @@ list
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     1.[T][ ] borrow book
     2.[D][ ] return book (by: Sep 20 2026)
     ____________________________________________________________
@@ -1556,7 +1556,7 @@ event meeting /from 2026-09-21 1600 /to 2026-09-21 1400
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     1.[T][ ] borrow book
     2.[D][ ] return book (by: Sep 20 2026)
     ____________________________________________________________
@@ -1578,7 +1578,7 @@ list
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     1.[T][ ] borrow book
     2.[D][ ] return book (by: Sep 20 2026)
     ____________________________________________________________
@@ -1680,7 +1680,7 @@ update 1 description borrow library book
 
 ```text
     ____________________________________________________________
-    Updated this task:
+    All changed! Here's the updated task:
       [T][ ] borrow library book
     ____________________________________________________________
 ```
@@ -1701,7 +1701,7 @@ list
 
 ```text
     ____________________________________________________________
-    Here are the tasks in your list:
+    Here's what's currently in our task nest:
     1.[T][ ] borrow library book
     2.[D][ ] return book (by: Sep 20 2026)
     ____________________________________________________________
@@ -1723,7 +1723,7 @@ bye
 
 ```text
     ____________________________________________________________
-    Goodbye! See you next time.
+    Bye for now! I'll guard the task nest until you return.
     ____________________________________________________________
 ```
 

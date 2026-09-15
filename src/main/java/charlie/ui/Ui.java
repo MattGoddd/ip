@@ -82,8 +82,8 @@ public class Ui implements AutoCloseable {
             showMessage(line);
         }
         showMessages(
-                "Hello! I'm " + BOT_NAME + "!",
-                "What do you want to do today?");
+                "Oh, hello! I'm " + BOT_NAME + ".",
+                "Ready to tackle some tasks together?");
         showHorizontalLine();
     }
 
@@ -91,7 +91,7 @@ public class Ui implements AutoCloseable {
      * Displays Charlie's farewell message.
      */
     public void showOutro() {
-        showMessage("Goodbye! See you next time.");
+        showMessage("Bye for now! I'll guard the task nest until you return.");
         showHorizontalLine();
     }
 
@@ -123,6 +123,17 @@ public class Ui implements AutoCloseable {
         for (String message : messages) {
             showMessage(message);
         }
+    }
+
+    /**
+     * Displays the current number of tasks using the correct singular or plural wording.
+     *
+     * @param taskCount Number of tasks currently stored.
+     */
+    public void showTaskCount(int taskCount) {
+        String verb = taskCount == 1 ? "is" : "are";
+        String noun = taskCount == 1 ? "task" : "tasks";
+        showMessage("There " + verb + " now " + taskCount + " " + noun + " in our nest.");
     }
 
     /**
