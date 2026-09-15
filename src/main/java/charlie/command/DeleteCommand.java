@@ -33,8 +33,8 @@ public class DeleteCommand extends Command {
         storage.save(tasks.getTasksAfterDeleting(index));
         Task deletedTask = tasks.delete(index);
         ui.showMessages(
-                "Noted. I've removed this task:",
-                "  " + deletedTask,
-                "Now you have " + tasks.getSize() + " tasks in the list.");
+                "I've cleared this task from our trail:",
+                "  " + deletedTask);
+        ui.showTaskCount(tasks.getSize());
     }
 }

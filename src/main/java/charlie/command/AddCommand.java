@@ -33,8 +33,8 @@ public class AddCommand extends Command {
         storage.save(tasks.getTasksAfterAdding(task));
         tasks.add(task);
         ui.showMessages(
-                "Got it. I've added this task:",
-                "  " + task,
-                "Now you have " + tasks.getSize() + " tasks in the list.");
+                "A happy little roar! I've tucked this task safely into the nest:",
+                "  " + task);
+        ui.showTaskCount(tasks.getSize());
     }
 }
