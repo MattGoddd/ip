@@ -30,7 +30,7 @@ public class FindCommand extends Command {
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
-        ui.showMessage("Here are the matching tasks in your list:");
+        ui.showMessage("I sniffed around and found these matching tasks:");
         int matchCount = 0;
         for (Task task : tasks.findByKeyword(this.keyword)) {
             matchCount++;
@@ -38,7 +38,7 @@ public class FindCommand extends Command {
         }
 
         if (matchCount == 0) {
-            ui.showMessage("No task contains this keyword.");
+            ui.showMessage("Hmm... I couldn't track down a matching task.");
         }
     }
 }

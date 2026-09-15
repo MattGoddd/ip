@@ -18,7 +18,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 public class CharlieTest {
     private static final String GREETING =
-            "Hello! I'm Charlie!\nWhat do you want to do today?";
+            "Oh, hello! I'm Charlie.\nReady to tackle some tasks together?";
 
     @Test
     public void getGreeting_missingSaveFile_returnsGreeting(@TempDir Path temporaryDirectory) {
@@ -37,7 +37,7 @@ public class CharlieTest {
         assertEquals(
                 GREETING + "\nError loading saved tasks: Invalid number of fields in saved task.",
                 charlie.getGreeting());
-        assertEquals("Here are the tasks in your list:", charlie.getResponse("list"));
+        assertEquals("Here's what's currently in our task nest:", charlie.getResponse("list"));
     }
 
     @Test
@@ -47,12 +47,13 @@ public class CharlieTest {
         Charlie charlie = new Charlie(saveFile.toString());
 
         assertEquals(
-                "Got it. I've added this task:" + System.lineSeparator()
+                "A happy little roar! I've tucked this task safely into the nest:"
+                        + System.lineSeparator()
                         + "  [T][ ] borrow book" + System.lineSeparator()
-                        + "Now you have 1 tasks in the list.",
+                        + "There is now 1 task in our nest.",
                 charlie.getResponse("todo borrow book"));
         assertEquals(
-                "Nice! I've marked this task as done:" + System.lineSeparator()
+                "Tiny victory roar! This task is done:" + System.lineSeparator()
                         + "  [T][X] borrow book",
                 charlie.getResponse("mark 1"));
         assertEquals("T | Done | borrow book" + System.lineSeparator(),
@@ -63,10 +64,12 @@ public class CharlieTest {
     public void getResponse_invalidThenExit_updatesExitSignal(@TempDir Path temporaryDirectory) {
         Charlie charlie = new Charlie(temporaryDirectory.resolve("charlie.txt").toString());
 
-        assertEquals("Goodbye! See you next time.", charlie.getResponse("bye"));
+        assertEquals(
+                "Bye for now! I'll guard the task nest until you return.",
+                charlie.getResponse("bye"));
         assertTrue(charlie.isExitRequested());
 
-        assertEquals("Oops, this is an invalid command", charlie.getResponse("hello"));
+        assertEquals("Oh! I don't recognize that command yet.", charlie.getResponse("hello"));
         assertFalse(charlie.isExitRequested());
     }
 
@@ -91,8 +94,8 @@ public class CharlieTest {
         }
 
         String output = testOutput.toString(StandardCharsets.UTF_8);
-        assertTrue(output.contains("Hello! I'm Charlie!"));
-        assertTrue(output.contains("Here are the tasks in your list:"));
-        assertTrue(output.contains("Goodbye! See you next time."));
+        assertTrue(output.contains("Oh, hello! I'm Charlie."));
+        assertTrue(output.contains("Here's what's currently in our task nest:"));
+        assertTrue(output.contains("Bye for now! I'll guard the task nest until you return."));
     }
 }

@@ -47,7 +47,7 @@ public class UpdateCommandTest {
                 "T | Not done | borrow library book" + System.lineSeparator(),
                 Files.readString(saveFile));
         assertEquals(
-                List.of("Updated this task:", "  [T][ ] borrow library book"),
+                List.of("All changed! Here's the updated task:", "  [T][ ] borrow library book"),
                 messages);
     }
 
@@ -71,7 +71,7 @@ public class UpdateCommandTest {
                 "D | Done | submit report | 2026-09-20" + System.lineSeparator(),
                 Files.readString(saveFile));
         assertEquals(
-                List.of("Updated this task:", "  [D][X] submit report (by: Sep 20 2026)"),
+                List.of("All changed! Here's the updated task:", "  [D][X] submit report (by: Sep 20 2026)"),
                 messages);
     }
 

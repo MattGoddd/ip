@@ -16,9 +16,16 @@ public class UiTest {
 
         ui.showMessage("first");
         ui.showMessages("second", "third");
+        ui.showTaskCount(1);
+        ui.showTaskCount(2);
         ui.showHorizontalLine();
 
-        assertEquals(List.of("first", "second", "third"), output);
+        assertEquals(List.of(
+                "first",
+                "second",
+                "third",
+                "There is now 1 task in our nest.",
+                "There are now 2 tasks in our nest."), output);
     }
 
     @Test
@@ -29,8 +36,8 @@ public class UiTest {
 
         assertEquals(7, output.size());
         assertTrue(output.get(0).contains("____"));
-        assertEquals("Hello! I'm Charlie!", output.get(5));
-        assertEquals("What do you want to do today?", output.get(6));
+        assertEquals("Oh, hello! I'm Charlie.", output.get(5));
+        assertEquals("Ready to tackle some tasks together?", output.get(6));
     }
 
     @Test
@@ -44,6 +51,6 @@ public class UiTest {
 
         assertEquals(List.of(
                 "Error loading saved tasks: broken file",
-                "Goodbye! See you next time."), output);
+                "Bye for now! I'll guard the task nest until you return."), output);
     }
 }

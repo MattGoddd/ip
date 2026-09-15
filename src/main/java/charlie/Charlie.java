@@ -12,7 +12,8 @@ import charlie.ui.Ui;
  */
 public class Charlie {
     /** Greeting shown when the graphical interface opens. */
-    private static final String GUI_GREETING = "Hello! I'm Charlie!\nWhat do you want to do today?";
+    private static final String GUI_GREETING =
+            "Oh, hello! I'm Charlie.\nReady to tackle some tasks together?";
 
     /** Saves and loads Charlie's task data. */
     private Storage storage;

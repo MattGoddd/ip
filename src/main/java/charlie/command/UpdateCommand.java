@@ -47,7 +47,7 @@ public class UpdateCommand extends Command {
         tasks.replace(this.index, updatedTask);
 
         ui.showMessages(
-                "Updated this task:",
+                "All changed! Here's the updated task:",
                 "  " + updatedTask);
     }
 }

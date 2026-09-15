@@ -48,7 +48,7 @@ public class ParserTest {
     public void parseCommand_emptyInput_exceptionThrown() {
         CharlieException exception = assertThrows(
                 CharlieException.class, () -> Parser.parseCommand(""));
-        assertEquals("Please enter a command.", exception.getMessage());
+        assertEquals("Um... please give me a command first.", exception.getMessage());
     }
 
     @Test

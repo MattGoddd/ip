@@ -39,9 +39,9 @@ public class CommandTest {
         assertEquals("T | Not done | borrow book" + System.lineSeparator(),
                 Files.readString(temporaryDirectory.resolve("charlie.txt")));
         assertEquals(List.of(
-                "Got it. I've added this task:",
+                "A happy little roar! I've tucked this task safely into the nest:",
                 "  [T][ ] borrow book",
-                "Now you have 1 tasks in the list."), messages);
+                "There is now 1 task in our nest."), messages);
     }
 
     @Test
@@ -75,9 +75,9 @@ public class CommandTest {
         assertEquals("T | Not done | second" + System.lineSeparator(),
                 Files.readString(temporaryDirectory.resolve("charlie.txt")));
         assertEquals(List.of(
-                "Noted. I've removed this task:",
+                "I've cleared this task from our trail:",
                 "  [T][ ] first",
-                "Now you have 1 tasks in the list."), messages);
+                "There is now 1 task in our nest."), messages);
     }
 
     @Test
@@ -107,7 +107,7 @@ public class CommandTest {
         assertEquals("[T][X] borrow book", tasks.get(0).toString());
         assertTrue(Files.readString(temporaryDirectory.resolve("charlie.txt")).contains("Done"));
         assertEquals(List.of(
-                "Nice! I've marked this task as done:",
+                "Tiny victory roar! This task is done:",
                 "  [T][X] borrow book"), messages);
 
         messages.clear();
@@ -116,7 +116,7 @@ public class CommandTest {
         assertEquals("[T][ ] borrow book", tasks.get(0).toString());
         assertTrue(Files.readString(temporaryDirectory.resolve("charlie.txt")).contains("Not done"));
         assertEquals(List.of(
-                "OK, I've marked this task not done yet:",
+                "That's okay - this task isn't quite ready yet:",
                 "  [T][ ] borrow book"), messages);
     }
 
@@ -143,7 +143,7 @@ public class CommandTest {
         new ListCommand().execute(tasks, new Ui(messages::add), null);
 
         assertEquals(List.of(
-                "Here are the tasks in your list:",
+                "Here's what's currently in our task nest:",
                 "1.[T][ ] first",
                 "2.[T][X] second"), messages);
     }
@@ -159,7 +159,7 @@ public class CommandTest {
         new FindCommand("book").execute(tasks, ui, null);
 
         assertEquals(List.of(
-                "Here are the matching tasks in your list:",
+                "I sniffed around and found these matching tasks:",
                 "1.[T][ ] borrow book",
                 "2.[T][X] return book"), messages);
 
@@ -167,8 +167,8 @@ public class CommandTest {
         new FindCommand("report").execute(tasks, ui, null);
 
         assertEquals(List.of(
-                "Here are the matching tasks in your list:",
-                "No task contains this keyword."), messages);
+                "I sniffed around and found these matching tasks:",
+                "Hmm... I couldn't track down a matching task."), messages);
     }
 
     @Test
@@ -187,7 +187,7 @@ public class CommandTest {
         new OnCommand(searchDate).execute(tasks, ui, null);
 
         assertEquals(3, messages.size());
-        assertEquals("Here are the tasks occurring on 2026-09-21:", messages.get(0));
+        assertEquals("Here's what I found for 2026-09-21:", messages.get(0));
         assertTrue(messages.get(1).startsWith("1.[D]"));
         assertTrue(messages.get(2).startsWith("2.[E]"));
 
@@ -195,8 +195,8 @@ public class CommandTest {
         new OnCommand(LocalDate.of(2025, 1, 1)).execute(tasks, ui, null);
 
         assertEquals(List.of(
-                "Here are the tasks occurring on 2025-01-01:",
-                "No deadlines or events occur on this date."), messages);
+                "Here's what I found for 2025-01-01:",
+                "Hmm... I couldn't track down anything for this date."), messages);
     }
 
     @Test
@@ -206,7 +206,9 @@ public class CommandTest {
 
         command.execute(new TaskList(), new Ui(messages::add), null);
 
-        assertEquals(List.of("Goodbye! See you next time."), messages);
+        assertEquals(
+                List.of("Bye for now! I'll guard the task nest until you return."),
+                messages);
         assertTrue(command.isExit());
         assertFalse(new ListCommand().isExit());
     }
@@ -223,7 +225,7 @@ public class CommandTest {
         CharlieException exception = assertThrows(
                 CharlieException.class, () -> CommandType.parseKeyword("unknown"));
 
-        assertEquals("Oops, this is an invalid command", exception.getMessage());
+        assertEquals("Oh! I don't recognize that command yet.", exception.getMessage());
     }
 
     private Storage createStorage(Path temporaryDirectory) {
