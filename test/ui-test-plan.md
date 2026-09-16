@@ -1743,20 +1743,21 @@ cover JavaFX window behavior that is difficult to verify reliably with JUnit.
 
 **Aim:** Verify that the conversation remains usable at different window sizes.
 
-1. Start Charlie and confirm that the window opens at approximately 520 by 640 pixels.
+1. Start Charlie and confirm that the window opens at approximately 500 by 620 pixels.
 2. Resize it to its minimum width and height.
 3. Enlarge it to fill a 1920 by 1080 display.
 4. Add enough tasks to make the conversation taller than the window.
 
 **Expected result:** Text wraps inside each message bubble, no horizontal scroll bar appears,
-the input field and Send button remain visible, and the conversation scrolls to the newest message.
+the window cannot shrink below approximately 360 by 420 pixels, the input field and Roar! button
+remain visible, and the conversation scrolls to the newest message.
 
 ### MANUAL-GUI-02 — Use keyboard and mouse input
 
 **Aim:** Verify both ways of submitting a command.
 
 1. Enter `list` and press Enter.
-2. Enter `todo mouse test` and click Send.
+2. Enter `todo mouse test` and click Roar!.
 
 **Expected result:** Each command and response appears exactly once, the input field clears after
 submission, and keyboard focus returns to the input field.
@@ -1781,3 +1782,17 @@ first with an English locale and then with a Chinese locale.
 **Expected result:** Charlie starts successfully, controls and message text are readable, dates use
 English month names, and saved tasks load and display identically apart from platform-native window
 decoration and font rendering.
+
+### MANUAL-GUI-05 — Display Charlie's visual identity
+
+**Aim:** Verify that the personality-themed resources and layout are applied correctly.
+
+1. Start Charlie and inspect the window title, input area, colors, and initial message.
+2. Submit `todo visual test` and inspect both new message bubbles.
+3. Hover over and press the Roar! button.
+
+**Expected result:** The title is `Charlie's Task Nest`, the input prompt is
+`Tell Charlie what to remember...`, and the interface uses the green-and-cream theme. Charlie's
+messages are left-aligned beside the Charlie avatar, user messages are right-aligned beside the user
+avatar, both avatars are circular and undistorted, and the Roar! button changes shade when hovered
+and pressed.
