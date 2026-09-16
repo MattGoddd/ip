@@ -1733,3 +1733,66 @@ bye
 T | Not done | borrow library book
 D | Not done | return book | 2026-09-20
 ```
+
+## Manual GUI compatibility tests
+
+Run these checks using `./gradlew run` on each available operating system. These cases
+cover JavaFX window behavior that is difficult to verify reliably with JUnit.
+
+### MANUAL-GUI-01 — Resize the application window
+
+**Aim:** Verify that the conversation remains usable at different window sizes.
+
+1. Start Charlie and confirm that the window opens at approximately 500 by 620 pixels.
+2. Resize it to its minimum width and height.
+3. Enlarge it to fill a 1920 by 1080 display.
+4. Add enough tasks to make the conversation taller than the window.
+
+**Expected result:** Text wraps inside each message bubble, no horizontal scroll bar appears,
+the window cannot shrink below approximately 360 by 420 pixels, the input field and Roar! button
+remain visible, and the conversation scrolls to the newest message.
+
+### MANUAL-GUI-02 — Use keyboard and mouse input
+
+**Aim:** Verify both ways of submitting a command.
+
+1. Enter `list` and press Enter.
+2. Enter `todo mouse test` and click Roar!.
+
+**Expected result:** Each command and response appears exactly once, the input field clears after
+submission, and keyboard focus returns to the input field.
+
+### MANUAL-GUI-03 — Exit from the graphical interface
+
+**Aim:** Verify the JavaFX-only delayed close behavior.
+
+1. Enter `bye`.
+2. Observe the window for at least one second.
+
+**Expected result:** Charlie displays the goodbye response, disables the input field and Send button,
+and closes the window after approximately one second.
+
+### MANUAL-GUI-04 — Check supported operating systems and language settings
+
+**Aim:** Verify that display formatting does not depend on the operating system locale.
+
+Run `list` with a saved deadline and event on each available combination of Windows, macOS, and Linux,
+first with an English locale and then with a Chinese locale.
+
+**Expected result:** Charlie starts successfully, controls and message text are readable, dates use
+English month names, and saved tasks load and display identically apart from platform-native window
+decoration and font rendering.
+
+### MANUAL-GUI-05 — Display Charlie's visual identity
+
+**Aim:** Verify that the personality-themed resources and layout are applied correctly.
+
+1. Start Charlie and inspect the window title, input area, colors, and initial message.
+2. Submit `todo visual test` and inspect both new message bubbles.
+3. Hover over and press the Roar! button.
+
+**Expected result:** The title is `Charlie's Task Nest`, the input prompt is
+`Tell Charlie what to remember...`, and the interface uses the green-and-cream theme. Charlie's
+messages are left-aligned beside the Charlie avatar, user messages are right-aligned beside the user
+avatar, both avatars are circular and undistorted, and the Roar! button changes shade when hovered
+and pressed.
