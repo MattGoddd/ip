@@ -25,17 +25,23 @@ public class TaskList {
      * Creates a task list containing tasks loaded from storage.
      *
      * @param initialTasks Tasks with which to initialize the list.
+     * @throws CharlieException If the initial tasks contain duplicate details.
      */
     public TaskList(List<Task> initialTasks) {
-        this.tasks = new ArrayList<>(initialTasks);
+        this.tasks = new ArrayList<>();
+        for (Task task : initialTasks) {
+            add(task);
+        }
     }
 
     /**
      * Adds a task to the end of the list.
      *
      * @param task Task to add.
+     * @throws CharlieException If another task already has the same details.
      */
     public void add(Task task) {
+        validateUnique(task, -1);
         tasks.add(task);
     }
 
@@ -44,8 +50,10 @@ public class TaskList {
      *
      * @param task Task to include in the proposed state.
      * @return Proposed tasks without changing this task list.
+     * @throws CharlieException If another task already has the same details.
      */
     public List<Task> getTasksAfterAdding(Task task) {
+        validateUnique(task, -1);
         List<Task> proposedTasks = new ArrayList<>(tasks);
         proposedTasks.add(task);
         return List.copyOf(proposedTasks);
@@ -69,10 +77,11 @@ public class TaskList {
      * @param index Zero-based index of the task to replace.
      * @param updatedTask Task to store at the selected index.
      * @return Proposed tasks without changing this task list.
-     * @throws CharlieException If the index does not identify an existing task.
+     * @throws CharlieException If the index is invalid or another task has the updated details.
      */
     public List<Task> getTasksAfterReplacing(int index, Task updatedTask) {
         validateIndex(index);
+        validateUnique(updatedTask, index);
         List<Task> proposedTasks = new ArrayList<>(tasks);
         proposedTasks.set(index, updatedTask);
         return List.copyOf(proposedTasks);
@@ -84,10 +93,11 @@ public class TaskList {
      * @param index Zero-based index of the task to replace.
      * @param updatedTask Task to store at the selected index.
      * @return Updated task.
-     * @throws CharlieException If the index does not identify an existing task.
+     * @throws CharlieException If the index is invalid or another task has the updated details.
      */
     public Task replace(int index, Task updatedTask) {
         validateIndex(index);
+        validateUnique(updatedTask, index);
         tasks.set(index, updatedTask);
         return updatedTask;
     }
@@ -176,6 +186,21 @@ public class TaskList {
         if (index < 0 || index >= tasks.size()) {
             throw new CharlieException(
                     "Please enter a task number from 1 to " + tasks.size() + ".");
+        }
+    }
+
+    /**
+     * Verifies that a task's identifying details are unique in this list.
+     *
+     * @param candidate Task proposed for addition or replacement.
+     * @param excludedIndex Existing index to ignore when replacing a task, or -1 when adding.
+     * @throws CharlieException If another task already has the same details.
+     */
+    private void validateUnique(Task candidate, int excludedIndex) {
+        for (int i = 0; i < tasks.size(); i++) {
+            if (i != excludedIndex && tasks.get(i).hasSameDetails(candidate)) {
+                throw new CharlieException("This task already exists in the list.");
+            }
         }
     }
 

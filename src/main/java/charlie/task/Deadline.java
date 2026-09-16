@@ -22,9 +22,13 @@ public class Deadline extends Task {
      * @param description Description of the task.
      * @param isDone Whether the task is completed.
      * @param deadline Date by which the task must be completed.
+     * @throws CharlieException If the description or deadline is invalid.
      */
     public Deadline(String description, boolean isDone, LocalDate deadline) {
         super(description, isDone);
+        if (deadline == null) {
+            throw new CharlieException("Deadline cannot be empty.");
+        }
         this.deadline = deadline;
     }
 
@@ -37,6 +41,18 @@ public class Deadline extends Task {
     @Override
     public Task copyWithStatus(boolean isDone) {
         return new Deadline(description, isDone, deadline);
+    }
+
+    /**
+     * Returns whether another deadline has the same description and due date.
+     *
+     * @param other Task to compare with this deadline.
+     * @return True when both deadlines contain the same identifying details.
+     */
+    @Override
+    public boolean hasSameDetails(Task other) {
+        return super.hasSameDetails(other)
+                && deadline.equals(((Deadline) other).deadline);
     }
 
     /**

@@ -1,8 +1,11 @@
 package charlie.storage;
 
 import java.io.IOException;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -13,6 +16,7 @@ import charlie.exception.CharlieException;
 import charlie.task.Deadline;
 import charlie.task.Event;
 import charlie.task.Task;
+import charlie.task.TaskList;
 import charlie.task.Todo;
 
 /**
@@ -22,13 +26,20 @@ public class Storage {
     /** Location of Charlie's save file. */
     private final Path filePath;
 
+    /** Prevents a failed load from being replaced by an empty task list. */
+    private boolean hasLoadFailed;
+
     /**
      * Creates storage that uses the specified save file.
      *
      * @param filePath Path to Charlie's save file.
      */
     public Storage(String filePath) {
-        this.filePath = Path.of(filePath);
+        try {
+            this.filePath = Path.of(filePath);
+        } catch (InvalidPathException | NullPointerException e) {
+            throw new CharlieException("Invalid save-file path.");
+        }
     }
 
     /**
@@ -39,19 +50,24 @@ public class Storage {
      * @throws CharlieException If the file cannot be read or contains invalid task data.
      */
     public List<Task> load() {
-        if (!Files.exists(filePath)) {
-            return new ArrayList<>();
-        }
-
-        List<Task> tasks = new ArrayList<>();
         try {
+            if (Files.notExists(filePath)) {
+                return new ArrayList<>();
+            }
+
+            List<Task> tasks = new ArrayList<>();
             for (String line : Files.readAllLines(filePath)) {
                 if (!line.isBlank()) {
                     tasks.add(parseSavedTask(line));
                 }
             }
+            new TaskList(tasks);
             return tasks;
-        } catch (IOException e) {
+        } catch (CharlieException e) {
+            hasLoadFailed = true;
+            throw e;
+        } catch (IOException | SecurityException e) {
+            hasLoadFailed = true;
             throw new CharlieException("Could not read the saved task file.");
         }
     }
@@ -63,15 +79,35 @@ public class Storage {
      * @throws CharlieException If the tasks cannot be written to the save file.
      */
     public void save(List<Task> tasks) {
+        if (hasLoadFailed) {
+            throw new CharlieException("Cannot save tasks because saved tasks could not be loaded.");
+        }
         StringBuilder content = new StringBuilder();
         for (Task task : tasks) {
             content.append(task.saveFileFormat()).append(System.lineSeparator());
         }
+        Path temporaryFile = null;
         try {
-            Files.createDirectories(filePath.getParent());
-            Files.writeString(filePath, content.toString());
-        } catch (IOException e) {
+            Path parentDirectory = filePath.toAbsolutePath().getParent();
+            Files.createDirectories(parentDirectory);
+            temporaryFile = Files.createTempFile(parentDirectory, "charlie-", ".tmp");
+            Files.writeString(temporaryFile, content.toString());
+            try {
+                Files.move(temporaryFile, filePath,
+                        StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(temporaryFile, filePath, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException | SecurityException e) {
             throw new CharlieException("Could not save tasks.");
+        } finally {
+            if (temporaryFile != null) {
+                try {
+                    Files.deleteIfExists(temporaryFile);
+                } catch (IOException | SecurityException e) {
+                    // A failed cleanup must not hide the original save result.
+                }
+            }
         }
     }
 
@@ -93,13 +129,28 @@ public class Storage {
             throw new CharlieException("Invalid number of fields in saved task.");
         }
 
-        boolean isDone = fields[1].equals("Done");
+        boolean isDone = parseSavedStatus(fields[1]);
 
         return switch (fields[0]) {
             case "T" -> new Todo(fields[2], isDone);
             case "D" -> parseSavedDeadline(fields, isDone);
             case "E" -> parseSavedEvent(fields, isDone);
             default -> throw new AssertionError("Task type was validated above.");
+        };
+    }
+
+    /**
+     * Converts a saved completion status into its boolean representation.
+     *
+     * @param status Saved status field.
+     * @return True for {@code Done}; false for {@code Not done}.
+     * @throws CharlieException If the status is not one of Charlie's supported values.
+     */
+    private boolean parseSavedStatus(String status) {
+        return switch (status) {
+            case "Done" -> true;
+            case "Not done" -> false;
+            default -> throw new CharlieException("Invalid completion status in saved task.");
         };
     }
 

@@ -19,6 +19,7 @@ D | Not done | missing deadline
 Start Charlie, then enter:
 
 ```text
+todo new task
 list
 bye
 ```
@@ -28,6 +29,16 @@ bye
 ```text
 Error loading saved tasks: Invalid number of fields in saved task.
 ```
+
+**Expected output after entering `todo new task`:**
+
+```text
+    ____________________________________________________________
+    Cannot save tasks because saved tasks could not be loaded.
+    ____________________________________________________________
+```
+
+Verify that `data/charlie.txt` still contains the original malformed line after Charlie exits.
 
 **Expected output after entering `list`:**
 
@@ -71,7 +82,118 @@ Error loading saved tasks: Could not read the saved task file.
     ____________________________________________________________
 ```
 
-Leave the `data/charlie.txt` directory in place for the following save-error case.
+Remove the `data/charlie.txt` directory before preparing the next startup-error case.
+
+### UI-STARTUP-DUPLICATE-01 — Preserve a saved file with duplicate tasks
+
+**Aim:** Verify that duplicate saved tasks are reported and cannot be overwritten by a new task.
+
+**Rationale:** A failed load must protect the original file, even when every individual saved line is valid.
+
+Before starting Charlie, create `data/charlie.txt` with exactly these lines:
+
+```text
+T | Not done | repeated
+T | Done | repeated
+```
+
+Start Charlie, then enter:
+
+```text
+todo new task
+bye
+```
+
+**Expected startup output after the banner and greeting:**
+
+```text
+Error loading saved tasks: This task already exists in the list.
+```
+
+**Expected output after entering `todo new task`:**
+
+```text
+    ____________________________________________________________
+    Cannot save tasks because saved tasks could not be loaded.
+    ____________________________________________________________
+```
+
+**Expected output after entering `bye`:**
+
+```text
+    ____________________________________________________________
+    Bye for now! I'll guard the task nest until you return.
+    ____________________________________________________________
+```
+
+Verify that the two original saved lines are unchanged after Charlie exits.
+
+### UI-STARTUP-STATUS-01 — Reject an unknown saved completion status
+
+**Aim:** Verify that a corrupted status is reported instead of being silently treated as not done.
+
+**Rationale:** Only `Done` and `Not done` are valid status values in Charlie's save format.
+
+Before starting Charlie, create `data/charlie.txt` with exactly this line:
+
+```text
+T | Finished | invalid status
+```
+
+Start Charlie, then enter:
+
+```text
+bye
+```
+
+**Expected startup output after the banner and greeting:**
+
+```text
+Error loading saved tasks: Invalid completion status in saved task.
+```
+
+**Expected output after entering `bye`:**
+
+```text
+    ____________________________________________________________
+    Bye for now! I'll guard the task nest until you return.
+    ____________________________________________________________
+```
+
+### UI-STARTUP-EVENT-01 — Reject a saved event with a reversed time range
+
+**Aim:** Verify that a saved event must end after it starts.
+
+**Rationale:** Loading must enforce the same chronology rule as interactive event creation.
+
+Before starting Charlie, create `data/charlie.txt` with exactly this line:
+
+```text
+E | Not done | invalid meeting | 2026-09-20T11:00 | 2026-09-20T10:00
+```
+
+Start Charlie, then enter:
+
+```text
+bye
+```
+
+**Expected startup output after the banner and greeting:**
+
+```text
+Error loading saved tasks: Event end must be after its start.
+```
+
+**Expected output after entering `bye`:**
+
+```text
+    ____________________________________________________________
+    Bye for now! I'll guard the task nest until you return.
+    ____________________________________________________________
+```
+
+After this case, remove the test file and create an empty directory named `data/charlie.txt` for the
+following save-error case.
 
 ### UI-STORAGE-02 — Handle a save-file write failure
 
@@ -79,7 +201,8 @@ Leave the `data/charlie.txt` directory in place for the following save-error cas
 
 **Rationale:** A save failure should be handled by Charlie's command loop instead of exposing a Java stack trace or terminating the program.
 
-Using the `data/charlie.txt` directory left by `UI-STARTUP-02`, start a fresh Charlie process. Then enter:
+Using the `data/charlie.txt` directory prepared after `UI-STARTUP-EVENT-01`, start a fresh Charlie process.
+Then enter:
 
 ```text
 todo unsaved task
@@ -97,7 +220,7 @@ Error loading saved tasks: Could not read the saved task file.
 
 ```text
     ____________________________________________________________
-    Could not save tasks.
+    Cannot save tasks because saved tasks could not be loaded.
     ____________________________________________________________
 ```
 
@@ -663,6 +786,26 @@ list
     ____________________________________________________________
 ```
 
+## UI-ERROR-DUPLICATE-01 — Reject a duplicate task with repeated whitespace
+
+**Aim:** Verify that repeated spaces are normalized and do not bypass task uniqueness checks.
+
+**Rationale:** A visually identical todo should not be stored twice because its input used extra spaces.
+
+**Input:**
+
+```text
+  todo   borrow    book
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    This task already exists in the list.
+    ____________________________________________________________
+```
+
 ## UI-02 — Add a deadline
 
 **Aim:** Verify that `/by` separates the deadline description from its date or time.
@@ -727,6 +870,26 @@ list
     1.[T][ ] borrow book
     2.[D][ ] return book (by: Sep 20 2026)
     3.[E][ ] project meeting (from: Sep 21 2026, 2:00 PM to: Sep 23 2026, 4:00 PM)
+    ____________________________________________________________
+```
+
+## UI-ERROR-ARGUMENT-01 — Reject an argument supplied to `list`
+
+**Aim:** Verify that a command which takes no arguments rejects accidental trailing text.
+
+**Rationale:** Silently ignoring text can hide a user's command-format mistake.
+
+**Input:**
+
+```text
+list extra
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    The list command does not accept arguments.
     ____________________________________________________________
 ```
 
@@ -1298,6 +1461,46 @@ deadline return book /by
     ____________________________________________________________
 ```
 
+## UI-ERROR-DELIMITER-01 — Reject a repeated deadline delimiter
+
+**Aim:** Verify that a deadline accepts exactly one `/by` field.
+
+**Rationale:** Repeated fields are ambiguous and should not be interpreted as part of the date.
+
+**Input:**
+
+```text
+deadline return book /by 2026-09-20 /by 2026-09-21
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    A deadline must include /by exactly once.
+    ____________________________________________________________
+```
+
+## UI-ERROR-DESCRIPTION-01 — Reject the save-file delimiter in a description
+
+**Aim:** Verify that task descriptions cannot contain Charlie's `|` save-file delimiter.
+
+**Rationale:** Accepting the delimiter would make the task impossible to load reliably later.
+
+**Input:**
+
+```text
+todo review A | B
+```
+
+**Expected output:**
+
+```text
+    ____________________________________________________________
+    A task description cannot contain |.
+    ____________________________________________________________
+```
+
 ## UI-PARSER-01 — Reject an event without delimiters
 
 **Aim:** Verify that an event command requires both `/from` and `/to` delimiters.
@@ -1769,7 +1972,7 @@ submission, and keyboard focus returns to the input field.
 1. Enter `bye`.
 2. Observe the window for at least one second.
 
-**Expected result:** Charlie displays the goodbye response, disables the input field and Send button,
+**Expected result:** Charlie displays the goodbye response, disables the input field and Roar! button,
 and closes the window after approximately one second.
 
 ### MANUAL-GUI-04 — Check supported operating systems and language settings

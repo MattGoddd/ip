@@ -195,4 +195,29 @@ public class TaskListTest {
 
         assertTrue(taskList.findByKeyword("report").isEmpty());
     }
+
+    @Test
+    public void add_sameTaskDetailsWithDifferentStatus_exceptionThrown() {
+        TaskList taskList = new TaskList(List.of(new Todo("borrow book", false)));
+
+        CharlieException exception = assertThrows(
+                CharlieException.class, () -> taskList.add(new Todo("borrow book", true)));
+
+        assertEquals("This task already exists in the list.", exception.getMessage());
+        assertEquals(1, taskList.getSize());
+    }
+
+    @Test
+    public void replace_detailsMatchingAnotherTask_exceptionThrown() {
+        Todo firstTask = new Todo("borrow book", false);
+        Todo secondTask = new Todo("return book", false);
+        Todo duplicateTask = new Todo("borrow book", false);
+        TaskList taskList = new TaskList(List.of(firstTask, secondTask));
+
+        CharlieException exception = assertThrows(
+                CharlieException.class, () -> taskList.replace(1, duplicateTask));
+
+        assertEquals("This task already exists in the list.", exception.getMessage());
+        assertEquals(secondTask, taskList.get(1));
+    }
 }
