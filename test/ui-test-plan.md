@@ -19,6 +19,7 @@ D | Not done | missing deadline
 Start Charlie, then enter:
 
 ```text
+todo new task
 list
 bye
 ```
@@ -28,6 +29,16 @@ bye
 ```text
 Error loading saved tasks: Invalid number of fields in saved task.
 ```
+
+**Expected output after entering `todo new task`:**
+
+```text
+    ____________________________________________________________
+    Cannot save tasks because saved tasks could not be loaded.
+    ____________________________________________________________
+```
+
+Verify that `data/charlie.txt` still contains the original malformed line after Charlie exits.
 
 **Expected output after entering `list`:**
 
@@ -72,6 +83,50 @@ Error loading saved tasks: Could not read the saved task file.
 ```
 
 Remove the `data/charlie.txt` directory before preparing the next startup-error case.
+
+### UI-STARTUP-DUPLICATE-01 — Preserve a saved file with duplicate tasks
+
+**Aim:** Verify that duplicate saved tasks are reported and cannot be overwritten by a new task.
+
+**Rationale:** A failed load must protect the original file, even when every individual saved line is valid.
+
+Before starting Charlie, create `data/charlie.txt` with exactly these lines:
+
+```text
+T | Not done | repeated
+T | Done | repeated
+```
+
+Start Charlie, then enter:
+
+```text
+todo new task
+bye
+```
+
+**Expected startup output after the banner and greeting:**
+
+```text
+Error loading saved tasks: This task already exists in the list.
+```
+
+**Expected output after entering `todo new task`:**
+
+```text
+    ____________________________________________________________
+    Cannot save tasks because saved tasks could not be loaded.
+    ____________________________________________________________
+```
+
+**Expected output after entering `bye`:**
+
+```text
+    ____________________________________________________________
+    Bye for now! I'll guard the task nest until you return.
+    ____________________________________________________________
+```
+
+Verify that the two original saved lines are unchanged after Charlie exits.
 
 ### UI-STARTUP-STATUS-01 — Reject an unknown saved completion status
 
@@ -165,7 +220,7 @@ Error loading saved tasks: Could not read the saved task file.
 
 ```text
     ____________________________________________________________
-    Could not save tasks.
+    Cannot save tasks because saved tasks could not be loaded.
     ____________________________________________________________
 ```
 

@@ -1,9 +1,11 @@
 package charlie.storage;
 
 import java.io.IOException;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -14,6 +16,7 @@ import charlie.exception.CharlieException;
 import charlie.task.Deadline;
 import charlie.task.Event;
 import charlie.task.Task;
+import charlie.task.TaskList;
 import charlie.task.Todo;
 
 /**
@@ -22,6 +25,9 @@ import charlie.task.Todo;
 public class Storage {
     /** Location of Charlie's save file. */
     private final Path filePath;
+
+    /** Prevents a failed load from being replaced by an empty task list. */
+    private boolean hasLoadFailed;
 
     /**
      * Creates storage that uses the specified save file.
@@ -55,8 +61,13 @@ public class Storage {
                     tasks.add(parseSavedTask(line));
                 }
             }
+            new TaskList(tasks);
             return tasks;
+        } catch (CharlieException e) {
+            hasLoadFailed = true;
+            throw e;
         } catch (IOException | SecurityException e) {
+            hasLoadFailed = true;
             throw new CharlieException("Could not read the saved task file.");
         }
     }
@@ -68,18 +79,35 @@ public class Storage {
      * @throws CharlieException If the tasks cannot be written to the save file.
      */
     public void save(List<Task> tasks) {
+        if (hasLoadFailed) {
+            throw new CharlieException("Cannot save tasks because saved tasks could not be loaded.");
+        }
         StringBuilder content = new StringBuilder();
         for (Task task : tasks) {
             content.append(task.saveFileFormat()).append(System.lineSeparator());
         }
+        Path temporaryFile = null;
         try {
-            Path parentDirectory = filePath.getParent();
-            if (parentDirectory != null) {
-                Files.createDirectories(parentDirectory);
+            Path parentDirectory = filePath.toAbsolutePath().getParent();
+            Files.createDirectories(parentDirectory);
+            temporaryFile = Files.createTempFile(parentDirectory, "charlie-", ".tmp");
+            Files.writeString(temporaryFile, content.toString());
+            try {
+                Files.move(temporaryFile, filePath,
+                        StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(temporaryFile, filePath, StandardCopyOption.REPLACE_EXISTING);
             }
-            Files.writeString(filePath, content.toString());
         } catch (IOException | SecurityException e) {
             throw new CharlieException("Could not save tasks.");
+        } finally {
+            if (temporaryFile != null) {
+                try {
+                    Files.deleteIfExists(temporaryFile);
+                } catch (IOException | SecurityException e) {
+                    // A failed cleanup must not hide the original save result.
+                }
+            }
         }
     }
 

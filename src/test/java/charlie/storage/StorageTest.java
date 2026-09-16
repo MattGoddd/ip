@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -167,6 +168,56 @@ public class StorageTest {
                 CharlieException.class, () -> storage.save(List.of(new Todo("unsaved", false))));
 
         assertEquals("Could not save tasks.", exception.getMessage());
+    }
+
+    @Test
+    public void save_loadFailed_preservesCorruptFile(@TempDir Path temporaryDirectory)
+            throws IOException {
+        Path saveFile = writeSavedLine(temporaryDirectory, "D | Not done | missing deadline");
+        String originalContent = Files.readString(saveFile);
+        Storage storage = new Storage(saveFile.toString());
+        assertThrows(CharlieException.class, storage::load);
+
+        CharlieException exception = assertThrows(
+                CharlieException.class, () -> storage.save(List.of(new Todo("new task", false))));
+
+        assertEquals("Cannot save tasks because saved tasks could not be loaded.",
+                exception.getMessage());
+        assertEquals(originalContent, Files.readString(saveFile));
+    }
+
+    @Test
+    public void save_duplicateLoadedTasks_preservesCorruptFile(@TempDir Path temporaryDirectory)
+            throws IOException {
+        String originalContent = "T | Not done | repeated" + System.lineSeparator()
+                + "T | Done | repeated" + System.lineSeparator();
+        Path saveFile = temporaryDirectory.resolve("charlie.txt");
+        Files.writeString(saveFile, originalContent);
+        Storage storage = new Storage(saveFile.toString());
+
+        CharlieException loadingError = assertThrows(CharlieException.class, storage::load);
+        CharlieException savingError = assertThrows(
+                CharlieException.class, () -> storage.save(List.of(new Todo("new task", false))));
+
+        assertEquals("This task already exists in the list.", loadingError.getMessage());
+        assertEquals("Cannot save tasks because saved tasks could not be loaded.",
+                savingError.getMessage());
+        assertEquals(originalContent, Files.readString(saveFile));
+    }
+
+    @Test
+    public void save_existingFile_replacesContentsWithoutTemporaryFile(
+            @TempDir Path temporaryDirectory) throws IOException {
+        Path saveFile = writeSavedLine(temporaryDirectory, "T | Not done | old task");
+        Storage storage = new Storage(saveFile.toString());
+
+        storage.save(List.of(new Todo("new task", false)));
+
+        assertEquals("T | Not done | new task" + System.lineSeparator(),
+                Files.readString(saveFile));
+        try (Stream<Path> directoryEntries = Files.list(temporaryDirectory)) {
+            assertEquals(1, directoryEntries.count());
+        }
     }
 
     private Path writeSavedLine(Path temporaryDirectory, String line) throws IOException {
