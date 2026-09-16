@@ -33,7 +33,7 @@ public class UnmarkCommand extends Command {
         storage.save(tasks.getTasksAfterChangingStatus(index, false));
         Task unmarkedTask = tasks.unmark(index);
         ui.showMessages(
-                "OK, I've marked this task not done yet:",
+                "That's okay - this task isn't quite ready yet:",
                 "  " + unmarkedTask);
     }
 }

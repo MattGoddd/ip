@@ -32,7 +32,7 @@ public class OnCommand extends Command {
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
-        ui.showMessage("Here are the tasks occurring on " + searchDate + ":");
+        ui.showMessage("Here's what I found for " + searchDate + ":");
         int matchCount = 0;
         for (Task task : tasks.findOnDate(searchDate)) {
             matchCount++;
@@ -40,7 +40,7 @@ public class OnCommand extends Command {
         }
 
         if (matchCount == 0) {
-            ui.showMessage("No deadlines or events occur on this date.");
+            ui.showMessage("Hmm... I couldn't track down anything for this date.");
         }
     }
 }

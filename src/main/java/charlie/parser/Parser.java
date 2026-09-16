@@ -76,7 +76,7 @@ public final class Parser {
      */
     public static CommandType parseCommand(String input) {
         if (input == null || input.isBlank()) {
-            throw new CharlieException("Please enter a command.");
+            throw new CharlieException("Um... please give me a command first.");
         }
 
         String[] parts = input.trim().split("\\s+");

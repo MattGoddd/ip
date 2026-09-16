@@ -55,6 +55,6 @@ public enum CommandType {
             }
         }
 
-        throw new CharlieException("Oops, this is an invalid command");
+        throw new CharlieException("Oh! I don't recognize that command yet.");
     }
 }
