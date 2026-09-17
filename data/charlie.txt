@@ -1,11 +1,2 @@
-D | Not done | submit report | 2026-09-20
-D | Not done | renew passport | 2027-01-05
-T | Not done | buy groceries
-D | Done | impssoble data | 2028-01-01
-D | Not done | ahhh | 2029-01-01
-D | Not done | ahhhhhh | 9891-01-01
-E | Not done | do dis | 2026-09-03T00:00 | 2026-09-10T00:00
-T | Not done | help
-T | Not done | tonight
-D | Not done | task | 2026-09-10
-T | Done | homework
+D | Not done | homework cs2103t | 2026-09-20
+E | Not done | cs2106 midterm | 2026-10-08T19:00 | 2026-10-08T20:00
