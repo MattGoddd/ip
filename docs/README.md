@@ -9,6 +9,8 @@ Charlie is a task chatbot for keeping track of todos, deadlines, and events. Typ
 
 Charlie saves changes automatically to `data/charlie.txt` in the folder you run it from. Your tasks will be there when you reopen the app.
 
+![Charlie chat window showing a deadline and an event](Ui.png)
+
 ## Features
 
 **Command format:** Replace words in `UPPER_CASE` with your own values. For example, use `mark 2` in place of `mark TASK_NUMBER`. Enter each command on one line. Dates use `yyyy-MM-dd` (for example, `2026-09-20`); times use four digits on a 24-hour clock (for example, `1400`).
