@@ -1,40 +1,73 @@
 # Charlie User Guide
 
-Charlie is a task chatbot. Tell Charlie what to remember, check what is coming up, and tick off tasks as you finish them.
+Charlie is a task chatbot for keeping track of todos, deadlines, and events. Type a command and Charlie will remember it for you.
 
-## Getting started
+## Quick start
 
-You need Java 25. From the project folder, run `gradlew.bat run` on Windows or `./gradlew run` on macOS or Linux. Type a command into the chat box and press **Enter** or click **Roar!**.
+1. Install Java 25. In the project folder, run `gradlew.bat run` on Windows or `./gradlew run` on macOS or Linux.
+2. Type a command in the chat box and press **Enter** or click **Roar!**. Try `todo borrow book`, then `list` to see your task.
 
-Charlie saves your tasks in `data/charlie.txt` in the folder you run it from, so they are there when you reopen the app. Enter one command at a time. Dates use `yyyy-MM-dd` (for example, `2026-09-20`); times use four digits on a 24-hour clock (for example, `1400`).
+Charlie saves changes automatically to `data/charlie.txt` in the folder you run it from. Your tasks will be there when you reopen the app.
 
-## Add tasks
+## Features
 
-| What you want to add | Command | Example |
-| --- | --- | --- |
-| A task without a date | `todo DESCRIPTION` | `todo borrow book` |
-| A task due on a date | `deadline DESCRIPTION /by yyyy-MM-dd` | `deadline return book /by 2026-09-20` |
-| An event with a start and end | `event DESCRIPTION /from yyyy-MM-dd HHmm /to yyyy-MM-dd HHmm` | `event study group /from 2026-09-21 1400 /to 2026-09-21 1600` |
+**Command format:** Replace words in `UPPER_CASE` with your own values. For example, use `mark 2` in place of `mark TASK_NUMBER`. Enter each command on one line. Dates use `yyyy-MM-dd` (for example, `2026-09-20`); times use four digits on a 24-hour clock (for example, `1400`).
 
-Descriptions cannot be empty or contain `|`. An event must end after it starts. Charlie will tell you if a command needs correcting.
+### Add a todo: `todo`
 
-## View and find tasks
+Adds a task without a date. Format: `todo DESCRIPTION`
 
-| Command | What it does |
-| --- | --- |
-| `list` | Shows all tasks and their numbers. Use these numbers for the commands below. |
-| `find book` | Finds tasks with `book` in the description, regardless of letter case. You can also search for a phrase. |
-| `on 2026-09-21` | Shows deadlines due that day and events spanning that day. |
+Example: `todo borrow book`
 
-In a list, `[T]` means todo, `[D]` means deadline, and `[E]` means event. `[ ]` means unfinished; `[X]` means done. Search results have their own numbering, so run `list` to get the task number before changing a task.
+### Add a deadline: `deadline`
 
-## Mark and unmark tasks
+Adds a task due on a date. Format: `deadline DESCRIPTION /by yyyy-MM-dd`
 
-Use the number shown by `list`. Enter `mark TASK_NUMBER` to mark a task as done (`[X]`), or `unmark TASK_NUMBER` to return it to unfinished (`[ ]`). For example, `mark 2` marks the second task as done.
+Example: `deadline return book /by 2026-09-20`
 
-## Update a task
+### Add an event: `event`
 
-To change one detail without losing the task's position or completion status, use `update TASK_NUMBER FIELD NEW_VALUE`:
+Adds a task with a start and end time. Format: `event DESCRIPTION /from yyyy-MM-dd HHmm /to yyyy-MM-dd HHmm`
+
+Example: `event study group /from 2026-09-21 1400 /to 2026-09-21 1600`
+
+The end must be after the start. Descriptions cannot be empty or contain `|`. Charlie will explain if an entry needs correcting.
+
+### See all tasks: `list`
+
+Shows every task with its task number. Format: `list`
+
+`[T]`, `[D]`, and `[E]` mean todo, deadline, and event. `[ ]` means unfinished; `[X]` means done. Use the number shown here for `mark`, `unmark`, `update`, and `delete`.
+
+### Find tasks by description: `find`
+
+Finds tasks whose descriptions contain a word or phrase, regardless of letter case. Format: `find KEYWORD_OR_PHRASE`
+
+Example: `find book`
+
+Results from `find` and `on` have their own numbering. Run `list` to get the task number before changing a task.
+
+### Find tasks on a date: `on`
+
+Shows deadlines due on a date and events spanning that date. Format: `on yyyy-MM-dd`
+
+Example: `on 2026-09-21`
+
+### Mark a task as done: `mark`
+
+Changes a task's status to done (`[X]`). Format: `mark TASK_NUMBER`
+
+Example: `mark 2` marks the second task shown by `list`.
+
+### Mark a task as unfinished: `unmark`
+
+Changes a task's status back to unfinished (`[ ]`). Format: `unmark TASK_NUMBER`
+
+Example: `unmark 2`
+
+### Update a task: `update`
+
+Changes one detail without changing the task's position or completion status. Format: `update TASK_NUMBER FIELD NEW_VALUE`
 
 | Field | Works for | Example |
 | --- | --- | --- |
@@ -43,12 +76,16 @@ To change one detail without losing the task's position or completion status, us
 | `from` | Event | `update 3 from 2026-09-21 1500` |
 | `to` | Event | `update 3 to 2026-09-21 1700` |
 
-Use the task number from `list`. When changing an event time, its end must still be after its start. Run `list` again to check the result.
+Use the task number from `list`. An updated event must still end after it starts.
 
-## Delete a task
+### Delete a task: `delete`
 
-Enter `delete TASK_NUMBER` to remove a task from the list. For example, `delete 2` removes the second task. Deletion is permanent; run `list` first to check the task number.
+Removes a task permanently. Format: `delete TASK_NUMBER`
 
-## Leave Charlie
+Example: `delete 2` removes the second task shown by `list`. Run `list` first to check its number.
 
-Enter `bye` to close the chat window. Your task changes are saved as you make them.
+### Exit Charlie: `bye`
+
+Closes the chat window. Format: `bye`
+
+Your task changes are saved as you make them.
