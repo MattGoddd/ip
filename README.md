@@ -1,70 +1,67 @@
-# CHARLIE project
+# Charlie
 
-This is the CHARLIE chatbot project. Given below are instructions on how to use it.
+Charlie is a Java 25 task chatbot with a desktop chat interface. It keeps track of
+todos, deadlines, and events, and saves your changes so they are available the next
+time you open the app.
 
-## Setting up in Intellij
+![Charlie chat window showing a deadline and an event](docs/Ui.png)
 
-Prerequisites: JDK 25, update Intellij to the most recent version.
+## Quick start
 
-1. Open Intellij (if you are not in the welcome screen, click `File` > `Close Project` to close the existing project first)
-1. Open the project into Intellij as follows:
-   1. Click `Open`.
-   1. Select the project directory, and click `OK`.
-   1. If there are any further prompts, accept the defaults.
-1. Configure the project to use **JDK 25** (not other versions) as explained in [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk).<br>
-   In the same dialog, set the **Project language level** field to the `SDK default` option.
-1. After that, locate the `src/main/java/charlie/Charlie.java` file, right-click it, and choose `Run Charlie.main()` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, you should see something like the below as the output:
-   ```
-     ____ _   _    _    ____  _     ___ _____
-    / ___| | | |  / \  |  _ \| |   |_ _| ____|
-   | |   | |_| | / _ \ | |_) | |    | ||  _|
-   | |___|  _  |/ ___ \|  _ <| |___ | || |___
-    \____|_| |_/_/   \_\_| \_\_____|___|_____|
-   ```
+1. Install JDK 25 and open this project in IntelliJ IDEA.
+2. Set the project SDK and Gradle JVM to JDK 25.
+3. From the project folder, run `gradlew.bat run` on Windows or `./gradlew run`
+   on macOS or Linux.
+4. Type a command in the chat box and press **Enter** or click **Roar!**.
 
-**Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
-
-## Creating and running the fat JAR
-
-The Gradle build uses the Shadow plugin to package Charlie and all of its runtime
-dependencies into one executable file.
-
-1. Open a terminal in the project directory.
-2. Create the fat JAR:
-   - Windows: `gradlew.bat shadowJar`
-   - macOS/Linux: `./gradlew shadowJar`
-3. Find the generated file at `build/libs/charlie.jar`.
-4. Run it from the project directory with `java -jar build/libs/charlie.jar`.
-
-Run the JAR from the project directory so that Charlie reads and writes its task
-data at `data/charlie.txt`. JDK 25 is required both to build and run the project.
-
-## Updating a task
-
-Use the `update` command to replace one detail of an existing task without deleting
-and recreating it:
+For example, enter these commands one at a time:
 
 ```text
-update TASK_NUMBER FIELD NEW_VALUE
+todo borrow book
+deadline return book /by 2026-09-20
+list
 ```
 
-Use the task number shown by the `list` command. The supported fields are:
+See the [User Guide](docs/README.md) for every command, date and time format, and
+more examples.
 
-| Field | Applicable task type | Value format |
+## Commands at a glance
+
+| Action | Command |
+| --- | --- |
+| Add a todo | `todo DESCRIPTION` |
+| Add a deadline | `deadline DESCRIPTION /by yyyy-MM-dd` |
+| Add an event | `event DESCRIPTION /from yyyy-MM-dd HHmm /to yyyy-MM-dd HHmm` |
+| Show all tasks | `list` |
+| Find by description | `find KEYWORD_OR_PHRASE` |
+| Find tasks on a date | `on yyyy-MM-dd` |
+| Mark complete or incomplete | `mark TASK_NUMBER` or `unmark TASK_NUMBER` |
+| Change one task detail | `update TASK_NUMBER FIELD NEW_VALUE` |
+| Remove a task | `delete TASK_NUMBER` |
+| Exit | `bye` |
+
+## Saved tasks
+
+Charlie saves tasks to `data/charlie.txt` relative to the folder from which you
+launch it. Run Charlie from the same folder each time to load the same tasks. The
+JAR does not contain this save file; Charlie reads and updates it while running.
+
+## Build and test
+
+Run these commands from the project folder:
+
+| Purpose | Windows | macOS/Linux |
 | --- | --- | --- |
-| `description` | Todo, Deadline, and Event | Any non-blank text |
-| `deadline` | Deadline | `yyyy-MM-dd` |
-| `from` | Event | `yyyy-MM-dd HHmm` |
-| `to` | Event | `yyyy-MM-dd HHmm` |
+| Run JUnit tests and Checkstyle | `gradlew.bat check` | `./gradlew check` |
+| Build the executable JAR | `gradlew.bat shadowJar` | `./gradlew shadowJar` |
 
-For example:
+The JAR is written to `build/libs/charlie.jar`. Run it with
+`java -jar build/libs/charlie.jar` from the project folder. JDK 25 is required to
+build and run Charlie.
 
-```text
-update 1 description borrow library book
-update 2 deadline 2026-09-20
-update 3 from 2026-09-21 1400
-update 3 to 2026-09-21 1600
-```
+The exact console test cases and expected responses are in the
+[UI test plan](test/ui-test-plan.md).
 
-The updated task remains at the same list position and keeps its existing completion
-status. For an Event, the updated end date-time must remain later than its start.
+## AI usage
+
+I used OpenAI Codex to assist with multiple parts of the Java code and tests, and I have verified the AI-generated output before using it in the code.
