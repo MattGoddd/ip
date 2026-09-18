@@ -39,6 +39,8 @@ The end must be after the start. Descriptions cannot be empty or contain `|`. Ch
 
 Shows every task with its task number. Format: `list`
 
+If you have no tasks, Charlie replies, `Your task nest is empty.`
+
 `[T]`, `[D]`, and `[E]` mean todo, deadline, and event. `[ ]` means unfinished; `[X]` means done. Use the number shown here for `mark`, `unmark`, `update`, and `delete`.
 
 ### Find tasks by description: `find`

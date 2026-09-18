@@ -149,6 +149,16 @@ public class CommandTest {
     }
 
     @Test
+    public void listCommand_emptyList_displaysEmptyMessage() {
+        TaskList tasks = new TaskList();
+        List<String> messages = new ArrayList<>();
+
+        new ListCommand().execute(tasks, new Ui(messages::add), null);
+
+        assertEquals(List.of("Your task nest is empty."), messages);
+    }
+
+    @Test
     public void findCommand_matchesAndNoMatches_displaysExpectedMessages() {
         TaskList tasks = new TaskList(List.of(
                 new Todo("borrow book", false),

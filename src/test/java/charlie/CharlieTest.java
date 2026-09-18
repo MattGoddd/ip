@@ -37,7 +37,7 @@ public class CharlieTest {
         assertEquals(
                 GREETING + "\nError loading saved tasks: Invalid number of fields in saved task.",
                 charlie.getGreeting());
-        assertEquals("Here's what's currently in our task nest:", charlie.getResponse("list"));
+        assertEquals("Your task nest is empty.", charlie.getResponse("list"));
     }
 
     @Test
@@ -95,7 +95,7 @@ public class CharlieTest {
 
         String output = testOutput.toString(StandardCharsets.UTF_8);
         assertTrue(output.contains("Oh, hello! I'm Charlie."));
-        assertTrue(output.contains("Here's what's currently in our task nest:"));
+        assertTrue(output.contains("Your task nest is empty."));
         assertTrue(output.contains("Bye for now! I'll guard the task nest until you return."));
     }
 }

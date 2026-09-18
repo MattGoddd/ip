@@ -44,7 +44,7 @@ Verify that `data/charlie.txt` still contains the original malformed line after 
 
 ```text
     ____________________________________________________________
-    Here's what's currently in our task nest:
+    Your task nest is empty.
     ____________________________________________________________
 ```
 
@@ -240,7 +240,7 @@ list
 
 ```text
     ____________________________________________________________
-    Here's what's currently in our task nest:
+    Your task nest is empty.
     ____________________________________________________________
 ```
 
@@ -271,7 +271,7 @@ bye
 
 ```text
     ____________________________________________________________
-    Here's what's currently in our task nest:
+    Your task nest is empty.
     ____________________________________________________________
 ```
 
